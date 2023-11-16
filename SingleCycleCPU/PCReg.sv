@@ -9,9 +9,9 @@ module PCReg(
     output logic [31:0] PC
 );
 
- logic [31:0] next_PC
+ logic [31:0] next_PC;
 
-always_ff @(posedge ck or posedge rst) begin
+always_ff @(posedge clk , posedge rst) begin
     if (rst)  
         PC <= 32'b0;
     else 

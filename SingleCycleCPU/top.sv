@@ -12,11 +12,13 @@ logic ImmSrc;
 logic RegWrite;
 logic ALUsrc;
 logic ALUctrl;
+logic PCsrc;
 
 PCReg PCReg (
     .clk (clk),
     .rst (rst),
     .ImmOp (ImmOp),
+    .PCsrc (PCsrc),
     .PC (PC)
 );
 
@@ -28,14 +30,20 @@ InstrMem InstrMem (
 ControlUnit ControlUnit(
     .Instr(Instr),
     .EQ(EQ),
-)
+    .RegWrite(RegWrite),
+    .ALUsrc(ALUsrc),
+    .ALUctrl(ALUctrl),
+    .ImmSrc(ImmSrc),
+    .PCsrc(PCsrc)
+);
 
 SignExtend SignExtend(
     .Instr(Instr),
-    .ImmSrc(ImmSrc)
-)
+    .ImmSrc(ImmSrc),
+    .ImmOp(ImmOp)
+);
 
-RegisterFile RegisterFile(
+DataPath DataPath(
     .clk(clk),
     .ImmOp(ImmOp),
     .EQ(EQ),
@@ -46,6 +54,6 @@ RegisterFile RegisterFile(
     .ALUsrc(ALUsrc),
     .ALUctrl(ALUctrl),
     .a0(a0)
-)
+);
 
 endmodule
