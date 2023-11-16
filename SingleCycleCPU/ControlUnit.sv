@@ -1,6 +1,6 @@
 module ControlUnit (
 	input logic EQ,
-	input logic Instr[31:0],
+	input logic [31:0] Instr,
 
 	output logic RegWrite,
 	output logic ALUctrl,
