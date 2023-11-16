@@ -14,7 +14,7 @@ logic ALUsrc;
 logic ALUctrl;
 logic PCsrc;
 
-PCReg PCReg (
+PCtop PCtop (
     .clk (clk),
     .rst (rst),
     .ImmOp (ImmOp),

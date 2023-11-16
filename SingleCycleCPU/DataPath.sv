@@ -31,11 +31,11 @@ RegFile RegFile(
     .a0 (a0)
 );
 
-RegMux regMux(
-    .regOp2(regOp2),
-    .ImmOp(ImmOp),
-    .ALUsrc(ALUsrc),
-    .MuxOut(ALUop2)
+Mux2 regMux(
+    .in0(regOp2),
+    .in1(ImmOp),
+    .sel(ALUsrc),
+    .out(ALUop2)
 );
 
 ALU ALU(
