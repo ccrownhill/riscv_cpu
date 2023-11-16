@@ -6,15 +6,16 @@ module PCReg(
     input logic clk,
     input logic rst,
     input logic [31:0] ImmOp,
-    input logic [31:0] next_PC
     output logic [31:0] PC
 );
+
+ logic [31:0] next_PC
 
 always_ff @(posedge ck or posedge rst) begin
     if (rst)  
         PC <= 32'b0;
     else 
-        PC = next_PC;
+        PC <= next_PC;
     
 end 
 
