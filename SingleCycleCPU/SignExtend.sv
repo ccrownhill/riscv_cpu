@@ -1,8 +1,8 @@
 /// Sign extend immediate value to 32 bit
 module SignExtend (
 	input logic ImmSrc; // 0 -> 12 bit, 1 -> 13 bit
-	input logic Instr[31:0];
-	output logic ImmOp[31:0];
+	input logic [31:0] Instr;
+	output logic [31:0] ImmOp;
 );
 
 if (ImmSrc == 1'b0) begin

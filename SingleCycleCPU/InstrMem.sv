@@ -1,8 +1,8 @@
 module InstrMem #(
 	parameter MEMSIZE = 100 // in words
 ) (
-	input logic A[31:0],
-	output logic RD[31:0]
+	input logic [31:0] A,
+	output logic [31:0] RD
 );
 
 logic [31:0] rom_arr[MEMSIZE-1:0];
