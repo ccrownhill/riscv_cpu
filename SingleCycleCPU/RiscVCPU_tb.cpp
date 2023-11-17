@@ -38,9 +38,6 @@ int main(int argc, char **argv, char **env) {
 		
 		top->rst = (simcyc<2);
 
-		vbdPlot((int(top->a0) >> 24) & 0xff, 0, 255);
-		vbdPlot((int(top->a0) >> 16) & 0xff, 0, 255);
-		vbdPlot((int(top->a0) >> 8) & 0xff, 0, 255);
 		vbdPlot(int(top->a0) & 0xff, 0, 255);
 		vbdCycle(simcyc);
 
