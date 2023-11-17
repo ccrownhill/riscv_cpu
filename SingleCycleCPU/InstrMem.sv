@@ -1,15 +1,16 @@
 module InstrMem #(
-	parameter MEMSIZE = 100 // in words
+	parameter MEMSIZE = 5000, // in bytes
+		  DATA_WIDTH = 32
 ) (
-	input logic [31:0] A,
-	output logic [31:0] RD
+	input logic [DATA_WIDTH-1:0] A,
+	output logic [DATA_WIDTH-1:0] RD
 );
 
-logic [31:0] rom_arr[MEMSIZE-1:0];
+logic [7:0] rom_arr[MEMSIZE-1:0];
 
 initial
 	$readmemh("insrom.mem", rom_arr);
 
-assign RD = rom_arr[A];
+assign RD = {rom_arr[A], rom_arr[A+1], rom_arr[A+2], rom_arr[A+3]};
 
 endmodule

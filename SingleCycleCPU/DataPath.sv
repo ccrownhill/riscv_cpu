@@ -1,23 +1,24 @@
 module DataPath #(
-    parameter   A_WIDTH = 5,
-                D_WIDTH = 32
+    parameter   ADDR_WIDTH = 5,
+                DATA_WIDTH = 32
 )(
     input logic clk,
-    input logic [A_WIDTH-1:0] rs1,
-    input logic [A_WIDTH-1:0] rs2,
-    input logic [A_WIDTH-1:0] rd,
+    input logic [ADDR_WIDTH-1:0] rs1,
+    input logic [ADDR_WIDTH-1:0] rs2,
+    input logic [ADDR_WIDTH-1:0] rd,
     input logic RegWrite,
     input logic ALUsrc,
     input logic ALUctrl,
-    input logic [D_WIDTH-1:0] ImmOp,
+    input logic [DATA_WIDTH-1:0] ImmOp,
+
     output logic EQ,
-    output logic [D_WIDTH-1:0] a0
+    output logic [DATA_WIDTH-1:0] a0
 );
 
-logic [D_WIDTH-1:0] regOp2 ;
-logic [D_WIDTH-1:0] ALUop1;
-logic [D_WIDTH-1:0] ALUop2;
-logic [D_WIDTH-1:0] ALUout;
+logic [DATA_WIDTH-1:0] regOp2;
+logic [DATA_WIDTH-1:0] ALUop1;
+logic [DATA_WIDTH-1:0] ALUop2;
+logic [DATA_WIDTH-1:0] ALUout;
 
 RegFile RegFile(
     .clk (clk),
@@ -31,7 +32,7 @@ RegFile RegFile(
     .a0 (a0)
 );
 
-Mux2 regMux(
+Mux2 #(DATA_WIDTH) regMux(
     .in0(regOp2),
     .in1(ImmOp),
     .sel(ALUsrc),

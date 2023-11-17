@@ -1,11 +1,13 @@
-module PCreg (
-    input logic [31:0] next_PC,
+module PCreg #(
+	parameter DATA_WIDTH = 32
+)(
+    input logic [DATA_WIDTH-1:0] next_PC,
     input logic rst,
     input logic clk,
-    output logic [31:0] PC
+    output logic [DATA_WIDTH-1:0] PC
 );
 
-logic [31:0] register;
+logic [DATA_WIDTH-1:0] register;
 
 always_ff @(posedge clk, posedge rst)
     if (rst)

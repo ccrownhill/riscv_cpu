@@ -1,6 +1,8 @@
-module ControlUnit (
+module ControlUnit #(
+	parameter DATA_WIDTH = 32
+)(
 	input logic EQ,
-	input logic [31:0] Instr,
+	input logic [DATA_WIDTH-1:0] Instr,
 
 	output logic RegWrite,
 	output logic ALUctrl,
@@ -30,9 +32,9 @@ always_comb begin
 		// B-type instruction
 		7'b1100011: begin
 			ALUctrl = 1'b1; // subtract for comparison
-			ALUsrc = 1'b1;
+			ALUsrc = 1'b0; // compare two registers
 			ImmSrc = 1'b1; // for 13 bit
-			PCsrc = EQ;
+			PCsrc = !EQ;
 			RegWrite = 1'b0;
 		end
 		default: begin

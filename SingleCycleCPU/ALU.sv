@@ -9,18 +9,9 @@ module ALU #(
 );
 
 always_comb begin
-    if (ALUctrl) begin
-        ALUout = ALUop1 - ALUop2;
-        if (ALUop1 == ALUop2)begin //see if two input of alu is equal
-            EQ = 1'b1;  
-        end
-        else begin
-            EQ = 1'b0;
-        end
-    end
-    else begin
-        EQ = 1'b0;
-        ALUout = ALUop1 + ALUop2; //add if aluctrl is 0
-    end
+    if (ALUctrl)
+	EQ = (ALUop1 == ALUop2) ? 1'b1 : 1'b0;
+    else
+        ALUout = ALUop1 + ALUop2; // add if aluctrl is 0
 end
 endmodule
