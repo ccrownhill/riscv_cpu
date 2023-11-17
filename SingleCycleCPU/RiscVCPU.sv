@@ -17,6 +17,7 @@ logic RegWrite;
 logic ALUsrc;
 logic ALUctrl;
 logic PCsrc;
+logic WriteSrc;
 
 PCtop PCtop (
     .clk (clk),
@@ -41,7 +42,8 @@ ControlUnit ControlUnit(
     .ALUsrc(ALUsrc),
     .ALUctrl(ALUctrl),
     .ImmSrc(ImmSrc),
-    .PCsrc(PCsrc)
+    .PCsrc(PCsrc),
+    .WriteSrc(WriteSrc)
 );
 
 SignExtend SignExtend(
@@ -60,6 +62,7 @@ DataPath DataPath(
     .RegWrite(RegWrite),
     .ALUsrc(ALUsrc),
     .ALUctrl(ALUctrl),
+    .WriteSrc(WriteSrc),
 
     .EQ(EQ),
     .a0(a0)

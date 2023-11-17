@@ -19,8 +19,8 @@ int main(int argc, char **argv, char **env) {
 	top->trace (tfp, 99);
 	tfp->open ("RiscVCPU.vcd");
  
-	//if (vbdOpen()!=1) return(-1);
-	//vbdHeader("lab4");
+	if (vbdOpen()!=1) return(-1);
+	vbdHeader("lab4");
 
 	// initialize simulation inputs
 	top->clk = 1;
@@ -38,13 +38,13 @@ int main(int argc, char **argv, char **env) {
 		
 		top->rst = (simcyc<2);
 
-		//vbdPlot(int(top->a0), 0, 255);
-		//vbdCycle(simcyc);
+		vbdPlot(int(top->a0) & 0xff, 0, 255);
+		vbdCycle(simcyc);
 
-		//if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
-			//exit(0);                
-		if ((Verilated::gotFinish())) 
+		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
 			exit(0);                
+		//if ((Verilated::gotFinish())) 
+			//exit(0);                
 	}
 
 	vbdClose();   

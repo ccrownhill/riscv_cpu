@@ -8,7 +8,8 @@ module ControlUnit #(
 	output logic ALUctrl,
 	output logic ALUsrc,
 	output logic ImmSrc,
-	output logic PCsrc
+	output logic PCsrc,
+	output logic WriteSrc
 );
 
 always_comb begin
@@ -20,6 +21,11 @@ always_comb begin
 			ImmSrc = 1'b0;
 			PCsrc = 1'b0;
 			RegWrite = 1'b1;
+			// for loading memory
+			if (Instr[6:0] == 7'b0000011)
+				WriteSrc = 1'b1;
+			else
+				WriteSrc = 1'b0;
 		end
 		// R-type instruction
 		7'b0110011: begin
@@ -28,6 +34,7 @@ always_comb begin
 			ImmSrc = 1'b0;
 			PCsrc = 1'b0;
 			RegWrite = 1'b1;
+			WriteSrc = 1'b0;
 		end
 		// B-type instruction
 		7'b1100011: begin
@@ -36,6 +43,7 @@ always_comb begin
 			ImmSrc = 1'b1; // for 13 bit
 			PCsrc = !EQ;
 			RegWrite = 1'b0;
+			WriteSrc = 1'b0;
 		end
 		default: begin
 			ALUctrl = 1'b0;
@@ -43,6 +51,7 @@ always_comb begin
 			ImmSrc = 1'b0;
 			PCsrc = 1'b0;
 			RegWrite = 1'b0;
+			WriteSrc = 1'b0;
 		end
 	endcase
 end

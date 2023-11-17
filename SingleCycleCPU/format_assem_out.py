@@ -12,6 +12,5 @@ with open(sys.argv[1], "r") as f:
         line = line.strip()
         split = " ".join([line[i:i+2] for i in range(0, len(line), 2)])
         out += split + "\n"
-        print(out)
 with open(sys.argv[1], "w") as f:
         f.write(out)
