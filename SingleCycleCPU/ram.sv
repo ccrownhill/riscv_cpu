@@ -5,11 +5,11 @@ module ram #(
 	output logic [31:0] dout
 );
 
-logic [7:0] ram_arr[SIZE];
+logic [31:0] ram_arr[SIZE];
 
 initial
 	$readmemh("sinerom.mem", ram_arr);
 
-assign dout = {ram_arr[addr], ram_arr[addr+1], ram_arr[addr+2], ram_arr[addr+3]};
+assign dout = ram_arr[addr[31:2]];
 
 endmodule
