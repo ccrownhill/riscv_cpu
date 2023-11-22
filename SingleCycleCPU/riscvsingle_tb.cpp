@@ -1,6 +1,6 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "VRiscVCPU.h"
+#include "Vriscvsingle.h"
 #include "vbuddy.cpp"     
 #define MAX_SIM_CYC 1000000
 #define ADDRESS_WIDTH 8
@@ -12,15 +12,15 @@ int main(int argc, char **argv, char **env) {
 
 	Verilated::commandArgs(argc, argv);
 	
-	VRiscVCPU* top = new VRiscVCPU;
+	Vriscvsingle* top = new Vriscvsingle;
 
 	Verilated::traceEverOn(true);
 	VerilatedVcdC* tfp = new VerilatedVcdC;
 	top->trace (tfp, 99);
-	tfp->open ("RiscVCPU.vcd");
+	tfp->open ("riscvsingle.vcd");
  
-	if (vbdOpen()!=1) return(-1);
-	vbdHeader("lab4");
+// 	if (vbdOpen()!=1) return(-1);
+// 	vbdHeader("lab4");
 
 	// initialize simulation inputs
 	top->clk = 1;
@@ -38,13 +38,13 @@ int main(int argc, char **argv, char **env) {
 		
 		top->rst = (simcyc<2);
 
-		vbdPlot(int(top->a0) & 0xff, 0, 255);
-		vbdCycle(simcyc);
+// 		vbdPlot(int(top->a0) & 0xff, 0, 255);
+// 		vbdCycle(simcyc);
 
-		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
+// 		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
+// 			exit(0);                
+		if ((Verilated::gotFinish())) 
 			exit(0);                
-		//if ((Verilated::gotFinish())) 
-			//exit(0);                
 	}
 
 	vbdClose();   
