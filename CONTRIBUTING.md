@@ -1,5 +1,10 @@
 # How to contribute to this repository
 
+## General guidelines
+
+* assign someone as reviewer for your pull request
+* in PR description: describe what you changed and why
+
 ## Workflow with pull requests (PREFERRED)
 
 Work on changes in your own branch and then submit them as a pull request for an Issue.
