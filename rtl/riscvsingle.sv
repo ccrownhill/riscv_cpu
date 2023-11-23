@@ -5,15 +5,15 @@ module riscvsingle (
 	output logic [31:0] a0
 );
 
-logic [31:0] ImmOp;
 logic [31:7] Instr31_7;
 logic EQ;
 logic RegWrite;
+logic MemWrite;
 logic ALUsrc;
-logic ALUctrl;
-logic WriteSrc;
-logic PCsrc;
-logic [1:0] ImmSrc;
+logic [2:0] ALUctrl;
+logic [1:0] WriteSrc;
+logic [1:0] PCsrc;
+logic [2:0] ImmSrc;
 logic [31:0] PC;
 logic [31:0] nextPC;
 
@@ -38,6 +38,7 @@ ControlPath ControlPath (
 	.WriteSrc_o (WriteSrc),
   .ImmSrc_o (ImmSrc),
   .Instr31_7_o (Instr31_7),
+  .MemWrite_o (MemWrite),
   .PCsrc_o (PCsrc),
   .PC_o (PC)
 );
@@ -48,6 +49,7 @@ DataPath DataPath (
 	.rs1 (rs1),
 	.rs2 (rs2),
 	.RegWrite (RegWrite),
+  .MemWrite_i (MemWrite),
 	.WriteSrc (WriteSrc),
 	.rd (rd),
   .PCsrc_i (PCsrc),

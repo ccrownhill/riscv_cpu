@@ -1,5 +1,5 @@
 module InstrMem #(
-	parameter MEMSIZE = 5000 // in bytes
+	parameter MEMSIZE = 12'hfff // in bytes
 )(
 	input logic [31:0] A,
 	output logic [31:0] RD

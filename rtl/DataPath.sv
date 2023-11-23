@@ -6,11 +6,12 @@ module DataPath #(
     input logic [ADDR_WIDTH-1:0] 	rs2,
     input logic [ADDR_WIDTH-1:0] 	rd,
     input logic 									RegWrite,
+    input logic                   MemWrite_i,
     input logic [1:0] 						WriteSrc,
     input logic [1:0] 						PCsrc_i,
     input logic 									ALUsrc,
-    input logic 									ALUctrl,
-    input logic [1:0] 						ImmSrc_i,
+    input logic [2:0]							ALUctrl,
+    input logic [2:0] 						ImmSrc_i,
     input logic [31:0] 						PC_i,
     input logic [31:7]            Instr31_7_i,
 
@@ -23,7 +24,8 @@ logic [31:0] regOp2;
 logic [31:0] ALUop1;
 logic [31:0] ALUop2;
 logic [31:0] ALUout;
-logic [31:0] RAMout;
+logic [7:0]  RAMout;
+logic [31:0] RAMoutExt;
 logic [31:0] WD3;
 logic [31:0] pcPlus4;
 logic [31:0] pcPlusImm;
@@ -57,27 +59,36 @@ Mux2 #(32) regMux(
 );
 
 ALU ALU(
-    .ALUop1(ALUop1),
-    .ALUop2 (ALUop2),
-    .ALUctrl (ALUctrl),
-    .EQ (EQ_o),
-    .ALUout (ALUout)
+    .ALUop1_i (ALUop1),
+    .ALUop2_i (ALUop2),
+    .ALUctrl_i (ALUctrl),
+    .EQ_o (EQ_o),
+    .ALUout_o (ALUout)
 );
 
-ram ram (
-	.addr (ALUout),
+DataMem DataMem (
+  .clk_i (clk),
+	.AddressPort_i (ALUout),
+  .WriteData_i (regOp2),
+  .MemWrite_i (MemWrite_i),
 
-	.dout (RAMout)
+	.ReadData_o (RAMout)
+);
+
+ZeroExtend ZeroExtend (
+  .in_i (RAMout),
+  .out_i (RAMoutExt)
 );
 
 Adder adder4 (PC_i, 4, pcPlus4);
 Adder adderImm (PC_i, InternalImmOp, pcPlusImm);
 
-Mux3 #(32) regWriteMux (
+Mux4 #(32) regWriteMux (
 	.sel_i (WriteSrc),
 	.in0_i (ALUout),
-	.in1_i (RAMout),
+	.in1_i (RAMoutExt),
   .in2_i (pcPlus4),
+  .in3_i (InternalImmOp),
 
 	.out_o (WD3)
 );
