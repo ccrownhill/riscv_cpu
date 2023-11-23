@@ -17,5 +17,6 @@ always_comb
         3'b111:     ALUout_o = ALUop1_i & ALUop2_i; // srl
         default:    ALUout_o = 0;
     endcase
-    EQ = (ALUout_o == 32'b0) ? 1'b1 : 1'b0;
+
+assign EQ_o = (ALUout_o == 32'b0) ? 1'b1 : 1'b0;
 endmodule

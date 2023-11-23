@@ -6,11 +6,12 @@ module DataPath #(
     input logic [ADDR_WIDTH-1:0] 	rs2,
     input logic [ADDR_WIDTH-1:0] 	rd,
     input logic 									RegWrite,
+    input logic                   MemWrite_i,
     input logic [1:0] 						WriteSrc,
     input logic [1:0] 						PCsrc_i,
     input logic 									ALUsrc,
-    input logic 									ALUctrl,
-    input logic [1:0] 						ImmSrc_i,
+    input logic [2:0]							ALUctrl,
+    input logic [2:0] 						ImmSrc_i,
     input logic [31:0] 						PC_i,
     input logic [31:7]            Instr31_7_i,
 
@@ -68,8 +69,8 @@ ALU ALU(
 DataMem DataMem (
   .clk_i (clk),
 	.AddressPort_i (ALUout),
-  .WriteData_i (rs2),
-  .MemWrite_i (MemWrite),
+  .WriteData_i (regOp2),
+  .MemWrite_i (MemWrite_i),
 
 	.ReadData_o (RAMout)
 );

@@ -1,4 +1,4 @@
-module Mux3 #(
+module Mux4 #(
     parameter DATA_WIDTH = 32
 )(
     input logic [1:0]             sel_i,

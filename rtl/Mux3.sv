@@ -14,6 +14,7 @@ always_comb
     2'b00: out_o = in0_i;
     2'b01: out_o = in1_i;
     2'b10: out_o = in2_i;
+    default: out_o = {DATA_WIDTH{1'bx}};
   endcase
 
 endmodule
