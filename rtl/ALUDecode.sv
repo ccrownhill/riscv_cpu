@@ -1,8 +1,8 @@
 module ALUDecode (
-  input logic [1:0] AlUop_i,
+  input logic [1:0] AlUOp_i,
   input logic [2:0] funct3_i,
 
-  output logic [2:0] ALUctrl
+  output logic [2:0] ALUctrl_o
 );
 
 always_comb

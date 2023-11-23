@@ -10,15 +10,18 @@ module ControlPath (
 
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
-	output logic        ALUctrl_o,
-	output logic        WriteSrc_o,
-  output logic        ImmSrc_o,
+	output logic [2:0]  ALUctrl_o,
+	output logic [1:0]  WriteSrc_o,
+  output logic [2:0]  ImmSrc_o,
   output logic        PCsrc_o,
   output logic [31:7] Instr31_7_o,
   output logic [31:0] PC_o
 );
 
-logic [31:0] Instr;
+logic [31:0]  Instr;
+logic [1:0]   ALUOp;
+logic         Branch;
+logic         Jump;
 
 RegAsyncR #(32) PCreg (
   .d (nextPC_i),
@@ -35,15 +38,24 @@ InstrMem InstrMem (
 );
 
 MainDecode MainDecode (
-  .op (Instr[6:0]),
-  .EQ (EQ_i),
+  .op_i (Instr[6:0]),
 
-  .RegWrite (RegWrite_o),
-  .ALUsrc (ALUsrc_o),
-  .ALUctrl (ALUctrl_o),
-  .ImmSrc (ImmSrc_o),
-  .PCsrc (PCsrc_o),
-  .WriteSrc (WriteSrc_o)
+  .RegWrite_o (RegWrite_o),
+  .ImmSrc_o (ImmSrc_o),
+  .ALUsrc_o (ALUsrc_o),
+  .WriteSrc_o (WriteSrc_o),
+  .Branch_o (Branch),
+  .ALUOp_o (ALUOp),
+  .Jump_o (Jump)
+);
+
+
+
+ALUDecode ALUDecode (
+  .ALUOp_i (ALUOp),
+  .funct3_i (Instr[14:12]),
+
+  .ALUctrl_o (ALUctrl_o)
 );
 
 
