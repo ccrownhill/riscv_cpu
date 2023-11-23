@@ -25,6 +25,9 @@ xor
 
 * For Control Unit:
 	* ALUControl now 3 bits (see table from Harris and Harris for which values to use)
+		* xor: 100 (rest as in Harris&Harris p. 409)
+		* sll: 110
+		* srl: 111
 	* ImmSrc now 2 bits (see table from Harris and Harris)
 
 * Possible division into 4 parts:
