@@ -7,17 +7,12 @@ module InstrLoad (
     input logic rst,
     input logic [31:0] ImmOp,
 
-    output logic [31:0] PC
+    output logic [31:0] PC,
+    output logic [31:0] next_PC
 );
 
 logic [31:0] next_PC;
 
-RegAsyncR #(32) PCreg (
-    .d (next_PC),
-    .rst (rst),
-    .clk (clk),
-    .q (PC)
-);
 
 Mux2 #(32) MuxReg (
     .sel (PCsrc),
