@@ -13,6 +13,10 @@ sb
 bne
 lui
 lbu
+slli
+srli
+andi
+xor
 ```
 
 * Set memory sizes as in given memory map
@@ -21,10 +25,7 @@ lbu
 
 * For Control Unit:
 	* ALUControl now 3 bits (see table from Harris and Harris for which values to use)
+		* xor: 100 (rest as in Harris&Harris p. 409)
+		* sll: 110
+		* srl: 111
 	* ImmSrc now 2 bits (see table from Harris and Harris)
-
-* Possible division into 4 parts:
-	1. Modify control unit for new instructions
-	1. Modify branching logic to implement JAL
-	1. Change memory to allow byte loading
-	1. Integrate and test it
