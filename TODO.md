@@ -13,6 +13,10 @@ sb
 bne
 lui
 lbu
+slli
+srli
+andi
+xor
 ```
 
 * Set memory sizes as in given memory map
