@@ -29,9 +29,3 @@ xor
 		* sll: 110
 		* srl: 111
 	* ImmSrc now 2 bits (see table from Harris and Harris)
-
-* Possible division into 4 parts:
-	1. Modify control unit for new instructions
-	1. Modify branching logic to implement JAL
-	1. Change memory to allow byte loading
-	1. Integrate and test it
