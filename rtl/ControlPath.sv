@@ -23,6 +23,7 @@ logic [31:0]  Instr;
 logic [1:0]   ALUOp;
 logic         Branch;
 logic         Jump;
+logic         Ret;
 
 RegAsyncR #(32) PCreg (
   .d (nextPC_i),
@@ -48,9 +49,17 @@ MainDecode MainDecode (
   .Branch_o (Branch),
   .ALUOp_o (ALUOp),
   .Jump_o (Jump),
-  .MemWrite_o (MemWrite_o)
+  .MemWrite_o (MemWrite_o),
+  .Ret_o (Ret)
 );
 
+PCsrcDecode PCsrcDecode (
+  .EQ_i (EQ_i),
+  .Branch_i (Branch),
+  .Jump_i (Jump),
+  .Ret_i (Ret),
+  .PCsrc_o (PCsrc_o)
+);
 
 
 ALUDecode ALUDecode (
@@ -65,6 +74,5 @@ assign rs1_o = Instr[19:15];
 assign rs2_o = Instr[24:20];
 assign rd_o = Instr[11:7];
 assign Instr31_7_o = Instr[31:7];
-assign PCsrc_o = {1'b0, (EQ_i & Branch)} << Jump;
 
 endmodule
