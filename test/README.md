@@ -1,4 +1,42 @@
 # Test 
+
+## Test of PDF Distributions
+
+This readme contains images of the expected data plotted using excel and the aquired data from our program using vbuddy.
+
+It can be seen that our design displays everything correctly for all 4 distributions:
+
+
+Triangular Distribution from Excel:
+![PDF Triangular](Images/PDF_Triangle.png)
+
+![Triangular Data](Images/Data_Triangle.png)
+This is included just to show we are using the correct data as the PDF of the triangle distribution is not as theoretically expected. 
+This is because some values in the range 0 - 255 never occur which causes the PDF to shoot to zero at these values which is why the distribution looks so strange.
+
+![Triangle Vbuddy](Images/Triangle_Vbuddy.png)
+
+Gaussian Distribution:
+![PDF Gaussian](Images/PDF_Gaussian.png)
+
+![Gaussian Vbuddy](Images/Gaussian_Vbuddy.png)
+
+Noisy Distribution:
+![PDF Noisy](Images/PDF_Noisy.png)
+
+![Noisy Vbuddy](Images/Noisy_Vbuddy.png)
+
+Sin Distribution:
+![PDF Sin](Images/PDF_Sin.png)
+
+![Sin Vbuddy](Images/Sin_Vbuddy.png)
+
+These images show that our CPU works exactly as expected as it produces the same results that we expect from the excel plots.
+The only minor issue is the display of vbuddy does not show the sin wave function very accurately. 
+However this is a limitation of the display and not our CPU itself.
+Overall we are very happy with the results we recieved and our SingleCycleCPU has been a success.
+
+
 ## Test for the F1-FSM
 
 Before Hardware design, Our team creat the assembly language program to implement the F1 starting light algorithms:
@@ -65,4 +103,3 @@ The time interval from the current light on to the next light on is also a const
 
 These results mean that we successfully generated random delay with LFSR.
 
-## Test for pdf.s
