@@ -1,4 +1,5 @@
-# Test for the F1-FSM
+# Test 
+## Test for the F1-FSM
 
 Before Hardware design, Our team creat the assembly language program to implement the F1 starting light algorithms:
 
@@ -54,7 +55,7 @@ After we use online assembler to get the f1_light.s test file with our assembly 
 
 https://youtu.be/eAhKKpVeQog?si=jxR7XT2m2lLqG2_a
 
-To make sure the random delay is  correct, We used a timer to record the time taken from 8 lights on to 8 lights off as illustrated in the table below:
+We used a timer to record the time taken from 8 lights on to 8 lights off as illustrated in the table below:
 
 Attempt | #1 | #2 | #3 | #4 | 
 --- | --- | --- | --- |--- |
@@ -62,4 +63,6 @@ Seconds | 3.95 | 4.61 | 5.89 | 5.10 |
 
 The time interval from the current light on to the next light on is also a constant, and the value is about 1.43 seconds
 
-These results mean that we successfully generated random numbers with LFSR.
+These results mean that we successfully generated random delay with LFSR.
+
+## Test for pdf.s
