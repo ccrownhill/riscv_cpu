@@ -12,7 +12,7 @@ module DataMem #(
 logic [7:0] ram_arr[MEMSIZE-1:0];
 
 initial
-	$readmemh("sine.mem", ram_arr, 17'h10000);
+	$readmemh("data.mem", ram_arr, 17'h10000);
 
 // READ instruction
 assign ReadData_o = ram_arr[AddressPort_i];

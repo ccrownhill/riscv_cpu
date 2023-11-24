@@ -21,13 +21,13 @@ int main(int argc, char **argv, char **env) {
 	tfp->open ("riscvsingle.vcd");
  
 	if (vbdOpen()!=1) return(-1);
-	vbdHeader("lab4");
+	vbdHeader("SingleCyc");
 
 	// initialize simulation inputs
 	top->clk = 1;
 	top->rst = 1;
-	int count = 0, values_plotted = 0;	
 	bool started = false;
+	int count = 0;
 
 	// run simulation for MAX_SIM_CYC clock cycles
 	for (simcyc=0; simcyc<MAX_SIM_CYC; simcyc++) {
@@ -39,28 +39,23 @@ int main(int argc, char **argv, char **env) {
 		}
 		
 		top->rst = (simcyc<2);
-		if (int(top->a0) != 0)
+
+		if (top->a0 != 0)
 			started = true;
 
 		if (started) {
-			if (++count == 1) {
+			if (++count == 3) {
 				vbdPlot(int(top->a0) & 0xff, 0, 255);
 				count = 0;
-				values_plotted++;
-				if (values_plotted == 255) {
-					exit(0);
-				}
 			}
 			vbdCycle(simcyc);
 		}
 
 		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
 			exit(0);                
-// 		if ((Verilated::gotFinish())) 
-// 			exit(0);                
 	}
 
-	vbdClose();   
-	tfp->close(); 
+	vbdClose();
+	tfp->close();
 	exit(0);
 }
