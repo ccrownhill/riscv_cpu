@@ -1,74 +1,37 @@
 module MainDecode (
-	input logic [6:0] op,
-	input logic EQ,
+	input logic [6:0] op_i,
 
-	output logic RegWrite,
-	output logic ALUctrl,
-	output logic ALUsrc,
-	output logic ImmSrc,
-	output logic PCsrc,
-	output logic WriteSrc
+	output logic RegWrite_o,
+	output logic [2:0] ImmSrc_o,
+	output logic ALUsrc_o,
+	output logic [1:0] WriteSrc_o,
+	output logic Branch_o,
+	output logic [1:0] ALUOp_o,
+	output logic Jump_o,
+  output logic MemWrite_o
 );
 
-logic [5:0] controls;
-logic Branch;
+logic [11:0] controls;
 
-assign {RegWrite, ALUsrc, ImmSrc, WriteSrc, ALUctrl, Branch} = controls;
+assign {RegWrite_o, ImmSrc_o, ALUsrc_o, WriteSrc_o, Branch_o, ALUOp_o, Jump_o, MemWrite_o} = controls;
+
+//ImmSrc is 2 bits 10 = PC+4, 01 = Memory 00 = ALUout
+//
 
 always_comb
-	// RegWrite_ALUsrc_ImmSrc_WriteSrc_ALUctrl_Branch
-	case (op)
-		7'b0110011: controls = 6'b1_0_x_0_0_0; // R-type ALU
-		7'b0010011: controls = 6'b1_1_0_0_0_0; // I-type ALU
-		7'b0000011: controls = 6'b1_1_0_1_0_0; // lw
-		7'b1100011: controls = 6'b0_1_1_x_1_1; // bne
-		default: controls = 6'bx_x_x_x_x_x;
+	// RegWrite_ImmSrc_ALUsrc_WriteSrc_Branch_ALUOp_Jump_MemWrite
+	case (op_i)
+		7'b1101111: controls = 12'b1_011_x_10_1_xx_0_0; // jal
+		7'b1100111: controls = 12'b1_000_1_10_1_10_1_0; // jalr
+		7'b0010011: controls = 12'b1_000_1_00_0_10_0_0; // addi + slli + srli + andi
+		7'b0110011: controls = 12'b1_xxx_0_00_0_10_0_0; // add + xor + and(r-type)
+		7'b0100011: controls = 12'b0_001_1_xx_0_00_0_1; // sb
+		7'b1100011: controls = 12'b0_010_0_xx_1_01_0_0; // bne
+		7'b0110111: controls = 12'b1_100_x_11_0_xx_0_0; // lui u-type
+		7'b0000011: controls = 12'b1_000_1_01_0_00_0_0; // lbu(i-type)
+		default: controls = 12'bx_xxx_x_xx_x_xx_x_x;
 	endcase
 
-assign PCsrc = Branch & (!EQ);
 
-// always_comb begin
-// 	casez (Instr[6:0])
-// 		// I-type instruction
-// 		7'b00?????: begin
-// 			ALUctrl = 1'b0;
-// 			ALUsrc = 1'b1;
-// 			ImmSrc = 1'b0;
-// 			PCsrc = 1'b0;
-// 			RegWrite = 1'b1;
-// 			// for loading memory
-// 			if (Instr[6:0] == 7'b0000011)
-// 				WriteSrc = 1'b1;
-// 			else
-// 				WriteSrc = 1'b0;
-// 		end
-// 		// R-type instruction
-// 		7'b0110011: begin
-// 			ALUctrl = 1'b0;
-// 			ALUsrc = 1'b0;
-// 			ImmSrc = 1'b0;
-// 			PCsrc = 1'b0;
-// 			RegWrite = 1'b1;
-// 			WriteSrc = 1'b0;
-// 		end
-// 		// B-type instruction
-// 		7'b1100011: begin
-// 			ALUctrl = 1'b1; // subtract for comparison
-// 			ALUsrc = 1'b0; // compare two registers
-// 			ImmSrc = 1'b1; // for 13 bit
-// 			PCsrc = !EQ;
-// 			RegWrite = 1'b0;
-// 			WriteSrc = 1'b0;
-// 		end
-// 		default: begin
-// 			ALUctrl = 1'b0;
-// 			ALUsrc = 1'b0;
-// 			ImmSrc = 1'b0;
-// 			PCsrc = 1'b0;
-// 			RegWrite = 1'b0;
-// 			WriteSrc = 1'b0;
-// 		end
-// 	endcase
-// end
 
 endmodule

@@ -20,8 +20,6 @@ xor
 ```
 
 * Set memory sizes as in given memory map
-* Create F1 assembly program; ideas:
-	* subroutine for random number generation
 
 * For Control Unit:
 	* ALUControl now 3 bits (see table from Harris and Harris for which values to use)
