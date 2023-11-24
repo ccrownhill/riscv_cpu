@@ -1,4 +1,5 @@
 # Test 
+
 ## Test of PDF Distributions
 
 This readme contains images of the expected data plotted using excel and the aquired data from our program using vbuddy.
@@ -34,6 +35,7 @@ These images show that our CPU works exactly as expected as it produces the same
 The only minor issue is the display of vbuddy does not show the sin wave function very accurately. 
 However this is a limitation of the display and not our CPU itself.
 Overall we are very happy with the results we recieved and our SingleCycleCPU has been a success.
+
 
 ## Test for the F1-FSM
 
@@ -101,4 +103,3 @@ The time interval from the current light on to the next light on is also a const
 
 These results mean that we successfully generated random delay with LFSR.
 
-## Test for pdf.s
