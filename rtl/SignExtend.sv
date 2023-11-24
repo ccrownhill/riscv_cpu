@@ -10,11 +10,10 @@ always_comb begin
 	case (ImmSrc)
 		3'b000: ImmOp = {{20{Instr31_7[31]}}, Instr31_7[31:20]};
 		3'b001: ImmOp = {{20{Instr31_7[31]}}, Instr31_7[31:25], Instr31_7[11:7]};
-		3'b010: ImmOp = {{19{Instr31_7[31]}}, Instr31_7[31], Instr31_7[7], Instr31_7[30:25], Instr31_7[11:8], 1'b0};
-		3'b011: ImmOp = {{11{Instr31_7[31]}}, Instr31_7[31], Instr31_7[19:12], Instr31_7[20], Instr31_7[30:21], 1'b0};
-    3'b100: ImmOp = {{12{Instr31_7[31]}}, Instr31_7[31:12]};
+		3'b010: ImmOp = {{20{Instr31_7[31]}}, Instr31_7[7], Instr31_7[30:25], Instr31_7[11:8], 1'b0};
+		3'b011: ImmOp = {{12{Instr31_7[31]}}, Instr31_7[19:12], Instr31_7[20], Instr31_7[30:21], 1'b0};
+    3'b100: ImmOp = {Instr31_7[31:12], {12{1'b0}}};
     default: ImmOp = {32{1'bx}};
 	endcase
 end
-// should always output a sign extended 32 bit ImmOp
 endmodule

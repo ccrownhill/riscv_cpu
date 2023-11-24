@@ -8,7 +8,7 @@ module InstrMem #(
 logic [31:0] rom_arr[MEMSIZE-1:0];
 
 initial
-	$readmemh("insrom.mem", rom_arr);
+	$readmemh("f1light.mem", rom_arr);
 
 assign RD = rom_arr[A[31:2]];
 

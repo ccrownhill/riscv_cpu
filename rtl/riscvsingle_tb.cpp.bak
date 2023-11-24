@@ -22,7 +22,6 @@ int main(int argc, char **argv, char **env) {
  
 	if (vbdOpen()!=1) return(-1);
 	vbdHeader("lab4");
-	vbdSetMode(1);
 
 	// initialize simulation inputs
 	top->clk = 1;
@@ -39,10 +38,21 @@ int main(int argc, char **argv, char **env) {
 			top->eval ();
 		}
 		
-		top->rst = vbdFlag();
+		top->rst = (simcyc<2);
+		if (int(top->a0) != 0)
+			started = true;
 
-		vbdBar(int(top->a0) & 0xff);
-		vbdCycle(simcyc);
+		if (started) {
+			if (++count == 1) {
+				vbdPlot(int(top->a0) & 0xff, 0, 255);
+				count = 0;
+				values_plotted++;
+				if (values_plotted == 255) {
+					exit(0);
+				}
+			}
+			vbdCycle(simcyc);
+		}
 
 		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
 			exit(0);                
