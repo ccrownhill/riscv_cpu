@@ -1,4 +1,4 @@
-# Test for the F1 fsm
+# Test for the F1-FSM
 
 Before Hardware design, Our team creat the assembly language program to implement the F1 starting light algorithms:
 
@@ -13,14 +13,14 @@ main:
 forever:
 	j forever
 
-init:        # function for initialise the output a0 and delay buffer
+init:        			  # function for initialise the output a0 and delay buffer
 	li a0, 0
 	li s1, NLIGHTS
 	bne s0, zero, light_on    # if random delay = zero
 	li s0, SREG_INIT          # then initial the delay 
 	j light_on                # jump to light_on
 
-light_on:   # function for modify the output a0 and reset
+light_on:   			  # function for modify the output a0 and reset
 	li a1, NORMAL_DELAY
 	jal ra, count_down
 	slli a0, a0, 1            # left shift to make the next light on
@@ -32,12 +32,12 @@ light_on:   # function for modify the output a0 and reset
 	li a0, 0
 	ret
 
-count_down: # function for countdown the delay of each light goes on
+count_down: 			  # function for countdown the delay of each light goes on
 	addi a1, a1, -1
 	bne zero, a1, count_down  # count down until 0
 	ret
 
-lfsr:       # function for modify the random delay of lights off
+lfsr:       			  # function for modify the random delay of lights off
 	slli s0, s0, 1            # shift left by 1
 	srli t0, s0, 7            # get bit 6 of s0
 	srli t1, s0, 3            # get bit 2 of s0
