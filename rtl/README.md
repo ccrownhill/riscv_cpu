@@ -44,3 +44,20 @@ the next value for PC from the ALUout (for JALR)
 * Smaller co-authoring edits:
 	* added immediate encoding for U-type instructions to `SignExtend`
 	* worked together with rest of Team to debug our code and run the tests
+
+
+## Orlan Forshaw (ManofRenown)
+Main Modules:
+SignExtend.sv:
+	This was almost entirely my own work. It involved handling the 5 instruction types we were going to be using and forming a 32 bit immediate value from the decoding of the instruction word. There were 5 cases where immediates where formed differently. Namely I S B J U Instruction types. These all formed the immediate from different bits of the word which needed to be concatenated together. The sign extending was achieved by repeating the most significant bit of the immediate an appropriate amount of times to form a 32 bit value. This value is then outputted by the module.
+		Note: I was not aware at the start that we would be using U instructions so this was implemented by Constantin.
+Lab 4: I made the Program Counter 
+	this was used in Lab 4 but could not be imported to the larger coursework as a whole unfortunately.
+	
+Other Contributions:
+	I generated the final excel diagrams which demonstrate the expected values of the distributions. This required calculating the frequency of each value between 0 and 255 and then plotting these as line graphs. I also created the section of the README with links and brief descriptions of these images. 
+		NOTE: Constantins script to convert the data into one long column was very helpful in doing this.
+
+	I also created a formatting script <TabRemove.py> which is to help keep formatting consistent across the project. This script takes in any number of files as arguments and then formats them so that no tab characters are used in the whole document. It also removes all trailing whitespace and replaces any instances of leading 4 spaces with leading 2 spaces as this was the formatting the team agreed upon.
+
+
