@@ -17,5 +17,10 @@ f1: clean riscvsingle_f1_tb.cpp
 	make -j -C obj_dir/ -f Vriscvsingle.mk Vriscvsingle
 	obj_dir/Vriscvsingle
 
+simple: clean riscvsingle_simple_tb.cpp
+	verilator -Wall -Wno-UNUSED -Wno-WIDTH --cc --trace riscvsingle.sv --exe riscvsingle_simple_tb.cpp
+	make -j -C obj_dir/ -f Vriscvsingle.mk Vriscvsingle
+	obj_dir/Vriscvsingle
 
-.PHONY: clean all distrib f1
+
+.PHONY: clean all distrib f1 simple
