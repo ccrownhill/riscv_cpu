@@ -1,5 +1,7 @@
 module IFStage (
 	input logic         clk_i,
+  input logic         IF_ID_En_i,
+  input logic         PCEn_i,
 	input logic         rst_i,
   input logic [1:0]   PCsrc_i,
   input logic [31:0]  pcPlusImm_i,
@@ -36,8 +38,9 @@ Mux3 #(32) nextPCMux (
   .out_o (nextPC)
 );
 
-RegAsyncR #(32) PCreg (
+RegAsyncEnR #(32) PCreg (
   .d (nextPC),
+  .en (PCEn_i),
   .rst (rst_i),
   .clk (clk_i),
   .q (PC)
@@ -60,6 +63,7 @@ assign funct3 = Instr[14:12];
 
 IF_IDReg IF_IDReg (
   .clk_i (clk_i),
+  .en_i (IF_ID_En_i),
   .rs1_i (rs1),
   .rs2_i (rs2),
   .rd_i (rd),

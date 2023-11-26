@@ -7,6 +7,7 @@ module ID_EXReg (
   input logic [1:0]   ALUOp_i,
   input logic         Jump_i,
   input logic         Ret_i,
+  input logic         MemRead_i,
   input logic         MemWrite_i,
 
   input logic [31:0]  PC_i,
@@ -28,6 +29,7 @@ module ID_EXReg (
   output logic [1:0]  ALUOp_o,
   output logic        Jump_o,
   output logic        Ret_o,
+  output logic        MemRead_o,
   output logic        MemWrite_o,
 
   output logic [31:0] PC_o,
@@ -50,6 +52,7 @@ always_ff @(posedge clk_i) begin
 	ALUOp_o <= ALUOp_i;
 	Jump_o <= Jump_i;
 	Ret_o <= Ret_i;
+  MemRead_o <= MemRead_i;
 	MemWrite_o <= MemWrite_i;
 	
 	PC_o <= PC_i;

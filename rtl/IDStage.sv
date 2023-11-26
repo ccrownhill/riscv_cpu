@@ -12,6 +12,7 @@ module IDStage (
   input logic         RegWriteWB_i, // from WB stage
   input logic [4:0]   writeRegAddr_i, // write address from WB stage
   input logic [31:0]  WD3_i, // write data from WB stage
+  input logic         controlZeroSel_i,
 
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
@@ -20,6 +21,7 @@ module IDStage (
 	output logic [1:0]  ALUOp_o,
 	output logic        Jump_o,
   output logic        Ret_o,
+  output logic        MemRead_o,
   output logic        MemWrite_o,
 
 	output logic [31:0] PC_o,
@@ -45,6 +47,7 @@ logic        Branch;
 logic [1:0]  ALUOp;
 logic        Jump;
 logic        Ret;
+logic        MemRead;
 logic        MemWrite;
 
 logic [31:0] ALUop1;
@@ -55,6 +58,7 @@ logic [31:0] ImmOp;
 
 MainDecode MainDecode (
   .op_i (op_i),
+  .controlZeroSel_i (controlZeroSel_i),
 
   .RegWrite_o (RegWrite),
   .ImmSrc_o (ImmSrc),
@@ -63,6 +67,7 @@ MainDecode MainDecode (
   .Branch_o (Branch),
   .ALUOp_o (ALUOp),
   .Jump_o (Jump),
+  .MemRead_o (MemRead),
   .MemWrite_o (MemWrite),
   .Ret_o (Ret)
 );
@@ -97,6 +102,7 @@ ID_EXReg ID_EXReg (
   .ALUOp_i (ALUOp),
   .Jump_i (Jump),
   .Ret_i (Ret),
+  .MemRead_i (MemRead),
   .MemWrite_i (MemWrite),
 
   .PC_i (PC_i),
@@ -118,6 +124,7 @@ ID_EXReg ID_EXReg (
   .ALUOp_o (ALUOp_o),
   .Jump_o (Jump_o),
   .Ret_o (Ret_o),
+  .MemRead_o (MemRead_o),
   .MemWrite_o (MemWrite_o),
 
   .PC_o (PC_o),

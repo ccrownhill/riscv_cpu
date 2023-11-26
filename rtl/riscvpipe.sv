@@ -15,6 +15,11 @@ logic [31:7] 	Instr31_7_IF;
 logic [6:0] 	op_IF;
 logic [2:0] 	funct3_IF;
 
+// signals for hazard unit
+logic PCEn;
+logic IF_ID_En;
+logic controlZeroSel; // make this an input for MainDecode and set everything to 0 if it is set
+
 // signals for ID stage output
 logic        	RegWrite_ID;
 logic        	ALUsrc_ID;
@@ -23,6 +28,7 @@ logic        	Branch_ID;
 logic [1:0]  	ALUOp_ID;
 logic        	Jump_ID;
 logic       	Ret_ID;
+logic        	MemRead_ID;
 logic        	MemWrite_ID;
 
 logic [31:0] 	PC_ID;
@@ -79,6 +85,8 @@ logic [31:0] WD3_WB;
 
 IFStage IFStage (
   .clk_i (clk),
+  .IF_ID_En_i (IF_ID_En),
+  .PCEn_i (PCEn),
   .rst_i (rst),
   .PCsrc_i (IF_PCsrc_MEM),
   .pcPlusImm_i (IF_pcPlusImm_MEM),
@@ -92,6 +100,17 @@ IFStage IFStage (
   .funct3_o (funct3_IF),
   .PC_o (PC_IF),
 	.pcPlus4_o (pcPlus4_IF)
+);
+
+HazardDetectionUnit HazardDetectionUnit (
+  .MemRead_ID_EX_i (MemRead_ID),
+  .rd_ID_EX_i (rd_ID),
+  .rs1_IF_ID_i (rs1_IF),
+  .rs2_IF_ID_i (rs2_IF),
+
+  .PCEn_o (PCEn),
+  .IF_ID_En_o (IF_ID_En),
+  .controlZeroSel_o (controlZeroSel)
 );
 
 IDStage IDStage (
@@ -108,6 +127,7 @@ IDStage IDStage (
   .RegWriteWB_i (RegWrite_WB),
   .writeRegAddr_i (rd_WB),
   .WD3_i (WD3_WB),
+  .controlZeroSel_i (controlZeroSel),
 
   .RegWrite_o (RegWrite_ID),
   .ALUsrc_o (ALUsrc_ID),
@@ -116,6 +136,7 @@ IDStage IDStage (
   .ALUOp_o (ALUOp_ID),
   .Jump_o (Jump_ID),
   .Ret_o (Ret_ID),
+  .MemRead_o (MemRead_ID),
   .MemWrite_o (MemWrite_ID),
   .PC_o (PC_ID),
   .pcPlus4_o (pcPlus4_ID),
