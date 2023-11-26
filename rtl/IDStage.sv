@@ -28,6 +28,8 @@ module IDStage (
   output logic [31:0] regOp2_o,
   output logic [31:0] ImmOp_o,
 
+  output logic [4:0]  rs1_o,
+  output logic [4:0]  rs2_o,
   output logic [4:0]  rd_o,
   output logic [2:0]  funct3_o,
 
@@ -103,6 +105,8 @@ ID_EXReg ID_EXReg (
   .regOp2_i (regOp2),
   .ImmOp_i (ImmOp),
 
+  .rs1_i (rs1_i),
+  .rs2_i (rs2_i),
   .rd_i (rd_i),
   .funct3_i (funct3_i),
 
@@ -122,6 +126,8 @@ ID_EXReg ID_EXReg (
   .regOp2_o (regOp2_o),
   .ImmOp_o (ImmOp_o),
 
+  .rs1_o (rs1_o),
+  .rs2_o (rs2_o),
   .rd_o (rd_o),
   .funct3_o (funct3_o)
 );

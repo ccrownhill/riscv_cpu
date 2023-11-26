@@ -1,22 +1,24 @@
 module ID_EXReg (
-  input logic        clk_i,
-  input logic        RegWrite_i,
-  input logic        ALUsrc_i,
-  input logic [1:0]  WriteSrc_i,
-  input logic        Branch_i,
-  input logic [1:0]  ALUOp_i,
-  input logic        Jump_i,
-  input logic        Ret_i,
-  input logic        MemWrite_i,
+  input logic         clk_i,
+  input logic         RegWrite_i,
+  input logic         ALUsrc_i,
+  input logic [1:0]   WriteSrc_i,
+  input logic         Branch_i,
+  input logic [1:0]   ALUOp_i,
+  input logic         Jump_i,
+  input logic         Ret_i,
+  input logic         MemWrite_i,
 
-  input logic [31:0] PC_i,
-  input logic [31:0] pcPlus4_i,
-  input logic [31:0] ALUop1_i,
-  input logic [31:0] regOp2_i,
-  input logic [31:0] ImmOp_i,
+  input logic [31:0]  PC_i,
+  input logic [31:0]  pcPlus4_i,
+  input logic [31:0]  ALUop1_i,
+  input logic [31:0]  regOp2_i,
+  input logic [31:0]  ImmOp_i,
 
-  input logic [4:0]  rd_i,
-  input logic [2:0]  funct3_i,
+  input logic [4:0]   rs1_i,
+  input logic [4:0]   rs2_i,
+  input logic [4:0]   rd_i,
+  input logic [2:0]   funct3_i,
 
 
   output logic        RegWrite_o,
@@ -34,6 +36,8 @@ module ID_EXReg (
   output logic [31:0] regOp2_o,
   output logic [31:0] ImmOp_o,
 
+  output logic [4:0]  rs1_o,
+  output logic [4:0]  rs2_o,
   output logic [4:0]  rd_o,
   output logic [2:0]  funct3_o
 );
@@ -54,6 +58,8 @@ always_ff @(posedge clk_i) begin
 	regOp2_o <= regOp2_i;
 	ImmOp_o <= ImmOp_i;
 	
+  rs1_o <= rs1_i;
+  rs2_o <= rs2_i;
 	rd_o <= rd_i;
 	funct3_o <= funct3_i;
 end

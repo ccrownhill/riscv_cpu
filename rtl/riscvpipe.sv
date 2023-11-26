@@ -31,8 +31,18 @@ logic [31:0] 	ALUop1_ID;
 logic [31:0] 	regOp2_ID;
 logic [31:0] 	ImmOp_ID;
 
+logic [4:0]   rs1_ID;
+logic [4:0]   rs2_ID;
 logic [4:0]  	rd_ID;
 logic [2:0]  	funct3_ID;
+
+// signals for Forward Unit
+logic [1:0]   F1Sel;
+logic [1:0]   F2Sel;
+logic [31:0]  forwardOp1;
+logic [31:0]  forwardOp2;
+logic         EX_ImmOpSel;
+logic [31:0]  forward_EX;
 
 // signals for EX stage output
 logic        EQ_EX;
@@ -112,9 +122,50 @@ IDStage IDStage (
   .ALUop1_o (ALUop1_ID),
   .regOp2_o (regOp2_ID),
   .ImmOp_o (ImmOp_ID),
+  .rs1_o (rs1_ID),
+  .rs2_o (rs2_ID),
   .rd_o (rd_ID),
   .funct3_o (funct3_ID),
   .a0_o (a0)
+);
+
+ForwardUnit ForwardUnit (
+  .rs1 (rs1_ID),
+  .rs2 (rs2_ID),
+  .EX_MEM_rd (rd_EX),
+  .MEM_WB_rd (rd_MEM),
+  .EX_MEM_RegWrite (RegWrite_EX),
+  .EX_MEM_WriteSrc (WriteSrc_EX),
+  .MEM_WB_RegWrite (RegWrite_MEM),
+
+  .F1Sel (F1Sel),
+  .F2Sel (F2Sel),
+  .EX_ImmOpSel (EX_ImmOpSel)
+);
+
+Mux2 #(32) exForwardOpMux (
+  .sel (EX_ImmOpSel),
+  .in0 (ALUout_EX),
+  .in1 (ImmOp_EX),
+  .out (forward_EX)
+);
+
+Mux3 #(32) f1Mux (
+  .sel_i (F1Sel),
+  .in0_i (ALUop1_ID),
+  .in1_i (forward_EX),
+  .in2_i (WD3_WB),
+
+  .out_o (forwardOp1)
+);
+
+Mux3 #(32) f2Mux (
+  .sel_i (F2Sel),
+  .in0_i (regOp2_ID),
+  .in1_i (forward_EX),
+  .in2_i (WD3_WB),
+
+  .out_o (forwardOp2)
 );
 
 EXStage EXStage (
@@ -130,8 +181,8 @@ EXStage EXStage (
   .MemWrite_i (MemWrite_ID),
   .PC_i (PC_ID),
   .pcPlus4_i (pcPlus4_ID),
-  .ALUop1_i (ALUop1_ID),
-  .regOp2_i (regOp2_ID),
+  .ALUop1_i (forwardOp1),
+  .regOp2_i (forwardOp2),
   .ImmOp_i (ImmOp_ID),
   .rd_i (rd_ID),
   .funct3_i (funct3_ID),
