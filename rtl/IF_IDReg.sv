@@ -1,6 +1,7 @@
 module IF_IDReg (
   input logic   clk_i,
   input logic   en_i,
+  input logic   flush_i,
   input logic [4:0] rs1_i,
   input logic [4:0] rs2_i,
   input logic [4:0] rd_i,
@@ -30,6 +31,16 @@ always_ff @(posedge clk_i) begin
     op_o <= op_i;
     funct3_o <= funct3_i;
     pcPlus4_o <= pcPlus4_i;
+  end
+  if (flush_i == 1'b1) begin
+    rs1_o <= 5'b0;
+    rs2_o <= 5'b0;
+    rd_o <= 5'b0;
+    PC_o <= 32'b0;
+    Instr31_7_o <= 25'b0;
+    op_o <= 7'b0;
+    funct3_o <= 3'b0;
+    pcPlus4_o <= 32'b0;
   end
 end
 

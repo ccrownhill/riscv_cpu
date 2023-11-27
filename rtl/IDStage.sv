@@ -17,14 +17,10 @@ module IDStage (
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
 	output logic [1:0]  WriteSrc_o,
-	output logic        Branch_o,
 	output logic [1:0]  ALUOp_o,
-	output logic        Jump_o,
-  output logic        Ret_o,
   output logic        MemRead_o,
   output logic        MemWrite_o,
 
-	output logic [31:0] PC_o,
   output logic [31:0] pcPlus4_o,
   output logic [31:0] ALUop1_o,
   output logic [31:0] regOp2_o,
@@ -35,7 +31,17 @@ module IDStage (
   output logic [4:0]  rd_o,
   output logic [2:0]  funct3_o,
 
-	output logic [31:0]	a0_o
+	output logic [31:0]	a0_o,
+
+  // input for HazardDetectionUnit
+  output logic Branch_o,
+  output logic Jump_o,
+  output logic Ret_o,
+  output logic EQ_o,
+	// input for IF stage
+	output logic [1:0]	IF_PCsrc_o,
+  output logic [31:0]  IF_pcPlusImm_o,
+  output logic [31:0] IF_regPlusImm_o // ALUout output that is used as input for IF stage
 );
 
 
@@ -43,34 +49,38 @@ logic        RegWrite;
 logic [2:0]  ImmSrc;
 logic        ALUsrc;
 logic [1:0]  WriteSrc;
-logic        Branch;
 logic [1:0]  ALUOp;
-logic        Jump;
-logic        Ret;
 logic        MemRead;
 logic        MemWrite;
+logic        Jump;
+
+
+logic        RegWriteAfterReset;
+logic        ALUsrcAfterReset;
+logic [1:0]  WriteSrcAfterReset;
+logic [1:0]  ALUOpAfterReset;
+logic        MemReadAfterReset;
+logic        MemWriteAfterReset;
 
 logic [31:0] ALUop1;
 logic [31:0] regOp2;
 logic [31:0] ImmOp;
 
-
-
 MainDecode MainDecode (
   .op_i (op_i),
-  .controlZeroSel_i (controlZeroSel_i),
 
   .RegWrite_o (RegWrite),
   .ImmSrc_o (ImmSrc),
   .ALUsrc_o (ALUsrc),
   .WriteSrc_o (WriteSrc),
-  .Branch_o (Branch),
   .ALUOp_o (ALUOp),
-  .Jump_o (Jump),
+  .Branch_o (Branch_o),
+  .Jump_o (Jump_o),
+  .Ret_o (Ret_o),
   .MemRead_o (MemRead),
-  .MemWrite_o (MemWrite),
-  .Ret_o (Ret)
+  .MemWrite_o (MemWrite)
 );
+
 
 RegFile RegFile(
   .clk (clk_i),
@@ -92,20 +102,48 @@ SignExtend SignExtend(
   .ImmOp (ImmOp)
 );
 
-ID_EXReg ID_EXReg (
-  .clk_i (clk_i),
+Adder adderImm (PC_i, ImmOp, IF_pcPlusImm_o);
+Adder adderRegImm (ALUop1, ImmOp, IF_regPlusImm_o);
 
+assign EQ_o = (ALUop1 == regOp2) ? 1'b1 : 1'b0;
+
+PCsrcDecode PCsrcDecode (
+  .EQ_i (EQ_o),
+  .Branch_i (Branch_o),
+  .Jump_i (Jump_o),
+  .Ret_i (Ret_o),
+
+  .PCsrc_o (IF_PCsrc_o) // output PCsrc directly to put into IF (don't put in MEM_WB register)
+);
+
+
+ControlResetMux ControlResetMux (
+  .controlZeroSel_i (controlZeroSel_i),
   .RegWrite_i (RegWrite),
   .ALUsrc_i (ALUsrc),
   .WriteSrc_i (WriteSrc),
-  .Branch_i (Branch),
   .ALUOp_i (ALUOp),
-  .Jump_i (Jump),
-  .Ret_i (Ret),
   .MemRead_i (MemRead),
   .MemWrite_i (MemWrite),
 
-  .PC_i (PC_i),
+  .RegWrite_o (RegWriteAfterReset),
+  .ALUsrc_o (ALUsrcAfterReset),
+  .WriteSrc_o (WriteSrcAfterReset),
+  .ALUOp_o (ALUOpAfterReset),
+  .MemRead_o (MemReadAfterReset),
+  .MemWrite_o (MemWriteAfterReset)
+);
+
+ID_EXReg ID_EXReg (
+  .clk_i (clk_i),
+
+  .RegWrite_i (RegWriteAfterReset),
+  .ALUsrc_i (ALUsrcAfterReset),
+  .WriteSrc_i (WriteSrcAfterReset),
+  .ALUOp_i (ALUOpAfterReset),
+  .MemRead_i (MemReadAfterReset),
+  .MemWrite_i (MemWriteAfterReset),
+
   .pcPlus4_i (pcPlus4_i),
   .ALUop1_i (ALUop1),
   .regOp2_i (regOp2),
@@ -120,14 +158,10 @@ ID_EXReg ID_EXReg (
   .RegWrite_o (RegWrite_o),
   .ALUsrc_o (ALUsrc_o),
   .WriteSrc_o (WriteSrc_o),
-  .Branch_o (Branch_o),
   .ALUOp_o (ALUOp_o),
-  .Jump_o (Jump_o),
-  .Ret_o (Ret_o),
   .MemRead_o (MemRead_o),
   .MemWrite_o (MemWrite_o),
 
-  .PC_o (PC_o),
   .pcPlus4_o (pcPlus4_o),
   .ALUop1_o (ALUop1_o),
   .regOp2_o (regOp2_o),

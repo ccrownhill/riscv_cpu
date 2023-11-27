@@ -14,16 +14,18 @@ module RegFile #(
 
 logic [31:0] reg_file [2**ADDRESS_WIDTH-1:0];
 
-// Write operation (synchronous)
-always_ff @(posedge clk) begin
-	// AD3 != 0 because writing zero register has to stay 0	
-	if (WE3 && AD3 != {ADDRESS_WIDTH{1'b0}}) begin
-		reg_file[AD3] <= WD3;   // Write data to port 3
-	end
+always_latch begin
+  if (clk == 1'b1) begin
+    // AD3 != 0 because writing zero register has to stay 0	
+    if (WE3 && AD3 != {ADDRESS_WIDTH{1'b0}}) begin
+      reg_file[AD3] = WD3;   // Write data to port 3
+    end
+  end
+  else if (clk == 1'b0) begin
+    RD1 = reg_file[AD1];
+    RD2 = reg_file[AD2];
+    a0_o = reg_file[10];
+  end
 end
 
-// Read operations (asynchronous)
-assign RD1 = reg_file[AD1];     // Read data from port 1
-assign RD2 = reg_file[AD2];     // Read data from port 2
-assign a0_o = reg_file[10];
 endmodule

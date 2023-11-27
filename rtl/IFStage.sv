@@ -1,11 +1,12 @@
 module IFStage (
 	input logic         clk_i,
+  input logic         flush_i,
   input logic         IF_ID_En_i,
   input logic         PCEn_i,
 	input logic         rst_i,
   input logic [1:0]   PCsrc_i,
   input logic [31:0]  pcPlusImm_i,
-  input logic [31:0]  ALUout_i,
+  input logic [31:0]  regPlusImm_i,
 	
 	output logic [4:0]  rs1_o,
 	output logic [4:0]  rs2_o,
@@ -33,7 +34,7 @@ Mux3 #(32) nextPCMux (
   .sel_i (PCsrc_i),
   .in0_i (pcPlus4),
   .in1_i (pcPlusImm_i),
-  .in2_i (ALUout_i), // for jalr: PC = rs1 + Imm
+  .in2_i (regPlusImm_i), // for jalr: PC = rs1 + Imm
 
   .out_o (nextPC)
 );
@@ -63,6 +64,7 @@ assign funct3 = Instr[14:12];
 
 IF_IDReg IF_IDReg (
   .clk_i (clk_i),
+  .flush_i (flush_i),
   .en_i (IF_ID_En_i),
   .rs1_i (rs1),
   .rs2_i (rs2),
