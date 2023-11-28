@@ -17,7 +17,6 @@ Modules mainly edited:
 * `ControlPath`
 * `ALUDecoder`
 * `InstrLoad`
-* `DataPath`
 * `Mux2/3/4`
 * `Adder`
 * `PCsrcDecode`
@@ -27,6 +26,7 @@ Modules mainly edited:
 Coauthoring
 
 * `MainDecode`
+* `DataPath`
 * `SignExtend`
 * `riscvsingle.sv`
 * `riscvsingle_dist_tb.cpp`/`riscvsingle_f1_tb.cpp`
@@ -75,3 +75,26 @@ Other Contributions:
   However these were usually minor issues and we managed to work together effectively as a team to prevent them.
 
 
+## Yixu Pan (YixuPan)
+
+Mainly Responsible for:
+
+* `DataMem`
+  I was responsible for the data memory which enables the data to be store and access. It was designed to have synchronous writting operation and asynchronous reading operation, which controled by the MemWrite and addressport. The write instruction only take 1 byte to store in the data memory and read instruction also take 1 byte to the register file every cycle.
+* `ALU`
+  I was responsable for the ALU of the datapath. It was initially designed to only deal add and sub operations in lab 4 but later project requies more, so I edit it to deal with several operations which are arithmetic, logical and bit shifting. These operations are controled by the 3 bit ALUctrl and differents operations are allocated according to the RV32I:RISC-V integer instructions.
+* `Regfile`
+  I was responsible for the register file of the datapath. This was designed with synchonous writting and asyhconous reading operations. It assign output a0 with the x10 register and simply work as a temporary storage with fast access.
+
+Partly Responsable for:
+
+* `DataPath`
+  I was initially designed the datapath module as a top level and improve integrity includeds register file, ALU, MUX and later data memory, thus to generate a more clear design hierarchy. This part is later used in the risc-v top level same as the controlpath. (Constantin later edit it to handle more instructions.)
+* `Mux2`
+  This is simply involved in the datapath and Constantin later unified format for all Mux.
+
+Other contributions:
+
+* Lab 4: I made the DataPath part and it was imported to the project with more edited features such as datamemory and 3-bit ALU.
+* I wrote explanation and comments of the F1-FSM assembly language program wroted by our group, and this illustrate how each function works and logic behind them. 
+* Work with the team to debug our code and test the program.
