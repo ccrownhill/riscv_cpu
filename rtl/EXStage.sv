@@ -54,28 +54,15 @@ ALU ALU (
 	.ALUout_o (ALUout)
 );
 
-EX_MEMReg EX_MEMReg (
-	.clk_i (clk_i),
-  .ALUout_i (ALUout),
-
-  .RegWrite_i (RegWrite_i),
-  .WriteSrc_i (WriteSrc_i),
-  .MemWrite_i (MemWrite_i),
-  .ImmOp_i (ImmOp_i),
-  .pcPlus4_i (pcPlus4_i),
-  .regOp2_i (regOp2_i),
-  .rd_i (rd_i),
-
-
-  .ALUout_o (ALUout_o),
-
-  .RegWrite_o (RegWrite_o),
-  .WriteSrc_o (WriteSrc_o),
-  .MemWrite_o (MemWrite_o),
-  .ImmOp_o (ImmOp_o),
-  .pcPlus4_o (pcPlus4_o),
-  .regOp2_o (regOp2_o),
-  .rd_o (rd_o)
-);
+always_ff @(posedge clk_i) begin
+  ALUout_o <= ALUout;
+  RegWrite_o <= RegWrite_i;
+  WriteSrc_o <= WriteSrc_i;
+  MemWrite_o <= MemWrite_i;
+  ImmOp_o <= ImmOp_i;
+  pcPlus4_o <= pcPlus4_i;
+  regOp2_o <= regOp2_i;
+  rd_o <= rd_i;
+end
 
 endmodule

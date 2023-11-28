@@ -36,23 +36,13 @@ ZeroExtend ZeroExtend (
   .out_i (MemWordOut)
 );
 
-MEM_WBReg MEM_WBReg (
-	.clk_i (clk_i),
-	.RegWrite_i (RegWrite_i),
-  .WriteSrc_i (WriteSrc_i),
-  .ALUout_i (ALUout_i),
-  .DataMemOut_i (MemWordOut),
-  .pcPlus4_i (pcPlus4_i),
-  .ImmOp_i (ImmOp_i),
-  .rd_i (rd_i),
-
-	.RegWrite_o (RegWrite_o),
-  .WriteSrc_o (WriteSrc_o),
-  .ALUout_o (ALUout_o),
-  .DataMemOut_o (DataMemOut_o),
-  .pcPlus4_o (pcPlus4_o),
-  .ImmOp_o (ImmOp_o),
-  .rd_o (rd_o)
-);
-
+always_ff @(posedge clk_i) begin
+  RegWrite_o <= RegWrite_i;
+  WriteSrc_o <= WriteSrc_i;
+  ALUout_o <= ALUout_i;
+  DataMemOut_o <= MemWordOut;
+  pcPlus4_o <= pcPlus4_i;
+  ImmOp_o <= ImmOp_i;
+  rd_o <= rd_i;
+end
 endmodule

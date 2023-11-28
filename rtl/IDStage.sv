@@ -134,42 +134,22 @@ ControlResetMux ControlResetMux (
   .MemWrite_o (MemWriteAfterReset)
 );
 
-ID_EXReg ID_EXReg (
-  .clk_i (clk_i),
+always_ff @(posedge clk_i) begin
+  RegWrite_o <= RegWriteAfterReset;
+  ALUsrc_o <= ALUsrcAfterReset;
+  WriteSrc_o <= WriteSrcAfterReset;
+  ALUOp_o <= ALUOpAfterReset;
+  MemRead_o <= MemReadAfterReset;
+  MemWrite_o <= MemWriteAfterReset;
 
-  .RegWrite_i (RegWriteAfterReset),
-  .ALUsrc_i (ALUsrcAfterReset),
-  .WriteSrc_i (WriteSrcAfterReset),
-  .ALUOp_i (ALUOpAfterReset),
-  .MemRead_i (MemReadAfterReset),
-  .MemWrite_i (MemWriteAfterReset),
+  pcPlus4_o <= pcPlus4_i;
+  ALUop1_o <= ALUop1;
+  regOp2_o <= regOp2;
+  ImmOp_o <= ImmOp;
 
-  .pcPlus4_i (pcPlus4_i),
-  .ALUop1_i (ALUop1),
-  .regOp2_i (regOp2),
-  .ImmOp_i (ImmOp),
-
-  .rs1_i (rs1_i),
-  .rs2_i (rs2_i),
-  .rd_i (rd_i),
-  .funct3_i (funct3_i),
-
-
-  .RegWrite_o (RegWrite_o),
-  .ALUsrc_o (ALUsrc_o),
-  .WriteSrc_o (WriteSrc_o),
-  .ALUOp_o (ALUOp_o),
-  .MemRead_o (MemRead_o),
-  .MemWrite_o (MemWrite_o),
-
-  .pcPlus4_o (pcPlus4_o),
-  .ALUop1_o (ALUop1_o),
-  .regOp2_o (regOp2_o),
-  .ImmOp_o (ImmOp_o),
-
-  .rs1_o (rs1_o),
-  .rs2_o (rs2_o),
-  .rd_o (rd_o),
-  .funct3_o (funct3_o)
-);
+  rs1_o <= rs1_i;
+  rs2_o <= rs2_i;
+  rd_o <= rd_i;
+  funct3_o <= funct3_i;
+end
 endmodule

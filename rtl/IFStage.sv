@@ -18,13 +18,7 @@ module IFStage (
   output logic [31:0] pcPlus4_o
 );
 
-logic [4:0] rs1;
-logic [4:0] rs2;
-logic [4:0] rd;
 logic [31:0] PC;
-logic [31:7] Instr31_7;
-logic [6:0] op;
-logic [2:0] funct3;
 
 logic [31:0]  Instr;
 logic [31:0]  pcPlus4;
@@ -55,33 +49,26 @@ InstrMem InstrMem (
   .RD (Instr)
 );
 
-assign rs1 = Instr[19:15];
-assign rs2 = Instr[24:20];
-assign rd = Instr[11:7];
-assign Instr31_7 = Instr[31:7];
-assign op = Instr[6:0];
-assign funct3 = Instr[14:12];
-
-IF_IDReg IF_IDReg (
-  .clk_i (clk_i),
-  .flush_i (flush_i),
-  .en_i (IF_ID_En_i),
-  .rs1_i (rs1),
-  .rs2_i (rs2),
-  .rd_i (rd),
-  .PC_i (PC),
-  .Instr31_7_i (Instr31_7),
-  .op_i (op),
-  .funct3_i (funct3),
-  .pcPlus4_i (pcPlus4),
-
-  .rs1_o (rs1_o),
-  .rs2_o (rs2_o),
-  .rd_o (rd_o),
-  .PC_o (PC_o),
-  .Instr31_7_o (Instr31_7_o),
-  .op_o (op_o),
-  .funct3_o (funct3_o),
-  .pcPlus4_o (pcPlus4_o)
-);
+always_ff @(posedge clk_i) begin
+  if (IF_ID_En_i == 1'b1) begin
+    rs1_o <= Instr[19:15];
+    rs2_o <= Instr[24:20];
+    rd_o <= Instr[11:7];
+    PC_o <= PC;
+    Instr31_7_o <= Instr[31:7];
+    op_o <= Instr[6:0];
+    funct3_o <= Instr[14:12];
+    pcPlus4_o <= pcPlus4;
+  end
+  if (flush_i == 1'b1) begin
+    rs1_o <= 5'b0;
+    rs2_o <= 5'b0;
+    rd_o <= 5'b0;
+    PC_o <= 32'b0;
+    Instr31_7_o <= 25'b0;
+    op_o <= 7'b0;
+    funct3_o <= 3'b0;
+    pcPlus4_o <= 32'b0;
+  end
+end
 endmodule

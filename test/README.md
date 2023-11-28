@@ -1,5 +1,36 @@
 # Test 
 
+## Running tests using the Makefile
+
+Note that the CPU expects the instructions in 4 byte words in `instructions.mem`
+and the data for the data memory in groups of 1 byte in `data.mem`.
+
+* Test probability function on VBuddy (will automatically change `instructions.mem` and `data.mem`)
+
+```
+make distfile.mem
+```
+
+**IMPORTANT**: needs `.mem` extension.
+
+* Test F1 light on VBuddy (will automatically change `instructions.mem`)
+
+```
+make f1
+```
+
+* For debugging: run with `gtkwave`
+
+```
+make gtkwave
+```
+
+* For debugging: Get all verilator warnings (none suppressed);
+
+```
+make warnings
+```
+
 ## Test of PDF Distributions
 
 This readme contains images of the expected data plotted using excel and the aquired data from our program using vbuddy.
