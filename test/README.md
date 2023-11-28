@@ -19,6 +19,14 @@ make distfile.mem
 make f1
 ```
 
+* Run a generic test bench file ending in `_tb.cpp`:
+
+```
+make my_tb.cpp
+```
+
+where `my` should be replaced by the actual name.
+
 * For debugging: run with `gtkwave`
 
 ```
