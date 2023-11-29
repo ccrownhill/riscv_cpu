@@ -13,6 +13,7 @@ module EXStage (
 
   input logic [4:0]   rd_i,
   input logic [2:0]   funct3_i,
+  input logic         funct7_5_i,
 
 
   output logic [31:0] ALUout_o,
@@ -27,7 +28,7 @@ module EXStage (
 );
 
 logic [31:0] ALUop2;
-logic [2:0] ALUctrl;
+logic [3:0] ALUctrl;
 
 // store these in EX_MEMReg
 logic [31:0] ALUout;
@@ -43,6 +44,7 @@ Mux2 #(32) regMux (
 ALUDecode ALUDecode (
   .ALUOp_i (ALUOp_i),
   .funct3_i (funct3_i),
+  .funct7_5_i (funct7_5_i),
 
   .ALUctrl_o (ALUctrl)
 );

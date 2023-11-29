@@ -21,7 +21,7 @@ always_comb
   case (op_i)
     7'b1101111: controls = 14'b1_011_x_10_xx_0_0_0_1_0; // jal
     7'b1100111: controls = 14'b1_000_1_10_10_0_0_0_0_1; // jalr
-    7'b0010011: controls = 14'b1_000_1_00_10_0_0_0_0_0; // addi + slli + srli + andi
+    7'b0010011: controls = 14'b1_000_1_00_11_0_0_0_0_0; // addi + slli + srli + andi
     7'b0110011: controls = 14'b1_xxx_0_00_10_0_0_0_0_0; // add + xor + and(r-type)
     7'b0100011: controls = 14'b0_001_1_xx_00_0_1_0_0_0; // sb
     7'b1100011: controls = 14'b0_010_0_xx_01_0_0_1_0_0; // bne

@@ -15,6 +15,7 @@ logic [31:0] 	pcPlus4_IF;
 logic [31:7] 	Instr31_7_IF;
 logic [6:0] 	op_IF;
 logic [2:0] 	funct3_IF;
+logic         funct7_5_IF;
 
 IFStage IFStage (
   .clk_i (clk),
@@ -32,6 +33,7 @@ IFStage IFStage (
   .Instr31_7_o (Instr31_7_IF),
   .op_o (op_IF),
   .funct3_o (funct3_IF),
+  .funct7_5_o (funct7_5_IF),
   .PC_o (PC_IF),
 	.pcPlus4_o (pcPlus4_IF)
 );
@@ -81,6 +83,7 @@ logic [4:0]   rs1_ID;
 logic [4:0]   rs2_ID;
 logic [4:0]  	rd_ID;
 logic [2:0]  	funct3_ID;
+logic         funct7_5_ID;
 // input for HazardDetectionUnit
 logic Branch_ID;
 logic Jump_ID;
@@ -102,6 +105,7 @@ IDStage IDStage (
   .PC_i (PC_IF),
   .pcPlus4_i (pcPlus4_IF),
 	.funct3_i (funct3_IF),
+  .funct7_5_i (funct7_5_IF),
 
   .RegWriteWB_i (RegWrite_WB),
   .writeRegAddr_i (rd_WB),
@@ -122,6 +126,7 @@ IDStage IDStage (
   .rs2_o (rs2_ID),
   .rd_o (rd_ID),
   .funct3_o (funct3_ID),
+  .funct7_5_o (funct7_5_ID),
   .a0_o (a0),
 
   .Branch_o (Branch_ID),
@@ -210,6 +215,7 @@ EXStage EXStage (
   .ImmOp_i (ImmOp_ID),
   .rd_i (rd_ID),
   .funct3_i (funct3_ID),
+  .funct7_5_i (funct7_5_ID),
 
 
   .ALUout_o (ALUout_EX),
