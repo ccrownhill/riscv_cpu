@@ -13,7 +13,7 @@ always_comb
         4'b0100:     ALUout_o = $signed(ALUop1_i) < $signed(ALUop2_i); // slt
         4'b0110:     ALUout_o = ALUop1_i < ALUop2_i; // sltu
         4'b1000:     ALUout_o = ALUop1_i ^ ALUop2_i; // xor
-        4'b1010:     ALUout_o = AlUop1_i >> ALUop2_i; // srl
+        4'b1010:     ALUout_o = ALUop1_i >> ALUop2_i; // srl
         4'b1011:     ALUout_o = ALUop1_i >>> ALUop2_i; // sra
         4'b1100:     ALUout_o = ALUop1_i | ALUop2_i; // or
         4'b1110:     ALUout_o = ALUop1_i & ALUop2_i; // and
