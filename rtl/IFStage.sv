@@ -14,6 +14,7 @@ module IFStage (
   output logic [31:7] Instr31_7_o,
   output logic [6:0]  op_o,
   output logic [2:0]  funct3_o,
+  output logic        funct7_5_o,
   output logic [31:0] PC_o,
   output logic [31:0] pcPlus4_o
 );
@@ -58,6 +59,7 @@ always_ff @(posedge clk_i) begin
     Instr31_7_o <= Instr[31:7];
     op_o <= Instr[6:0];
     funct3_o <= Instr[14:12];
+    funct7_5_o <= Instr[30];
     pcPlus4_o <= pcPlus4;
   end
   if (flush_i == 1'b1) begin
@@ -68,6 +70,7 @@ always_ff @(posedge clk_i) begin
     Instr31_7_o <= 25'b0;
     op_o <= 7'b0;
     funct3_o <= 3'b0;
+    funct7_5_o <= 1'b0;
     pcPlus4_o <= 32'b0;
   end
 end

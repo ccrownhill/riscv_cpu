@@ -7,6 +7,7 @@ module IDStage (
   input logic [31:7]  Instr31_7_i,
   input logic [6:0]   op_i,
   input logic [2:0]   funct3_i,
+  input logic         funct7_5_i,
   input logic [31:0]  PC_i,
   input logic [31:0]  pcPlus4_i,
   input logic         RegWriteWB_i, // from WB stage
@@ -30,6 +31,7 @@ module IDStage (
   output logic [4:0]  rs2_o,
   output logic [4:0]  rd_o,
   output logic [2:0]  funct3_o,
+  output logic        funct7_5_o,
 
 	output logic [31:0]	a0_o,
 
@@ -52,7 +54,6 @@ logic [1:0]  WriteSrc;
 logic [1:0]  ALUOp;
 logic        MemRead;
 logic        MemWrite;
-logic        Jump;
 
 
 logic        RegWriteAfterReset;
@@ -151,5 +152,6 @@ always_ff @(posedge clk_i) begin
   rs2_o <= rs2_i;
   rd_o <= rd_i;
   funct3_o <= funct3_i;
+  funct7_5_o <= funct7_5_i;
 end
 endmodule
