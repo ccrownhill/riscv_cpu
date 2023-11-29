@@ -38,3 +38,20 @@ https://github.com/ccrownhill/Team11/assets/109323873/36f99c2b-c3e1-4079-9823-c8
 
 https://github.com/ccrownhill/Team11/assets/109323873/37fe8da2-174c-4ef9-8724-69ba9ef2e71a
 
+
+Here are image evidence related to other `.mem` files executed on pipelined version:
+NOTE: testbench has been modified, the step length now is 7 which was 3 for non-pipelined version in order to narrow the plots (make pipelined plots looked the same as non-pipelined version).
+
+`Triangle.mem` as shown:
+
+![4091701276462_ pic](https://github.com/ccrownhill/Team11/assets/109323873/a19c1965-df81-442a-99d8-3e706e1a94a3)
+
+`Gaussian.mem` as shown:
+
+![4081701276460_ pic](https://github.com/ccrownhill/Team11/assets/109323873/5eb5bd29-1d37-44a6-bd3f-4f335a99a4e9)
+
+`Sine.mem` as shown:
+
+![4071701276458_ pic](https://github.com/ccrownhill/Team11/assets/109323873/b7c78869-c807-4f06-b8a9-90d72da8e7cc)
+
+Obviously, non-pipelined hardware can work correctly since pipelined hardware does work correctly
