@@ -1,7 +1,7 @@
 #include <iostream>
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "Vriscvsingle.h"
+#include "Vriscvpipe.h"
 #include "vbuddy.cpp"     
 #define MAX_SIM_CYC 1000000
 #define ADDRESS_WIDTH 8
@@ -13,17 +13,13 @@ int main(int argc, char **argv, char **env) {
 
 	Verilated::commandArgs(argc, argv);
 	
-	Vriscvsingle* top = new Vriscvsingle;
+	Vriscvpipe* top = new Vriscvpipe;
 
 	Verilated::traceEverOn(true);
 	VerilatedVcdC* tfp = new VerilatedVcdC;
 	top->trace (tfp, 99);
-	tfp->open ("riscvsingle.vcd");
+	tfp->open ("riscvpipe.vcd");
  
-	if (vbdOpen()!=1) return(-1);
-	vbdHeader("SingleCyc");
-	vbdSetMode(1);
-
 	// initialize simulation inputs
 	top->clk = 1;
 	top->rst = 0;
@@ -36,19 +32,12 @@ int main(int argc, char **argv, char **env) {
 			top->clk = !top->clk;
 			top->eval ();
 		}
-		
-		top->rst = vbdFlag();
 
-		vbdBar(top->a0 & 0xff);
-		vbdCycle(simcyc);
-
-		if ((Verilated::gotFinish()) || (vbdGetkey()=='q')) 
+		if ((Verilated::gotFinish())) {
+			tfp->close();
 			exit(0);                
-// 		if ((Verilated::gotFinish())) 
-// 			exit(0);                
+		}
 	}
-
-	vbdClose();   
 	tfp->close(); 
 	exit(0);
 }

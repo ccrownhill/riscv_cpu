@@ -2,7 +2,6 @@ module ALU (
     input logic [31:0]    ALUop1_i,
     input logic [31:0]    ALUop2_i,
     input logic [2:0]     ALUctrl_i,
-    output logic          EQ_o,
     output logic  [31:0]  ALUout_o
 );
 
@@ -17,6 +16,4 @@ always_comb
         3'b111:     ALUout_o = ALUop1_i & ALUop2_i; // srl
         default:    ALUout_o = 0;
     endcase
-
-assign EQ_o = (ALUout_o == 32'b0) ? 1'b1 : 1'b0;
 endmodule
