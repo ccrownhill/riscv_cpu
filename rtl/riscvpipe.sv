@@ -199,6 +199,7 @@ logic [31:0] pcPlus4_EX;
 logic [31:0] ImmOp_EX;
 logic [31:0] regOp2_EX;
 logic [4:0]  rd_EX;
+logic [2:0]  funct3_EX;
 
 
 EXStage EXStage (
@@ -226,7 +227,8 @@ EXStage EXStage (
   .ImmOp_o (ImmOp_EX),
   .pcPlus4_o (pcPlus4_EX),
   .regOp2_o (regOp2_EX),
-  .rd_o (rd_EX)
+  .rd_o (rd_EX),
+  .funct3_o (funct3_EX)
 );
 
 
@@ -252,6 +254,7 @@ MEMStage MEMStage (
   .pcPlus4_i (pcPlus4_EX),
   .regOp2_i (regOp2_EX),
   .rd_i (rd_EX),
+  .funct3_i (funct3_EX),
 
 	.RegWrite_o (RegWrite_MEM),
   .WriteSrc_o (WriteSrc_MEM),
