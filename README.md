@@ -17,3 +17,11 @@ We successfully conquered the challenge and displayed a sine wave on the Vbuddy 
 4. To verify your RV32I design by executing the F1 light program
 5. As stretched goal, to implement a simple pipelined version of the microarchitecutre with hazard detection and mitigation
 6. As a further stretched goal, add data cache to the pipelined RV32I
+
+# Stretch Goal 1: Pipelined RV32I Design
+
+## Testing and Report
+
+*`F1_light` can be successfully run on Vbuddy with noticeable longer time interval, around 3.1 seconds and 130 cycles, from current light on to next light on. However, the time interval for non-pipelined version is around 1.5 seconds and 60 cycles. This sounds wired because verilator lock the clock speed to 2ps/cycle (in reality, the clock speed will be increased since only one stage is executed in one cycle instead of 5 stages). This phenomenon means that we do pipelined the instructions successfully.
+
+*`Guassian` `Noisy` `Sine` `Triangle` can be plotted on Vbuddy with noticeable slower plotting speed compared to non-pipelined version, which means plotting instructions can be successfully run with pipelined hardware, reason as explained above. 
