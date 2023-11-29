@@ -25,3 +25,16 @@ We successfully conquered the challenge and displayed a sine wave on the Vbuddy 
 *`F1_light` can be successfully run on Vbuddy with noticeable longer time interval, around 3.1 seconds and 130 cycles, from current light on to next light on. However, the time interval for non-pipelined version is around 1.5 seconds and 60 cycles. This sounds wired because verilator lock the clock speed to 2ps/cycle (in reality, the clock speed will be increased since only one stage is executed in one cycle instead of 5 stages). This phenomenon means that we do pipelined the instructions successfully.
 
 *`Guassian` `Noisy` `Sine` `Triangle` can be plotted on Vbuddy with noticeable slower plotting speed compared to non-pipelined version, which means plotting instructions can be successfully run with pipelined hardware, reason as explained above. 
+
+## Evidence
+
+Here is a video comparison when `Noisy.mem` is run on a pipelined version and a non-pipelined one
+
+
+
+https://github.com/ccrownhill/Team11/assets/109323873/36f99c2b-c3e1-4079-9823-c8a6841b5b61
+
+
+
+https://github.com/ccrownhill/Team11/assets/109323873/37fe8da2-174c-4ef9-8724-69ba9ef2e71a
+
