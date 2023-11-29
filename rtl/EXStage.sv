@@ -24,7 +24,8 @@ module EXStage (
   output logic [31:0] pcPlus4_o,
   output logic [31:0] ImmOp_o,
   output logic [31:0] regOp2_o,
-  output logic [4:0]  rd_o
+  output logic [4:0]  rd_o,
+  output logic [2:0]  funct3_o
 );
 
 logic [31:0] ALUop2;
@@ -65,6 +66,7 @@ always_ff @(posedge clk_i) begin
   pcPlus4_o <= pcPlus4_i;
   regOp2_o <= regOp2_i;
   rd_o <= rd_i;
+  funct3_o <= funct3_i;
 end
 
 endmodule
