@@ -57,7 +57,7 @@ HazardDetectionUnit HazardDetectionUnit (
   .Branch_i (Branch_ID),
   .Jump_i (Jump_ID),
   .Ret_i (Ret_ID),
-  .EQ_i (EQ_ID),
+  .BranchCond_i (BranchCond_ID),
 
   .IF_Flush_o (IF_Flush),
   .PCEn_o (PCEn),
@@ -88,7 +88,7 @@ logic         funct7_5_ID;
 logic Branch_ID;
 logic Jump_ID;
 logic Ret_ID;
-logic EQ_ID;
+logic BranchCond_ID;
 // input for IF stage
 logic [1:0]	IF_PCsrc_ID;
 logic [31:0]  IF_pcPlusImm_ID;
@@ -132,7 +132,7 @@ IDStage IDStage (
   .Branch_o (Branch_ID),
   .Jump_o (Jump_ID),
   .Ret_o (Ret_ID),
-  .EQ_o (EQ_ID),
+  .BranchCond_o (BranchCond_ID),
 
   .IF_PCsrc_o (IF_PCsrc_ID),
   .IF_pcPlusImm_o (IF_pcPlusImm_ID),

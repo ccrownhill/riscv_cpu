@@ -9,7 +9,7 @@ module HazardDetectionUnit (
   input logic       Branch_i,
   input logic       Jump_i,
   input logic       Ret_i,
-  input logic       EQ_i,
+  input logic       BranchCond_i,
 
   output logic IF_Flush_o,
   output logic PCEn_o,
@@ -40,7 +40,7 @@ always_comb begin
         controlZeroSel_o = 1'b1;
         IF_Flush_o = 1'b0;
     end
-  else if ((Branch_i == 1'b1 && EQ_i == 1'b0) || Jump_i == 1'b1 || Ret_i == 1'b1) begin // do this only if branch taken
+  else if ((Branch_i == 1'b1 && BranchCond_i == 1'b1) || Jump_i == 1'b1 || Ret_i == 1'b1) begin // do this only if branch taken
     controlZeroSel_o = 1'b0;
     IF_Flush_o = 1'b1;
     PCEn_o = 1'b1;
