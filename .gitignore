@@ -3,3 +3,4 @@ obj_dir
 .DS_Store
 Imm_encoding.png
 RiscV_Instructions.png
+.vscode

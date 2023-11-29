@@ -39,7 +39,7 @@ module IDStage (
   output logic Branch_o,
   output logic Jump_o,
   output logic Ret_o,
-  output logic EQ_o,
+  output logic BranchCond_o,
 	// input for IF stage
 	output logic [1:0]	IF_PCsrc_o,
   output logic [31:0]  IF_pcPlusImm_o,
@@ -106,10 +106,15 @@ SignExtend SignExtend(
 Adder adderImm (PC_i, ImmOp, IF_pcPlusImm_o);
 Adder adderRegImm (ALUop1, ImmOp, IF_regPlusImm_o);
 
-assign EQ_o = (ALUop1 == regOp2) ? 1'b1 : 1'b0;
+BranchCond BranchCond (
+  .regOp1_i (ALUop1),
+  .regOp2_i (regOp2),
+  .funct3_i (funct3_i),
+  .BranchCond_o (BranchCond_o)
+);
 
 PCsrcDecode PCsrcDecode (
-  .EQ_i (EQ_o),
+  .BranchCond_i (BranchCond_o),
   .Branch_i (Branch_o),
   .Jump_i (Jump_o),
   .Ret_i (Ret_o),

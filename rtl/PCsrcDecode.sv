@@ -1,5 +1,5 @@
 module PCsrcDecode (
-  input logic EQ_i,
+  input logic BranchCond_i,
   input logic Branch_i,
   input logic Jump_i,
   input logic Ret_i,
@@ -8,7 +8,7 @@ module PCsrcDecode (
 );
 
 always_comb begin
-  if (((!EQ_i & Branch_i) | Jump_i) == 1'b1)
+  if (((BranchCond_i & Branch_i) | Jump_i) == 1'b1)
     PCsrc_o = 2'b01;
   else if (Ret_i == 1'b1)
     PCsrc_o = 2'b10;
