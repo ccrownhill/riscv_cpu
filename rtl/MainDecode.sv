@@ -26,7 +26,7 @@ always_comb
     7'b0100011: controls = 14'b0_001_1_xx_00_0_1_0_0_0; // sb
     7'b1100011: controls = 14'b0_010_0_xx_01_0_0_1_0_0; // bne
     7'b0110111: controls = 14'b1_100_x_11_xx_0_0_0_0_0; // lui u-type
-    7'b0000011: controls = 14'b1_000_1_01_00_1_0_0_0_0; // lbu(i-type)
+    7'b0000011: controls = 14'b1_000_1_01_00_1_0_0_0_0; // lb+lh+lw+lbu+lhu (i-type)
     default: controls = 14'bx_xxx_x_xx_xx_x_x_x_x_x;
   endcase
 
