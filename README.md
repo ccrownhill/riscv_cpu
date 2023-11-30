@@ -21,12 +21,19 @@ We successfully conquered the challenge and displayed a sine wave on the Vbuddy 
 ## Corresponding Achievements
 
 1. We refer to the book written by Harris & Harris, Control Unit as:
+
 <img width="836" alt="Screen Shot 2023-11-30 at 10 48 00" src="https://github.com/ccrownhill/Team11/assets/109323873/182af720-c189-4339-a2b1-ba8f939fd0d7">
+
 ALU section as:
+
 <img width="630" alt="Screen Shot 2023-11-30 at 10 48 11" src="https://github.com/ccrownhill/Team11/assets/109323873/233053ef-cd99-4918-86dc-895bf0439bbd">
+
 ImmSrc as:
+
 <img width="882" alt="Screen Shot 2023-11-30 at 10 48 43" src="https://github.com/ccrownhill/Team11/assets/109323873/9a2a506a-a7d0-45ed-941c-00db4a568895">
+
 finally, the whole design as
+
 <img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/Team11/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
 
 2. We verified that we can implement the our single-cycle CPU as evidence shown under the folder `test`   
