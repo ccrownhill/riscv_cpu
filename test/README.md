@@ -60,8 +60,9 @@ and a0, a1, a2
 The wave we have for this test shown below and all the result matches, last signal refer to the result a0:
 ![ALU test](Images/ALUtest.png)
 
-### Test all instructions with data memory(Load and store instructions)
-Then to test all the load and store instructions are working proporly, we edit the data memory to enable more instructions
+### Test all instructions with data memory (lb, lh, lw, lbu, lhu, sb, sh and sw)
+Then to test all the load and store instructions are working proporly, we edit the data memory to enable more instructionss
+
 The testing program(Load_store_test.s):
 ```
 lui a1, 0x10
@@ -81,8 +82,9 @@ lw a0, 0(a1)
 The wave we got from this test satify the expected read data:
 ![DataMemoryTest](Images/Load_store_test.png)
 
-### Test with all B type instructions 
-For Branch instructions we add a BranchCond to identify the funct3 and take the certain branch instructions. 
+### Test with all B type instructions (beq, bne, blt, bge, bltu and bgeu)
+For Branch instructions we add a BranchCond to identify the funct3 and take the certain branch instructions.
+
 The testing program(Branchs.s):
 ```
 main:
