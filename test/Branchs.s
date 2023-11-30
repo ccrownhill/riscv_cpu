@@ -1,6 +1,6 @@
 main:
   li t0, 5
-  li t1, 5
+  li t1, 6
   li t4, 10
   li t5, 0
 
