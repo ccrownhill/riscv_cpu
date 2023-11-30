@@ -16,7 +16,7 @@ module Hazard(
 
 
 
-always_ff @(posedge clk_i)
+always_ff @(posedge clk_i) // for forwarding
 	if (Rs1E_i == RdM_i)
 
 	if (Rs1E_i == RdW_i)

@@ -159,7 +159,7 @@ EXStage EXStage (
   // for hazard multiplexers
   .ALUResultM_i(ALUout_EX)
   .RD1E(ALUop1_ID) // order is correct 
-  .RD2E(regOp2_ID) //
+  .RD2E(regOp2_ID) // 
   .ForwardAE(ForwardAE_HAZ)
   .ForwardBE(ForwardBE_HAZ)
   .ResultW(WD3_WB)

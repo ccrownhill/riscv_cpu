@@ -79,7 +79,7 @@ Mux3 #(32) Mux3_B (
 );
 
 Mux2 #(32) regMux (
-	.in0(regOp2_i),
+	.in0(WriteDataE), // this mux needs changing
 	.in1(ImmOp_i),
 	.sel(ALUsrc_i),
 	.out(ALUop2)
@@ -94,7 +94,7 @@ ALUDecode ALUDecode (
 
 // needs changing to take new values
 ALU ALU (
-	.ALUop1_i (ALUop1_i),
+	.ALUop1_i (SrcAE),
 	.ALUop2_i (ALUop2),
 	.ALUctrl_i (ALUctrl),
 	.EQ_o (EQ),
@@ -115,7 +115,7 @@ EX_MEMReg EX_MEMReg (
   .ImmOp_i (ImmOp_i),
   .pcPlus4_i (pcPlus4_i),
   .pcPlusImm_i (pcPlusImm),
-  .regOp2_i (regOp2_i),
+  .regOp2_i (WriteDataE),
   .rd_i (rd_i),
 
 
