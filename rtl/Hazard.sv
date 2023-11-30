@@ -16,13 +16,19 @@ module Hazard(
 
 
 
-always_ff @(posedge clk_i) // for forwarding
-	if (Rs1E_i == RdM_i)
+always_comb begin // for forwarding
 
-	if (Rs1E_i == RdW_i)
-
-	if (Rs2E_i == RdM_i)
-
-	if (Rs2E_i == RdW_i)
-	
+	if (Rs1E_i == RdM_i) // this can be forwarded
+		ForwardAE <= 2'b10
+	else if (Rs1E_i == RdW_i) // this can be forwarded
+		ForwardAE <= 2'b01
+	else 
+		ForwardAE <= 2'b00
+	if (Rs2E_i == RdM_i) // this can be forwarded
+		ForwardBE <= 2'b10
+	else if (Rs2E_i == RdW_i) // this can be forwarded
+		ForwardBE <= 2'b01
+	else 
+	ForwardBE <= 2'b00
+end
 endmodule
