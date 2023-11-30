@@ -34,6 +34,9 @@ logic [31:0] 	ImmOp_ID;
 logic [4:0]  	rd_ID;
 logic [2:0]  	funct3_ID;
 
+logic [4:0]   rs1D_o
+logic [4:0]   rs2D_o
+
 // signals for EX stage output
 logic        EQ_EX;
 logic [31:0] ALUout_EX;
@@ -119,6 +122,10 @@ IDStage IDStage (
   .rd_o (rd_ID),
   .funct3_o (funct3_ID),
   .a0_o (a0)
+
+  //hazard
+  .rs1_o(rs1D_o)
+  .rs2_o(rs2D_o)
 );
 
 EXStage EXStage (
@@ -211,8 +218,8 @@ WBStage WBStage (
 
 Hazard Hazard  (
   .clk_i(clk)
-  .Rs1E_i(rs1_i)
-  .Rs2E_i(rs2_i)
+  .Rs1E_i(rs1D_o)
+  .Rs2E_i(rs2D_o)
   .RdM_i(rd_MEM)
   .RdW_i(rd_WB)
   .RegWriteM_i(RegWrite_MEM)

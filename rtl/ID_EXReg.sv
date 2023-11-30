@@ -18,6 +18,13 @@ module ID_EXReg (
   input logic [4:0]  rd_i,
   input logic [2:0]  funct3_i,
 
+  //hazard
+  input logic [4:0] rs1_i
+  input logic [4:0] rs2_i
+
+  output logic [4:0] rs1_o
+  output logic [4:0] rs2_o
+  //end 
 
   output logic        RegWrite_o,
   output logic        ALUsrc_o,
@@ -56,6 +63,10 @@ always_ff @(posedge clk_i) begin
 	
 	rd_o <= rd_i;
 	funct3_o <= funct3_i;
+
+  // hazard
+  rs1_o <= rs1_i;
+  rs2_o <= rs2_i;
 end
 	
 endmodule

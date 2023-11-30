@@ -124,5 +124,9 @@ ID_EXReg ID_EXReg (
 
   .rd_o (rd_o),
   .funct3_o (funct3_o)
+
+  // hazard
+  .rs1D(rs1_i)
+  .rs2D(rs2_i)
 );
 endmodule
