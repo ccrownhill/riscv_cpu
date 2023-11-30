@@ -58,7 +58,7 @@ or  a0, a1, a2
 and a0, a1, a2
 ```
 The wave we have for this test shown below and all the result matches, last signal refer to the result a0:
-![ALU test](<Images:ALUtest.png>)
+![ALU test](Images/ALUtest.png)
 
 ### Test all instructions with data memory(Load and store instructions)
 Then to test all the load and store instructions are working proporly, we edit the data memory to enable more instructions
@@ -79,7 +79,7 @@ sw a2, 0(a1)
 lw a0, 0(a1)
 ``` 
 The wave we got from this test satify the expected read data:
-![DataMemoryTest](<Load_store_test.png>)
+![DataMemoryTest](Images/Load_store_test.png)
 
 ### Test with all B type instructions 
 For Branch instructions we add a BranchCond to identify the funct3 and take the certain branch instructions. 
@@ -112,7 +112,7 @@ not_EQ:
 end_test:
 ```
 The wave we got is the same with what we expexted as the 6 is bigger and not equal to 5:
-![Branch test](<Branch_test.png>)
+![Branch test](<Images/Branch_test.png>)
 
 Thus we have include all the RV32I integer instruction and finish testing them worked functionally.
 ## Test of PDF Distributions
