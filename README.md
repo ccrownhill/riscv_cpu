@@ -37,10 +37,10 @@ finally, the whole design as
 <img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/Team11/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
 
 2. We verified that we can implement the our single-cycle CPU as evidence shown under the folder `test`   
-3. Assembly code as shown in `test/f1_light.s` as well as assembled hexadecimal code shown in `test/f1light.mem`. Futher details can also be found under test folder 
+3. Assembly code as shown in `test/f1_light.s` as well as assembled hexadecimal code shown in `test/f1light.mem`. Futher details can also be found under `test` folder 
 4. As shown in the video https://youtu.be/eAhKKpVeQog?si=jxR7XT2m2lLqG2_a
 5. Further details refer to Stretch Goal 1: Pipelined RV32I Design section
-6. Further details refer to Stretch Goal 2: RV32I with Memory Cache
+6. Further details refer to Stretch Goal 2: RV32I with Memory Cache section
 
 # Stretch Goal 1: Pipelined RV32I Design
 
