@@ -67,6 +67,10 @@ logic RegWrite_WB;
 logic [4:0] rd_WB;
 logic [31:0] WD3_WB;
 
+//signals for hazard stage
+logic [1:0] ForwardAE_HAZ
+logic [1:0] ForwardBE_HAZ
+
 IFStage IFStage (
   .clk_i (clk),
   .rst_i (rst),
@@ -151,6 +155,14 @@ EXStage EXStage (
   .pcPlusImm_o (pcPlusImm_EX),
   .regOp2_o (regOp2_EX),
   .rd_o (rd_EX)
+
+  // for hazard multiplexers
+  .ALUResultM_i(ALUout_EX)
+  .RD1E(ALUop1_ID) // order is correct 
+  .RD2E(regOp2_ID) //
+  .ForwardAE(ForwardAE_HAZ)
+  .ForwardBE(ForwardBE_HAZ)
+  .ResultW(WD3_WB)
 );
 
 MEMStage MEMStage (
@@ -195,6 +207,18 @@ WBStage WBStage (
 	.RegWrite_o (RegWrite_WB),
 	.rd_o (rd_WB),
 	.WD3_o (WD3_WB)
+);
+
+Hazard Hazard  (
+  .clk_i(clk)
+  .Rs1E_i(rs1_i)
+  .Rs2E_i(rs2_i)
+  .RdM_i(rd_MEM)
+  .RdW_i(rd_WB)
+  .RegWriteM_i(RegWrite_MEM)
+  .RegWriteW_i(RegWrite_WB)
+  .ForwardAE(ForwardAE_HAZ)
+  .ForwardBE(ForwardBE_HAZ)
 );
 
 endmodule
