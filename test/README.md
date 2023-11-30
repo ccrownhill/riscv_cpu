@@ -38,7 +38,83 @@ make gtkwave
 ```
 make warnings
 ```
+## Test of all RV32I: RISC-V interger instructions
+This part test all the instructions of RV32I with I, S, R, B and J type instructions. 
+### Test all instructions with ALU
+We started with editing ALU and to include all the R type and part of I type Instructions. The ALUdecoder has been edited to deal with R and I type intructions differently because the I type instruction do not have funct7 thus it should be identify whther is shift instructions. We also make the ALUctrl to 4 bits number so it is enough to includes all instructions. Here is the testing result:
+We have the assembly testing program(ALUtest.s):
+```
+addi a1, zero, -3
+addi a2, zero, 1
+add a0, a1, a2
+sub a0, a1, a2
+sll a0, a1, a2
+slt a0, a1, a2
+sltu a0, a1, a2
+xor a0, a1, a2
+srl a0, a1, a2
+sra a0, a1, a2
+or  a0, a1, a2
+and a0, a1, a2
+```
+The wave we have for this test shown below and all the result matches, last signal refer to the result a0:
+![ALU test](Images/ALUtest.png)
 
+### Test all instructions with data memory(Load and store instructions)
+Then to test all the load and store instructions are working proporly, we edit the data memory to enable more instructions
+The testing program(Load_store_test.s):
+```
+lui a1, 0x10
+li a2, 0xff
+sb a2, 0(a1)
+lb a0, 0(a1)
+lbu a0, 0(a1)
+
+addi a2, zero, -1
+sh a2, 0(a1)
+lh a0, 0(a1)
+lhu a0, 0(a1)
+
+sw a2, 0(a1)
+lw a0, 0(a1)
+``` 
+The wave we got from this test satify the expected read data:
+![DataMemoryTest](Images/Load_store_test.png)
+
+### Test with all B type instructions 
+For Branch instructions we add a BranchCond to identify the funct3 and take the certain branch instructions. 
+The testing program(Branchs.s):
+```
+main:
+  li t0, 6
+  li t1, 5
+  li t4, 10
+  li t5, 0
+
+  blt t0, t1, Smaller
+  li t2, 0
+  bge t0, t1, Bigger_or_Equal
+  bne t0, t4, not_EQ
+  j end_test
+
+Bigger_or_Equal:
+  li t2, 1
+  beq t0, t1, EQ
+  li t3, 1        # t2,t3,t5 = 111 if t0 is bigger than t1
+  j end_test
+Smaller:
+  li t3, 0        # t2,t3,t5 = 001 if t0 smaller than t1 
+EQ:
+  li t3, 0        # t2,t3,t5 = 100 if t0 equal to t1
+not_EQ:
+  li t5, 1
+
+end_test:
+```
+The wave we got is the same with what we expexted as the 6 is bigger and not equal to 5:
+![Branch test](<Images/Branch_test.png>)
+
+Thus we have include all the RV32I integer instruction and finish testing them worked functionally.
 ## Test of PDF Distributions
 
 This readme contains images of the expected data plotted using excel and the aquired data from our program using vbuddy.
