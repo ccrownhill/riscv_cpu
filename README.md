@@ -56,11 +56,13 @@ Here is a video comparison when `Noisy.mem` is run on a pipelined version and a 
 
 
 
-https://github.com/ccrownhill/Team11/assets/109323873/36f99c2b-c3e1-4079-9823-c8a6841b5b61
+https://github.com/ccrownhill/Team11/assets/109323873/f035e546-bae7-4a60-9108-87be6d8bb2ff
 
 
 
-https://github.com/ccrownhill/Team11/assets/109323873/37fe8da2-174c-4ef9-8724-69ba9ef2e71a
+https://github.com/ccrownhill/Team11/assets/109323873/5ed6b64c-92a2-4eb5-ac90-768da428ab14
+
+
 
 
 Here are image evidence related to other `.mem` files executed on pipelined version:
