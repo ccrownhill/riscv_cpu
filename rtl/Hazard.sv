@@ -1,34 +1,38 @@
 module Hazard(
-	input logic 	   clk_i
-	input logic [4:0]  Rs1E_i
-	input logic [4:0]  Rs2E_i
-	input logic [4:0]  RdM_i
-	input logic [4:0]  RdW_i
-	input logic [31:0] ALUResultM_i
-	input logic [31:0] RD1E
-	input logic [31:0] RD2E
-	input logic [31:0] ResultW
-	input logic 	   RegWriteM_i
-	input logic 	   RegWriteW_i
-	output logic       ForwardAE
-	output logic       ForwardBE
+	input logic 	   clk_i,
+	input logic [4:0]  Rs1E_i,
+	input logic [4:0]  Rs2E_i,
+	input logic [4:0]  RdM_i,
+	input logic [4:0]  RdW_i,
+//	input logic [31:0] ALUResultM_i,
+//	input logic [31:0] RD1E,
+//	input logic [31:0] RD2E,
+//	input logic [31:0] ResultW,
+	input logic 	   RegWriteM_i,
+	input logic 	   RegWriteW_i,
+	output logic [1:0] ForwardAE,
+	output logic [1:0] ForwardBE
 );
 
 
 
 always_comb begin // for forwarding
 
-	if (Rs1E_i == RdM_i) // this can be forwarded
-		ForwardAE <= 2'b10
-	else if (Rs1E_i == RdW_i) // this can be forwarded
-		ForwardAE <= 2'b01
-	else 
-		ForwardAE <= 2'b00
+	if (Rs1E_i == RdM_i) begin // this can be forwarded
+		ForwardAE <= 2'b10;
+	end
+	if (Rs1E_i == RdW_i) begin // this can be forwarded
+		ForwardAE <= 2'b01;
+	end
+	else begin
+		ForwardAE <= 2'b00;
+	end
 	if (Rs2E_i == RdM_i) // this can be forwarded
-		ForwardBE <= 2'b10
+		ForwardBE <= 2'b10;
 	else if (Rs2E_i == RdW_i) // this can be forwarded
-		ForwardBE <= 2'b01
+		ForwardBE <= 2'b01;
 	else 
-	ForwardBE <= 2'b00
+	ForwardBE <= 2'b00;
 end
+
 endmodule

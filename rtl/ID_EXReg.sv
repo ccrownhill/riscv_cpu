@@ -19,11 +19,11 @@ module ID_EXReg (
   input logic [2:0]  funct3_i,
 
   //hazard
-  input logic [4:0] rs1_i
-  input logic [4:0] rs2_i
+  input logic [4:0] rs1_i,
+  input logic [4:0] rs2_i,
 
-  output logic [4:0] rs1_o
-  output logic [4:0] rs2_o
+  output logic [4:0] rs1_o,
+  output logic [4:0] rs2_o,
   //end 
 
   output logic        RegWrite_o,

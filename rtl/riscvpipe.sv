@@ -222,6 +222,7 @@ Hazard Hazard  (
   .Rs2E_i(rs2D_o),
   .RdM_i(rd_MEM),
   .RdW_i(rd_WB),
+//  .ResultW(),
   .RegWriteM_i(RegWrite_MEM),
   .RegWriteW_i(RegWrite_WB),
   .ForwardAE(ForwardAE_HAZ),

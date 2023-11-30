@@ -18,12 +18,12 @@ module EXStage (
   //logic for Hazard detection IN PROCESS
   
   
-  input logic [31:0]  ALUResultM_i
-  input logic [31:0]  ResultW
-  input logic [31:0]  RD1E
-  input logic [31:0]  RD2E
-  input logic [1:0]   ForwardAE
-  input logic [1:0]   ForwardBE
+  input logic [31:0]  ALUResultM_i,
+  input logic [31:0]  ResultW,
+  input logic [31:0]  RD1E,
+  input logic [31:0]  RD2E,
+  input logic [1:0]   ForwardAE,
+  input logic [1:0]   ForwardBE,
 
 
 
@@ -48,8 +48,8 @@ module EXStage (
 );
 
 // for hazard multiplexer outputs
-logic [31:0]  SrcAE
-logic [31:0]  WriteDataE
+logic [31:0]  SrcAE;
+logic [31:0]  WriteDataE;
 // end
 
 logic [31:0] pcPlusImm;
@@ -63,18 +63,18 @@ logic [31:0] ALUout;
 Adder adderImm (PC_i, ImmOp_i, pcPlusImm);
 
 Mux3 #(32) Mux3_A (
-  .in0_i(RD1E)
-  .in1_i(ResultW)
-  .in2_i(ALUResultM_i)
-  .sel_i(ForwardAE)
+  .in0_i(RD1E),
+  .in1_i(ResultW),
+  .in2_i(ALUResultM_i),
+  .sel_i(ForwardAE),
   .out_o(SrcAE)
 );
 
 Mux3 #(32) Mux3_B (
-  .in0_i(RD2E)
-  .in1_i(ResultW)
-  .in2_i(ALUResultM_i)
-  .sel_i(ForwardBE)
+  .in0_i(RD2E),
+  .in1_i(ResultW),
+  .in2_i(ALUResultM_i),
+  .sel_i(ForwardBE),
   .out_o(WriteDataE)
 );
 

@@ -13,8 +13,8 @@ module IDStage (
   input logic [4:0]   writeRegAddr_i, // write address from WB stage
   input logic [31:0]  WD3_i, // write data from WB stage
 
-  output logic [4:0] rs1_o
-  output logic [4:0] rs2_o
+  output logic [4:0] rs1_o,
+  output logic [4:0] rs2_o,
 
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
@@ -126,12 +126,12 @@ ID_EXReg ID_EXReg (
   .ImmOp_o (ImmOp_o),
 
   .rd_o (rd_o),
-  .funct3_o (funct3_o)
+  .funct3_o (funct3_o),
 
   // hazard
-  .rs1_i(rs1_i)
-  .rs2_i(rs2_i)
-  .rs1_o(rs1_o)
+  .rs1_i(rs1_i),
+  .rs2_i(rs2_i),
+  .rs1_o(rs1_o),
   .rs2_o(rs2_o)
 );
 endmodule
