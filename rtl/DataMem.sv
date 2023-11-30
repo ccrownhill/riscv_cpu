@@ -29,9 +29,9 @@ always_comb
 always_ff @(posedge clk_i) begin
 	if(MemWrite_i) begin
 		case(funct3_i)
-			3'b000: ram_arr[AddressPort_i] <= WriteData_i[7:0];
-			3'b001: {ram_arr[AddressPort_i+1], ram_arr[AddressPort_i]} <= {WriteData_i[15:8], WriteData_i[7:0]};
-			3'b010: {ram_arr[AddressPort_i+3], ram_arr[AddressPort_i+2], ram_arr[AddressPort_i+1], ram_arr[AddressPort_i]} <= {WriteData_i[31:24], WriteData_i[23:16], WriteData_i[15:8], WriteData_i[7:0]};
+			3'b000: ram_arr[AddressPort_i] <= WriteData_i[7:0]; //sb
+			3'b001: {ram_arr[AddressPort_i+1], ram_arr[AddressPort_i]} <= {WriteData_i[15:8], WriteData_i[7:0]}; //sh
+			3'b010: {ram_arr[AddressPort_i+3], ram_arr[AddressPort_i+2], ram_arr[AddressPort_i+1], ram_arr[AddressPort_i]} <= {WriteData_i[31:24], WriteData_i[23:16], WriteData_i[15:8], WriteData_i[7:0]}; //sw
       default: ram_arr[AddressPort_i] <= ram_arr[AddressPort_i];
 		endcase
 	end
