@@ -18,18 +18,18 @@ module Hazard(
 
 always_comb begin // for forwarding
 
-	if (Rs1E_i == RdM_i) begin // this can be forwarded
+	if (Rs1E_i == RdM_i && RegWriteM_i == 1'b1) begin // this can be forwarded
 		ForwardAE = 2'b10;
 	end
-	if (Rs1E_i == RdW_i) begin // this can be forwarded
+	if (Rs1E_i == RdW_i && RegWriteW_i == 1'b1) begin // this can be forwarded
 		ForwardAE = 2'b01;
 	end
 	else begin
 		ForwardAE = 2'b00;
 	end
-	if (Rs2E_i == RdM_i) // this can be forwarded
+	if (Rs2E_i == RdM_i && RegWriteM_i == 1'b1) // this can be forwarded
 		ForwardBE = 2'b10;
-	else if (Rs2E_i == RdW_i) // this can be forwarded
+	else if (Rs2E_i == RdW_i && RegWriteW_i == 1'b1) // this can be forwarded
 		ForwardBE = 2'b01;
 	else 
 	ForwardBE = 2'b00;

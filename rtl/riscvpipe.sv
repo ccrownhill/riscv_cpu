@@ -223,8 +223,8 @@ Hazard Hazard  (
   .RdM_i(rd_MEM),
   .RdW_i(rd_WB),
 //  .ResultW(),
-  .RegWriteM_i(RegWrite_MEM),
-  .RegWriteW_i(RegWrite_WB),
+  .RegWriteM_i(RegWrite_EX),
+  .RegWriteW_i(RegWrite_MEM),
   .ForwardAE(ForwardAE_HAZ),
   .ForwardBE(ForwardBE_HAZ)
 );
