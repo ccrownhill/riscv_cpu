@@ -11,4 +11,4 @@ verilator -Wall -Wno-UNUSEDSIGNAL --cc --trace riscvpipe.sv --exe riscvpipe_simp
 make -j -C obj_dir/ -f Vriscvpipe.mk Vriscvpipe
 
 # run executable simulation file
-obj_dir/Vriscvsingle
+obj_dir/Vriscvpipe
