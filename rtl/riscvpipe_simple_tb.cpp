@@ -3,7 +3,7 @@
 #include "verilated_vcd_c.h"
 #include "Vriscvpipe.h"
 #include "vbuddy.cpp"     
-#define MAX_SIM_CYC 1000000
+#define MAX_SIM_CYC 2000
 #define ADDRESS_WIDTH 8
 #define ROM_SZ 256
 
