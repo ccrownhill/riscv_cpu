@@ -217,7 +217,7 @@ WBStage WBStage (
 );
 
 Hazard Hazard  (
-  .clk_i(clk),
+//.clk_i(clk),
   .Rs1E_i(rs1D_o),
   .Rs2E_i(rs2D_o),
   .RdM_i(rd_MEM),

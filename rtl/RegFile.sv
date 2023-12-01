@@ -19,7 +19,7 @@ always_latch begin
 	// AD3 != 0 because writing zero register has to stay 0	
     if (clk == 1'b1) begin
         if (WE3 && AD3 != {ADDRESS_WIDTH{1'b0}}) begin
-            reg_file[AD3] <= WD3;   // Write data to port 3
+            reg_file[AD3] = WD3;   // Write data to port 3
         end
     end
     if (clk == 1'b0) begin

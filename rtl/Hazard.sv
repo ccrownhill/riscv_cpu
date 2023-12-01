@@ -1,5 +1,5 @@
 module Hazard(
-	input logic 	   clk_i,
+//	input logic 	   clk_i,
 	input logic [4:0]  Rs1E_i,
 	input logic [4:0]  Rs2E_i,
 	input logic [4:0]  RdM_i,
@@ -19,20 +19,20 @@ module Hazard(
 always_comb begin // for forwarding
 
 	if (Rs1E_i == RdM_i) begin // this can be forwarded
-		ForwardAE <= 2'b10;
+		ForwardAE = 2'b10;
 	end
 	if (Rs1E_i == RdW_i) begin // this can be forwarded
-		ForwardAE <= 2'b01;
+		ForwardAE = 2'b01;
 	end
 	else begin
-		ForwardAE <= 2'b00;
+		ForwardAE = 2'b00;
 	end
 	if (Rs2E_i == RdM_i) // this can be forwarded
-		ForwardBE <= 2'b10;
+		ForwardBE = 2'b10;
 	else if (Rs2E_i == RdW_i) // this can be forwarded
-		ForwardBE <= 2'b01;
+		ForwardBE = 2'b01;
 	else 
-	ForwardBE <= 2'b00;
+	ForwardBE = 2'b00;
 end
 
 endmodule

@@ -11,8 +11,8 @@ module EXStage (
 
   input logic [31:0]  PC_i,
   input logic [31:0]  pcPlus4_i,
-  input logic [31:0]  ALUop1_i,
-  input logic [31:0]  regOp2_i,
+//input logic [31:0]  ALUop1_i,
+//input logic [31:0]  regOp2_i,
   input logic [31:0]  ImmOp_i,
 
   //logic for Hazard detection IN PROCESS
