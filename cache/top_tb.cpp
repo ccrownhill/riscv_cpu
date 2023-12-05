@@ -30,26 +30,41 @@ int main(int argc, char **argv, char **env) {
 		}
 
     // test read
-    if (simcyc == 5 || (simcyc < 15 && !top->MemReady_o)) {
+    if (simcyc == 5 || (simcyc < 11 && !top->MemReady_o)) {
       top->AddressPort_i = 0x10000;
       top->MemWrite_i = 0;
       top->MemRead_i = 1;
+      top->funct3_i = 0b0;
+    }
+    else if (simcyc == 11 || (simcyc < 17 && !top->MemReady_o)) {
+      top->AddressPort_i = 0x10001;
+      top->MemWrite_i = 0;
+      top->MemRead_i = 1;
+      top->funct3_i = 0b1;
+    }
+    else if (simcyc == 17 || (simcyc < 23 && !top->MemReady_o)) {
+      top->AddressPort_i = 0x10010;
+      top->MemWrite_i = 0;
+      top->MemRead_i = 1;
+      top->funct3_i = 0b10;
     }
 
     // test write
-    else if (simcyc == 15) {
-      top->AddressPort_i = 0x10000;
+    else if (simcyc == 25) {
+      top->AddressPort_i = 0x10100;
       top->MemWrite_i = 1;
       top->WriteData_i = 0x10;
       top->MemRead_i = 0;
+      top->funct3_i = 0b0; // sb
     }
 
     // test cached read
-    else if (simcyc == 17) {
-      top->AddressPort_i = 0x10000;
+    else if (simcyc == 27) {
+      top->AddressPort_i = 0x10100;
       top->MemWrite_i = 0;
       top->WriteData_i = 0x10;
       top->MemRead_i = 1;
+      top->funct3_i = 0b10;
     }
 
     // test write back
@@ -58,6 +73,7 @@ int main(int argc, char **argv, char **env) {
       top->MemWrite_i = 1;
       top->WriteData_i = 0x20;
       top->MemRead_i = 0;
+      top->funct3_i = 0b10;
     }
 
     else if (simcyc == 45 || ((simcyc > 45 && simcyc < 55) && !top->MemReady_o)) {
@@ -65,12 +81,14 @@ int main(int argc, char **argv, char **env) {
       top->MemWrite_i = 1;
       top->WriteData_i = 0x30;
       top->MemRead_i = 0;
+      top->funct3_i = 0b10;
     }
-    else if (simcyc == 100) {
+    else if (simcyc == 60) {
       top->AddressPort_i = 0x10004;
       top->MemWrite_i = 0;
       top->WriteData_i = 0x30;
       top->MemRead_i = 1;
+      top->funct3_i = 0b10;
     }
 
     else {

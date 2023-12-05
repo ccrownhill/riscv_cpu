@@ -8,19 +8,19 @@ module mainmem
 );
 
 // use block addressing
-logic [BLOCK_SIZE-1:0] mem_arr[MAIN_MEM_SIZE/4:0];
+logic [BLOCK_SIZE-1:0] mem_arr[MAIN_MEM_BLOCK_SIZE-1:0];
 
 initial
-  $readmemh("data.mem", mem_arr, 17'h10000/4);
+  $readmemh("data.mem", mem_arr, 17'h10000/(BLOCK_SIZE/8));
 
 always_ff @(posedge clk_i) begin
   if (mem_i.Valid) begin
     if (mem_i.Write) begin
-      mem_arr[mem_i.Addr[31:2]] <= mem_i.Wdata;
+      mem_arr[mem_i.Addr[31:NON_BLOCK_ADDR_BITS]] <= mem_i.Wdata;
       mem_o.Rdata <= {BLOCK_SIZE{1'bx}};
     end
     else begin
-      mem_o.Rdata <= mem_arr[mem_i.Addr[31:2]]; // convert byte address to block address
+      mem_o.Rdata <= mem_arr[mem_i.Addr[31:NON_BLOCK_ADDR_BITS]]; // convert byte address to block address
     end
     mem_o.Ready <= 1'b1;
   end
