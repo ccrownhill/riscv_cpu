@@ -4,8 +4,10 @@ package mem_pkg;
   parameter OFFSET_BITS = $clog2(BLOCK_SIZE) - 3;
   parameter MAIN_MEM_BLOCK_SIZE = MAIN_MEM_BYTE_SIZE/(BLOCK_SIZE/8);
   parameter NON_BLOCK_ADDR_BITS = $clog2(BLOCK_SIZE) - 3;
+  parameter CACHE_BLOCKS = 16; // means 2^CACHE_INDEX_SIZE blocks
+  parameter WAYS = 4;
+  parameter CACHE_INDEX_SIZE = $clog2(CACHE_BLOCKS/WAYS); // means 2^CACHE_INDEX_SIZE blocks
   parameter TAG_SIZE = 32 - CACHE_INDEX_SIZE - NON_BLOCK_ADDR_BITS;
-  parameter CACHE_INDEX_SIZE = 10; // means 2^CACHE_INDEX_SIZE blocks
 
   typedef struct packed {
     logic Valid;
@@ -16,7 +18,7 @@ package mem_pkg;
 
   typedef struct packed {
     logic Write;
-    logic Valid; // 0 if there is no read operation
+    logic Valid; // 0 if there is no read or write operation
     logic [31:0] Addr;
     logic [BLOCK_SIZE-1:0] Wdata;
     logic [BLOCK_SIZE-1:0] Mask;

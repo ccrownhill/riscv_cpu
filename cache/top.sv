@@ -24,8 +24,6 @@ assign cache_in.Valid = (MemRead_i || MemWrite_i) ? 1'b1 : 1'b0;
 assign cache_in.Write = MemWrite_i;
 assign cache_in.Addr = AddressPort_i;
 
-assign MemReady_o = cache_out.Ready;
-
 LoadStoreUnit LoadStoreUnit (
   .addr (AddressPort_i),
   .funct3_10_i (funct3_i[1:0]),
@@ -44,6 +42,8 @@ cache cache (
   .to_mem_o (mainmem_in),
   .cache_o (cache_out)
 );
+
+assign MemReady_o = cache_out.Ready;
 
 mainmem mainmem (
   .clk_i (clk),
