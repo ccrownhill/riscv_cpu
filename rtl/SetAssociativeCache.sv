@@ -1,8 +1,8 @@
 module SetAssociativeCache #(
   parameter ADDRESS_WIDTH = 32,
             DATA_WIDTH    = 32,
-            CACHE_SIZE    = 1024, //cache capacity size in bytes
-            NUM_WAYS = 2
+            CACHE_SIZE    = 512, //cache capacity size in bytes
+            NUM_WAYS = 4
 )(
   input logic  clk_i,
   input logic [ADDRESS_WIDTH-1:0] AddressPort_i,
@@ -14,12 +14,12 @@ module SetAssociativeCache #(
   output logic  hit_o //Cache hit signal
 );
 
-localparam BLOCK_SIZE = DATA_WIDTH / 8; //one word per cache block 
+localparam BLOCK_SIZE = DATA_WIDTH / 16; //one word per cache block 
 localparam NUM_BLOCKS = CACHE_SIZE / BLOCK_SIZE; //derive cache lines
 localparam SET_NUM = NUM_BLOCKS/NUM_WAYS;
-localparam INDEX_SIZE = $clog2(SET_NUM); // Size of index
-localparam OFFSET_SIZE = $clog2(BLOCK_SIZE); // SIze of byte offset
-localparam TAG_SIZE = ADDRESS_WIDTH - INDEX_SIZE - OFFSET_SIZE; // Size of tag
+localparam INDEX_SIZE = $clog2(SET_NUM); // Size of index = 3
+localparam OFFSET_SIZE = $clog2(BLOCK_SIZE); // Size of byte offset = 1
+localparam TAG_SIZE = ADDRESS_WIDTH - INDEX_SIZE - OFFSET_SIZE; // Size of tag  = 28
 
 // Cache line structure
 typedef struct {
