@@ -21,7 +21,7 @@ int main(int argc, char **argv, char **env) {
 	tfp->open ("riscvpipe.vcd");
  
 	if (vbdOpen()!=1) return(-1);
-	vbdHeader("SingleCyc");
+	vbdHeader("Pipelined");
 
 	// initialize simulation inputs
 	top->clk = 1;
@@ -44,7 +44,7 @@ int main(int argc, char **argv, char **env) {
 			started = true;
 
 		if (started) {
-			if (++count == 3) {
+			if (++count == 7) {
 				vbdPlot(int(top->a0) & 0xff, 0, 255);
 				count = 0;
 			}
