@@ -25,7 +25,7 @@ f1: clean riscvpipe_f1_tb.cpp
 
 gtkwave: clean riscvpipe_simple_tb.cpp
 	obj_dir/Vriscvpipe
-	gtkwave riscvpipe.vcd
+#	gtkwave riscvpipe.vcd
 
 
 .PHONY: clean all f1 gtkwave warnings
