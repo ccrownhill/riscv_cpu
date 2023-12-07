@@ -187,7 +187,7 @@ always_comb
 				else 
 					N_STATE = REQUEST;
 			end 
-			if (!CPUD_i.Wen_i && !hit) begin
+			else if (!CPUD_i.Wen_i && !hit) begin
 				// reading but not in cache
 
 				MOutput.Wen_o = 1'b0;
@@ -208,18 +208,22 @@ always_comb
 				if(!cache_arr[0][set].Valid) begin
 					cache_arr[0][set].Valid = 1'b1;
 					cache_arr[0][set].Data = block_in;
+					Degree = 2'b00;
 				end
 				else if(!cache_arr[1][set].Valid) begin
 					cache_arr[1][set].Valid = 1'b1;
 					cache_arr[1][set].Data = block_in;
+					Degree = 2'b01;
 				end
 				else if(!cache_arr[2][set].Valid) begin
 					cache_arr[2][set].Valid = 1'b1;
 					cache_arr[2][set].Data = block_in;
+					Degree = 2'b10;
 				end
 				else if(!cache_arr[3][set].Valid) begin
 					cache_arr[3][set].Valid = 1'b1;
 					cache_arr[3][set].Data = block_in;
+					Degree = 2'b11;
 				end
 				else begin 
 					Degree = {group_least_used, random_select};
@@ -256,6 +260,7 @@ always_comb
 				endcase
 				N_STATE = REQUEST;
 				block_out = cache_arr[Degree][set].Data
+				
 			end 
 			else begin 
 				N_STATE = IDLE
