@@ -82,7 +82,11 @@ NOTE: if the instruction was not load/store but a miss occurs valid must go high
 logic 			hit;
 logic [1:0] 	Degree;
 logic [2:0] 	set;
-logic [22:0] 	tag
+logic [3:0]		byte;
+logic [22:0] 	tag;
+logic [7:0]		byte_out;
+logic [15:0]	half_out;
+logic [31:0]	word_out;
 STATE 			C_State;
 STATE		 	N_STATE;
 
@@ -105,6 +109,23 @@ always_comb
 				hit = 1'b1;
 				Degree = 2'b00;
 			end
+			else if(cache_arr[1][set].Valid && cache_arr[1][set].Tag == tag) begin
+				hit = 1'b1;
+				Degree = 2'b01;
+			end
+			if(cache_arr[2][set].Valid && cache_arr[2][set].Tag == tag) begin
+				hit = 1'b1;
+				Degree = 2'b10;
+			end
+			if(cache_arr[3][set].Valid && cache_arr[3][set].Tag == tag) begin
+				hit = 1'b1;
+				Degree = 2'b11;
+			end
+			else 
+				hit = 1'b0;
+			if (CPUD_i.valid && hit) begin
+				N_STATE = IDLE;
+			end
 		end
 
 		REQUEST:
@@ -118,6 +139,64 @@ always_comb
 			else begin
 				N_STATE <= IDLE;
 			end
+			case (CPUD_i.funct3_i[1:0])
+				2'b00: begin
+				Mux16 #(DATA_WIDTH = 8) ByteSelect(
+					.sel_i  (byte),
+					.in0_i  (cache_arr[Degree][set].Data[7:0]),
+					.in1_i  (cache_arr[Degree][set].Data[15:8]),
+					.in2_i  (cache_arr[Degree][set].Data[23:16]),
+					.in3_i  (cache_arr[Degree][set].Data[31:24]),
+					.in4_i  (cache_arr[Degree][set].Data[39:32]),
+					.in5_i  (cache_arr[Degree][set].Data[47:40]),
+					.in6_i  (cache_arr[Degree][set].Data[55:48]),
+					.in7_i  (cache_arr[Degree][set].Data[63:56]),
+					.in8_i  (cache_arr[Degree][set].Data[71:64]),
+					.in9_i  (cache_arr[Degree][set].Data[79:72]),
+					.in10_i (cache_arr[Degree][set].Data[87:80]),
+					.in11_i (cache_arr[Degree][set].Data[95:88]),
+					.in12_i (cache_arr[Degree][set].Data[103:96]),
+					.in13_i (cache_arr[Degree][set].Data[111:104]),
+					.in14_i (cache_arr[Degree][set].Data[119:112]),
+					.in15_i (cache_arr[Degree][set].Data[127:120]),
+
+					.out_o  (byte_out)
+				);
+				CPUD_o.ByteData_o = byte_out;
+				end
+				2'b01: begin
+				Mux8 #(DATA_WIDTH = 16) HalfSelect(
+					.sel_i  (byte[3:1]),
+					.in0_i  (cache_arr[Degree][set].Data[15:0]),
+					.in1_i  (cache_arr[Degree][set].Data[31:16]),
+					.in2_i  (cache_arr[Degree][set].Data[47:32]),
+					.in3_i  (cache_arr[Degree][set].Data[63:48]),
+					.in4_i  (cache_arr[Degree][set].Data[79:64]),
+					.in5_i  (cache_arr[Degree][set].Data[95:80]),
+					.in6_i  (cache_arr[Degree][set].Data[111:96]),
+					.in7_i  (cache_arr[Degree][set].Data[127:112]),
+
+					.out_o  (half_out)
+				);
+				CPUD_o.HalfData_o = half_out;
+				end
+				2'b10: begin
+				Mux4 #(DATA_WIDTH = 32) WordSelect(
+					.sel_i  (byte[3:2]),
+					.in0_i  (cache_arr[Degree][set].Data[31:0]),
+					.in1_i  (cache_arr[Degree][set].Data[63:32]),
+					.in2_i  (cache_arr[Degree][set].Data[95:64]),
+					.in3_i  (cache_arr[Degree][set].Data[127:96]),
+
+					.out_o  (word_out)
+				);
+				CPUD_o.WordData_o = word_out;
+				end
+				default: begin
+					CPUD_o.ByteData_o = byte_out;
+				end
+			endcase
+			
 		end
 	endcase
 
