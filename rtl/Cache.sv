@@ -1,35 +1,35 @@
 // this is the data recieved from the cpu
 typedef struct packed {
-	input logic 	Valid_i, // when the data is not being changed valid is low. Valid is high for Load/Store
-	input logic 	Wen_i,
-	input logic 	Addr_i [31:0], // this will form the various parts of the address such as tag and byte offset.
-	input logic 	funct3_i [2:0],
-	input logic 	WordData_i[31:0],
-	input logic 	HalfData_i [15:0],
-	input logic 	ByteData_i [7:0]
+	logic 	Valid_i, // when the data is not being changed valid is low. Valid is high for Load/Store
+	logic 	Wen_i,
+	logic 	Addr_i [31:0], // this will form the various parts of the address such as tag and byte offset.
+	logic 	funct3_i [2:0],
+	logic 	WordData_i[31:0],
+	logic 	HalfData_i [15:0],
+	logic 	ByteData_i [7:0]
 } CInput;
 
 // this is the data recieved from the memory and the enables to allow this
 typedef struct packed {
-	input logic 	Ready_i, // when the data is not being changed valid is low. Valid is high for Load/Store
-	input logic 	Wen_i, 	// this is not necessary but left in case is implemented in main mem
-	input logic 	Addr_i [31:0],
-	input logic 	WriteD_i [127:0]
+	logic 	Ready_i, // when the data is not being changed valid is low. Valid is high for Load/Store
+	logic 	Wen_i, 	// this is not necessary but left in case is implemented in main mem
+	logic 	Addr_i [31:0],
+	logic 	WriteD_i [127:0]
 } MInput;
 
 // this is for sending data to the CPU after it is found
 typedef struct packed { 
-	output logic 	WordData_o [31:0],
-	output logic 	HalfData_o [15:0],
-	output logic 	ByteData_o [7:0]
+	logic 	WordData_o [31:0],
+	logic 	HalfData_o [15:0],
+	logic 	ByteData_o [7:0]
 } COutput;
 
 // This is the data sent to the memory to be written and the enables to do so
 typedef struct packed {
-	output logic 	Valid_o, 
-	output logic 	Wen_o,
-	output logic 	WriteD_o [127:0],
-	output logic 	Addr_o	 [31:0]
+	logic 	Valid_o, 
+	logic 	Wen_o,
+	logic 	WriteD_o [127:0],
+	logic 	Addr_o	 [31:0]
 } MOutput;
 
 
@@ -274,6 +274,7 @@ always_comb
 			end
 			else begin
 				N_STATE <= IDLE;
+				Cready = 1'b1;
 				hit = 1'b0;
 			end
 			
