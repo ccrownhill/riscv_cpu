@@ -7,10 +7,10 @@ clean:
 	rm -rf riscvpipe.vcd
 
 warnings:
-	verilator -Wall -I$(SRCPATH) --cc --trace $(SRCPATH)/riscvpipe.sv
+	verilator -Wall -I$(SRCPATH) --cc --trace $(SRCPATH)/mem_pkg.sv $(SRCPATH)/riscvpipe.sv
 
 %_tb.cpp: clean
-	verilator -Wall -Wno-UNUSED -Wno-WIDTH -I$(SRCPATH) --cc --trace $(SRCPATH)/riscvpipe.sv --exe $@
+	verilator -Wall -Wno-UNUSED -Wno-UNOPTFLAT -Wno-SELRANGE -Wno-ALWCOMBORDER -Wno-WIDTH -I$(SRCPATH) --cc --trace $(SRCPATH)/mem_pkg.sv $(SRCPATH)/riscvpipe.sv --top-module riscvpipe --exe $@
 	make -j -C obj_dir/ -f Vriscvpipe.mk Vriscvpipe
 	obj_dir/Vriscvpipe
 

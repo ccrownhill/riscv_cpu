@@ -1,5 +1,6 @@
 module IDStage (
 	input logic					clk_i,
+  input logic         en_i,
 
 	input logic [4:0]   rs1_i,
 	input logic [4:0]   rs2_i,
@@ -141,22 +142,24 @@ ControlResetMux ControlResetMux (
 );
 
 always_ff @(posedge clk_i) begin
-  RegWrite_o <= RegWriteAfterReset;
-  ALUsrc_o <= ALUsrcAfterReset;
-  WriteSrc_o <= WriteSrcAfterReset;
-  ALUOp_o <= ALUOpAfterReset;
-  MemRead_o <= MemReadAfterReset;
-  MemWrite_o <= MemWriteAfterReset;
+  if (en_i) begin
+    RegWrite_o <= RegWriteAfterReset;
+    ALUsrc_o <= ALUsrcAfterReset;
+    WriteSrc_o <= WriteSrcAfterReset;
+    ALUOp_o <= ALUOpAfterReset;
+    MemRead_o <= MemReadAfterReset;
+    MemWrite_o <= MemWriteAfterReset;
 
-  pcPlus4_o <= pcPlus4_i;
-  ALUop1_o <= ALUop1;
-  regOp2_o <= regOp2;
-  ImmOp_o <= ImmOp;
+    pcPlus4_o <= pcPlus4_i;
+    ALUop1_o <= ALUop1;
+    regOp2_o <= regOp2;
+    ImmOp_o <= ImmOp;
 
-  rs1_o <= rs1_i;
-  rs2_o <= rs2_i;
-  rd_o <= rd_i;
-  funct3_o <= funct3_i;
-  funct7_5_o <= funct7_5_i;
+    rs1_o <= rs1_i;
+    rs2_o <= rs2_i;
+    rd_o <= rd_i;
+    funct3_o <= funct3_i;
+    funct7_5_o <= funct7_5_i;
+  end
 end
 endmodule

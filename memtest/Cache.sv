@@ -1,8 +1,18 @@
 `define UPDATE_SHIFT_REG(SHIFT_REG, NEWVAL) \
   for (int i = 1; i < DEGREES; i++) begin \
-    SHIFT_REG[i] <= SHIFT_REG[i-1]; \
+    SHIFT_REG[i] = SHIFT_REG[i-1]; \
   end \
-  SHIFT_REG[0] <= NEWVAL;
+  SHIFT_REG[0] = NEWVAL;
+
+// `define WRITE_BYTE(CACHE_BLOCK, OFFSET, BYTE) \
+//   for (int i = 0; i < BLOCKSIZE/8; i++) begin \
+//     CACHE_BLOCK[i*8 + 7:i*8] = (OFFSET == i) ? BYTE : CACHE_BLOCK[i*8 + 7:i*8]; \
+//   end
+// 
+// `define WRITE_HALF(CACHE_BLOCK, OFFSET, HALF) \
+//   for (int i = 0; i < BLOCKSIZE/8; i++) begin \
+//     CACHE_BLOCK[i*8 + 15:i*8] = (OFFSET == i) ? HALF : CACHE_BLOCK[i*8 + 15:i*8]; \
+//   end
 
 `define UPDATE_DEGREE_HIT(CACHE_ARR, TAG, SET, DEGREE, HIT) \
 	if (CACHE_ARR[0][SET].Valid && CACHE_ARR[0][SET].Tag == TAG) begin \
@@ -102,8 +112,6 @@ end
 
 always_ff @(posedge clk) begin
 	C_State <= N_State;
-  if (degree != last_used_shift_reg[0])
-    `UPDATE_SHIFT_REG(last_used_shift_reg, degree);
 end
 
 
@@ -115,6 +123,8 @@ always_comb begin // logic for state machine and outputs
     COMP_TAG: begin
       `UPDATE_DEGREE_HIT(cache_arr, tag, set, degree, hit)
       if (CPUD_i.Valid && hit) begin
+        if (degree != last_used_shift_reg[0])
+            `UPDATE_SHIFT_REG(last_used_shift_reg, degree);
 
         if (CPUD_i.Wen) begin
           N_State = WRITE_THROUGH;
@@ -151,6 +161,7 @@ always_comb begin // logic for state machine and outputs
     end
     ALLOCATE: begin
       degree = last_used_shift_reg[DEGREES-1];
+      //`UPDATE_SHIFT_REG(last_used_shift_reg, degree);
       MemD_o.Wen = 1'b0;
       MemD_o.Valid = 1'b1;
       MemD_o.Addr = CPUD_i.Addr;
@@ -167,13 +178,14 @@ always_comb begin // logic for state machine and outputs
     end
     WRITE_MEM: begin
       degree = last_used_shift_reg[DEGREES-1];
+      //`UPDATE_SHIFT_REG(last_used_shift_reg, degree);
       cache_arr[degree][set].Tag = tag;
       N_State = WRITE_THROUGH;
       MemD_o.Valid = 1'b0;
       Cready_o = 1'b0;
     end
     OUTPUT: begin
-      degree = last_used_shift_reg[0];
+      `UPDATE_DEGREE_HIT(cache_arr, tag, set, degree, hit)
       N_State = COMP_TAG;
       Cready_o = 1'b1;	
     end
