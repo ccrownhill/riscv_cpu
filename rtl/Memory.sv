@@ -19,9 +19,6 @@ MOutput memOut;
 assign cacheIn.Valid = (Mwrite_i || Mread_i);
 assign cacheIn.Wen = Mwrite_i;
 assign cacheIn.Addr = Addr_i;
-assign cacheIn.funct3 = funct3_i;
-assign cacheIn.WordData = WriteD_i;
-assign cacheIn.HalfData = WriteD_i[15:0];
 assign cacheIn.ByteData = WriteD_i[7:0];
 
 Cache Cache (
@@ -29,9 +26,10 @@ Cache Cache (
   .CPUD_i (cacheIn),
   .MemD_i (memOut),
   .CPUD_o (cacheOut),
-  .MemD_o (memIn),
-  .Cready_o (Mready_o)
+  .MemD_o (memIn)
 );
+
+assign Mready_o = cacheOut.Ready;
 
 MainMemory MainMemory (
   .clk (clk),
@@ -40,9 +38,7 @@ MainMemory MainMemory (
 );
 
 MemExtend MemExtend (
-  .WordData_i (cacheOut.WordData),
-  .HalfData_i (cacheOut.HalfData),
-  .ByteData_i (cacheOut.ByteData),
+  .ByteData_i (cacheOut.ByteOut),
   .funct3_i   (funct3_i),
   .ExtD_o     (ReadD_o)
 );
