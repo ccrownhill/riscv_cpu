@@ -8,9 +8,10 @@ parameter   BLOCKNUM = 32;
 parameter   DEGREES = 4;
 
 typedef struct packed {
-    logic Valid;
-    logic [TAGSIZE-1:0] Tag;
-    logic [BLOCKSIZE-1:0] Data;
+	logic Valid;
+	logic Dirty;
+	logic [TAGSIZE-1:0] Tag;
+	logic [BLOCKSIZE-1:0] Data;
 } cache_entry;
 
 // this is the data recieved from the cpu
@@ -18,9 +19,6 @@ typedef struct packed {
 	logic 			    Valid; // when the data is not being changed valid is low. Valid is high for Load/Store
 	logic 			    Wen;
 	logic 	[31:0]	Addr; // this will form the various parts of the address such as tag and byte_off offset.
-	logic 	[2:0]	  funct3;
-	logic 	[31:0]	WordData;
-	logic 	[15:0]	HalfData;
 	logic 	[7:0]	  ByteData;
 } CInput;
 
@@ -32,9 +30,8 @@ typedef struct packed {
 
 // this is for sending data to the CPU after it is found
 typedef struct packed { 
-	logic 	[31:0]	WordData;
-	logic 	[15:0]	HalfData;
-	logic 	[7:0]	  ByteData;
+	logic 	[7:0]	  ByteOut;
+  logic           Ready;
 } COutput;
 
 // This is the data sent to the memory to be written and the enables to do so

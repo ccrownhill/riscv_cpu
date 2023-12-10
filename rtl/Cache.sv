@@ -36,7 +36,7 @@ module Cache
 	output MInput  MemD_o
 );
 
-typedef enum {COMP_TAG, ALLOCATE, WRITE_MEM, WRITE_THROUGH, OUTPUT} cache_state;
+typedef enum {COMP_TAG, ALLOCATE, WRITE_BACK} cache_state;
 
 logic 			hit;
 
@@ -63,6 +63,9 @@ initial begin
 		cache_arr[2][i].Valid = 1'b0;
 		cache_arr[3][i].Valid = 1'b0;
 	end
+  for (int i = 0; i < DEGREES; i++) begin
+    last_used_shift_reg[i] = {$clog2(DEGREES)-1{1'b1}};
+  end
 	C_State = COMP_TAG;
 end 
 
@@ -97,40 +100,26 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
-      if (CPUD_i.Valid && hit) begin
-
+      if (CPUD_i.Valid && hit) begin // hit
         if (CPUD_i.Wen) begin
-          N_State = WRITE_THROUGH;
+          cache_arr[degree][set].Dirty = 1'b1;
+          `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData)
         end
-        else begin
-          N_State = OUTPUT;
-        end
-      end
-      else if (CPUD_i.Valid && !hit && !CPUD_i.Wen) begin
-        N_State = ALLOCATE;
-      end
-      else if (CPUD_i.Valid && !hit && CPUD_i.Wen) begin
-        N_State = WRITE_MEM;
-      end
-      MemD_o.Valid = 1'b0;
-      CPUD_o.Ready = 1'b0;
-    end
-    WRITE_THROUGH: begin
-      degree = last_used_shift_reg[0];
-      // write to cache
-      cache_arr[degree][set].Valid = 1'b1;
-      `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
-      // write to main memory
-      MemD_o.Valid = 1'b1;		
-      MemD_o.Wen = 1'b1;
-      MemD_o.WriteD = cache_arr[degree][set].Data;
-      MemD_o.Addr = CPUD_i.Addr;
-      if (MemD_i.Ready)
-        N_State = OUTPUT;
-      else
+        CPUD_o.Ready = 1'b1;
         N_State = C_State;
-      CPUD_o.Ready = 1'b0;
+      end
+      else if (CPUD_i.Valid) begin // no hit
+        if (cache_arr[last_used_shift_reg[DEGREES-1]][set].Dirty)
+          N_State = WRITE_BACK;
+        else
+          N_State = ALLOCATE;
+        CPUD_o.Ready = 1'b0;
+      end
+      else
+        CPUD_o.Ready = 1'b0;
+      MemD_o.Valid = 1'b0;
     end
+
     ALLOCATE: begin
       degree = last_used_shift_reg[DEGREES-1];
       MemD_o.Wen = 1'b0;
@@ -138,26 +127,29 @@ always_comb begin // logic for state machine and outputs
       MemD_o.Addr = CPUD_i.Addr;
       MemD_o.WriteD = {BLOCKSIZE{1'bx}};
       if (MemD_i.Ready) begin
-        N_State = OUTPUT;
+        N_State = COMP_TAG;
         cache_arr[degree][set].Data = MemD_i.ReadD;
         cache_arr[degree][set].Tag = tag;
         cache_arr[degree][set].Valid = 1'b1;
+        cache_arr[degree][set].Dirty = 1'b0;
       end
       else
         N_State = C_State;
       CPUD_o.Ready = 1'b0;
     end
-    WRITE_MEM: begin
-      degree = last_used_shift_reg[DEGREES-1];
-      cache_arr[degree][set].Tag = tag;
-      N_State = WRITE_THROUGH;
-      MemD_o.Valid = 1'b0;
+
+    WRITE_BACK: begin
+      MemD_o.Wen = 1'b1;
+      MemD_o.Valid = 1'b1;
+      MemD_o.Addr = {cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag, set, byte_off};
+      MemD_o.WriteD = cache_arr[last_used_shift_reg[DEGREES-1]][set].Data;
+      if (MemD_i.Ready) begin
+        N_State = ALLOCATE;
+        MemD_o.Valid = 1'b0;
+      end
+      else
+        N_State = C_State;
       CPUD_o.Ready = 1'b0;
-    end
-    OUTPUT: begin
-      degree = last_used_shift_reg[0];
-      N_State = COMP_TAG;
-      CPUD_o.Ready = 1'b1;	
     end
 	endcase
 end

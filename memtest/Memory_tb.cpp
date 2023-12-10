@@ -20,89 +20,54 @@ int main(int argc, char **argv, char **env) {
 	// initialize simulation inputs
 	Memory->clk = 1;
 
-  bool ready = false;
 
 	// run simulation for MAX_SIM_CYC clock cycles
 	for (simcyc=0; simcyc<MAX_SIM_CYC; simcyc++) {
 		// dump variables into VCD file and toggle clock
 	
     // test read
-    if (simcyc == 5 || ((simcyc > 5 && simcyc < 11) && !ready)) {
+    if (simcyc == 5 || ((simcyc > 5 && simcyc < 11) && !Memory->Mready_o)) {
       Memory->Addr_i = 0x10000;
       Memory->Mwrite_i = 0;
       Memory->Mread_i = 1;
       Memory->funct3_i = 0b0;
-      if (Memory->Mready_o)
-        ready = true;
     }
-    else if (simcyc == 11) {
-      ready = false;
+    else if (simcyc == 11 || (simcyc > 11 && simcyc < 17) && !Memory->Mready_o) {
       Memory->Addr_i = 0x10001;
       Memory->Mwrite_i = 0;
       Memory->Mread_i = 1;
-      Memory->funct3_i = 0b1;
+      Memory->funct3_i = 0b0;
     }
-    else if ((simcyc > 11 && simcyc < 17) && !ready) {
-      if (Memory->Mready_o)
-        ready = true;
-    }
-    else if (simcyc == 17) {
-      ready = false;
+    else if (simcyc == 17 || ((simcyc > 17 && simcyc < 23) && !Memory->Mready_o)) {
       Memory->Addr_i = 0x10010;
       Memory->Mwrite_i = 0;
       Memory->Mread_i = 1;
-      Memory->funct3_i = 0b10;
+      Memory->funct3_i = 0b0;
 
-    }
-    else if (simcyc == 17 || ((simcyc > 17 && simcyc < 23) && !ready)) {
-      if (Memory->Mready_o)
-        ready = true;
-    }
-
-    // test write
-    else if (simcyc == 25) {
-      Memory->Addr_i = 0x10100;
-      Memory->Mwrite_i = 1;
-      Memory->WriteD_i = 0x10;
-      Memory->Mread_i = 0;
-      Memory->funct3_i = 0b0; // sb
-    }
-
-    // test cached read
-    else if (simcyc == 27) {
-      Memory->Addr_i = 0x10100;
-      Memory->Mwrite_i = 0;
-      Memory->WriteD_i = 0x10;
-      Memory->Mread_i = 1;
-      Memory->funct3_i = 0b10;
     }
 
     // test write back
-    else if (simcyc == 35) {
+    else if (simcyc == 35 || ((simcyc > 35 && simcyc < 45) && !Memory->Mready_o)) {
       Memory->Addr_i = 0x10000;
       Memory->Mwrite_i = 1;
       Memory->WriteD_i = 0x20;
       Memory->Mread_i = 0;
-      Memory->funct3_i = 0b10;
+      Memory->funct3_i = 0b0;
     }
 
-    else if (simcyc == 45) {
-      ready = false;
+    else if (simcyc == 45 || (simcyc > 45 && simcyc < 55) && !Memory->Mready_o) {
       Memory->Addr_i = 0x10004;
       Memory->Mwrite_i = 1;
       Memory->WriteD_i = 0x30;
       Memory->Mread_i = 0;
-      Memory->funct3_i = 0b10;
-    } else if ((simcyc > 45 && simcyc < 55) && !ready) {
-      if (Memory->Mready_o)
-        ready = true;
+      Memory->funct3_i = 0b0;
     }
     else if (simcyc == 60) {
       Memory->Addr_i = 0x10004;
       Memory->Mwrite_i = 0;
       Memory->WriteD_i = 0x30;
       Memory->Mread_i = 1;
-      Memory->funct3_i = 0b10;
+      Memory->funct3_i = 0b0;
     }
 
     else {
