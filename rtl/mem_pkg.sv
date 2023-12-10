@@ -8,9 +8,10 @@ parameter   BLOCKNUM = 32;
 parameter   DEGREES = 4;
 
 typedef struct packed {
-    logic Valid;
-    logic [TAGSIZE-1:0] Tag;
-    logic [BLOCKSIZE-1:0] Data;
+	logic Valid;
+	logic Dirty;
+	logic [TAGSIZE-1:0] Tag;
+	logic [BLOCKSIZE-1:0] Data;
 } cache_entry;
 
 // this is the data recieved from the cpu

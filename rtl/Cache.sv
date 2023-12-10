@@ -38,7 +38,7 @@ module Cache
 	output MInput  MemD_o
 );
 
-typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
+typedef enum {COMP_TAG, ALLOCATE, WRITE_BACK} cache_state;
 
 logic 			hit;
 
@@ -65,9 +65,14 @@ initial begin
 		cache_arr[2][i].Valid = 1'b0;
 		cache_arr[3][i].Valid = 1'b0;
 	end
+<<<<<<< HEAD
 
   for (int i = 0; i < DEGREES; i++) begin
     last_used_shift_reg[i] = i;
+=======
+  for (int i = 0; i < DEGREES; i++) begin
+    last_used_shift_reg[i] = {$clog2(DEGREES)-1{1'b1}};
+>>>>>>> 1ad069a (add writeback implementation of cache)
   end
 	C_State = COMP_TAG;
 end 
@@ -103,10 +108,16 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
+<<<<<<< HEAD
       if (CPUD_i.Valid && hit) begin
+=======
+      if (CPUD_i.Valid && hit) begin // hit
+>>>>>>> 1ad069a (add writeback implementation of cache)
         if (CPUD_i.Wen) begin
-          N_State = WRITE_THROUGH;
+          cache_arr[degree][set].Dirty = 1'b1;
+          `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData)
         end
+<<<<<<< HEAD
         else begin
           N_State = OUTPUT;
         end
@@ -131,8 +142,21 @@ always_comb begin // logic for state machine and outputs
       if (MemD_i.Ready)
         N_State = OUTPUT;
       else
+=======
+        CPUD_o.Ready = 1'b1;
+>>>>>>> 1ad069a (add writeback implementation of cache)
         N_State = C_State;
-      CPUD_o.Ready = 1'b0;
+      end
+      else if (CPUD_i.Valid) begin // no hit
+        if (cache_arr[last_used_shift_reg[DEGREES-1]][set].Dirty)
+          N_State = WRITE_BACK;
+        else
+          N_State = ALLOCATE;
+        CPUD_o.Ready = 1'b0;
+      end
+      else
+        CPUD_o.Ready = 1'b0;
+      MemD_o.Valid = 1'b0;
     end
 
     ALLOCATE: begin
@@ -141,23 +165,29 @@ always_comb begin // logic for state machine and outputs
       MemD_o.Addr = CPUD_i.Addr;
       MemD_o.WriteD = {BLOCKSIZE{1'bx}};
       if (MemD_i.Ready) begin
-        if (CPUD_i.Wen)
-          N_State = WRITE_THROUGH;
-        else
-          N_State = OUTPUT;
+        N_State = COMP_TAG;
         cache_arr[degree][set].Data = MemD_i.ReadD;
         cache_arr[degree][set].Tag = tag;
         cache_arr[degree][set].Valid = 1'b1;
+        cache_arr[degree][set].Dirty = 1'b0;
       end
       else
         N_State = C_State;
       CPUD_o.Ready = 1'b0;
     end
 
-    OUTPUT: begin
-      N_State = COMP_TAG;
-      CPUD_o.Ready = 1'b1;	
-      MemD_o.Valid = 1'b0;
+    WRITE_BACK: begin
+      MemD_o.Wen = 1'b1;
+      MemD_o.Valid = 1'b1;
+      MemD_o.Addr = {cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag, set, byte_off};
+      MemD_o.WriteD = cache_arr[last_used_shift_reg[DEGREES-1]][set].Data;
+      if (MemD_i.Ready) begin
+        N_State = ALLOCATE;
+        MemD_o.Valid = 1'b0;
+      end
+      else
+        N_State = C_State;
+      CPUD_o.Ready = 1'b0;
     end
 	endcase
 end
