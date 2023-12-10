@@ -38,7 +38,11 @@ module Cache
 	output MInput  MemD_o
 );
 
+<<<<<<< HEAD
 typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
+=======
+typedef enum {COMP_TAG, ALLOCATE, WRITE_BACK} cache_state;
+>>>>>>> 1ad069a (add writeback implementation of cache)
 
 logic 			hit;
 
@@ -65,9 +69,14 @@ initial begin
 		cache_arr[2][i].Valid = 1'b0;
 		cache_arr[3][i].Valid = 1'b0;
 	end
+<<<<<<< HEAD
 
   for (int i = 0; i < DEGREES; i++) begin
     last_used_shift_reg[i] = i;
+=======
+  for (int i = 0; i < DEGREES; i++) begin
+    last_used_shift_reg[i] = {$clog2(DEGREES)-1{1'b1}};
+>>>>>>> 1ad069a (add writeback implementation of cache)
   end
 	C_State = COMP_TAG;
 end 
@@ -104,12 +113,7 @@ always_comb begin // logic for state machine and outputs
       else
         hit = 1'b0;
       if (CPUD_i.Valid && hit) begin
-        if (CPUD_i.Wen) begin
-          N_State = WRITE_THROUGH;
-        end
-        else begin
-          N_State = OUTPUT;
-        end
+        N_State = OUTPUT;
       end
       else if (CPUD_i.Valid) begin
         degree = last_used_shift_reg[DEGREES-1];
@@ -132,7 +136,7 @@ always_comb begin // logic for state machine and outputs
         N_State = OUTPUT;
       else
         N_State = C_State;
-      CPUD_o.Ready = 1'b0;
+      end
     end
 
     ALLOCATE: begin
@@ -148,6 +152,7 @@ always_comb begin // logic for state machine and outputs
         cache_arr[degree][set].Data = MemD_i.ReadD;
         cache_arr[degree][set].Tag = tag;
         cache_arr[degree][set].Valid = 1'b1;
+        cache_arr[degree][set].Dirty = 1'b0;
       end
       else
         N_State = C_State;
