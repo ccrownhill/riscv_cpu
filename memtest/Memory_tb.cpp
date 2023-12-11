@@ -46,6 +46,14 @@ int main(int argc, char **argv, char **env) {
 
     }
 
+    else if (simcyc == 25 || ((simcyc > 25 && simcyc < 35) && !Memory->Mready_o)) {
+      Memory->Addr_i = 0x10000;
+      Memory->Mwrite_i = 1;
+      Memory->WriteD_i = 0x20;
+      Memory->Mread_i = 0;
+      Memory->funct3_i = 0b0;
+    }
+ 
     // test write back
     else if (simcyc == 35 || ((simcyc > 35 && simcyc < 45) && !Memory->Mready_o)) {
       Memory->Addr_i = 0x10000;
