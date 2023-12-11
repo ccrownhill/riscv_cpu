@@ -1,10 +1,12 @@
 package mem_pkg;
 
-parameter   CACHESIZE = 4096;
-parameter   TAGSIZE = 25;
+parameter   MAINMEM_SIZE = 18'h20000;
 parameter   BLOCKSIZE = 128;
-parameter   SETNUM = 8;
-parameter   BLOCKNUM = 32;
+parameter   MAINMEM_BLOCKS = MAINMEM_SIZE/(BLOCKSIZE/8);
+parameter   CACHESIZE = 4096;
+parameter   BYTE_ADDR_BITS = $clog2(BLOCKSIZE/8);
+parameter   SETNUM = CACHESIZE/(4*(BLOCKSIZE/8));
+parameter   TAGSIZE = 32 - $clog2(SETNUM) - BYTE_ADDR_BITS;
 parameter   DEGREES = 4;
 
 typedef struct packed {
@@ -20,26 +22,51 @@ typedef struct packed {
 	logic 			    Wen;
 	logic 	[31:0]	Addr; // this will form the various parts of the address such as tag and byte_off offset.
 	logic 	[7:0]	  ByteData;
-} CInput;
+} L1DataIn_t;
 
-// this is the data recieved from the memory and the enables to allow this
 typedef struct packed {
-	logic 			    Ready; // when the data is not being changed valid is low. Valid is high for Load/Store
-	logic 	[127:0] ReadD;
-} MOutput;
+	logic 			    Valid; // when the data is not being changed valid is low. Valid is high for Load/Store
+	logic 	[31:0]	Addr; // this will form the various parts of the address such as tag and byte_off offset.
+} L1InstrIn_t;
+
+typedef struct packed {
+  logic [31:0]  ReadD;
+  logic         Ready;
+} L1InstrOut_t;
 
 // this is for sending data to the CPU after it is found
 typedef struct packed { 
 	logic 	[7:0]	  ByteOut;
   logic           Ready;
-} COutput;
+} L1DataOut_t;
+
+typedef struct packed {
+  logic           Valid;
+  logic           Wen;
+  logic [31:0]    Addr;
+  logic [127:0]   WriteD;
+} CacheToMem_t;
+
+typedef struct packed {
+  logic           Ready;
+  logic [127:0]   ReadD;
+} MemToCache_t;
 
 // This is the data sent to the memory to be written and the enables to do so
 typedef struct packed {
-	logic 			Valid;
-	logic 			Wen;
+	logic 			    Valid;
+	logic 			    Wen;
+	logic 	[31:0] 	rAddr1;
+  logic   [31:0]  rAddr2;
+  logic   [31:0]  wAddr;
 	logic 	[127:0]	WriteD;
-	logic 	[31:0] 	Addr;
-} MInput;
+} MInput_t;
+
+// this is the data recieved from the memory and the enables to allow this
+typedef struct packed {
+	logic 			    Ready; // when the data is not being changed valid is low. Valid is high for Load/Store
+	logic 	[127:0] ReadD1;
+  logic   [127:0] ReadD2;
+} MOutput;
 
 endpackage

@@ -16,6 +16,7 @@ logic [31:7] 	Instr31_7_IF;
 logic [6:0] 	op_IF;
 logic [2:0] 	funct3_IF;
 logic         funct7_5_IF;
+logic [31:0]  PCbeforeReg_IF;
 
 IFStage IFStage (
   .clk_i (clk),
@@ -26,6 +27,8 @@ IFStage IFStage (
   .PCsrc_i (IF_PCsrc_ID),
   .pcPlusImm_i (IF_pcPlusImm_ID),
   .regPlusImm_i (IF_regPlusImm_ID),
+  .IMemReady_i (IMemReady),
+  .IMemInstr_i (IMemOut),
 
   .rs1_o (rs1_IF),
   .rs2_o (rs2_IF),
@@ -34,6 +37,7 @@ IFStage IFStage (
   .op_o (op_IF),
   .funct3_o (funct3_IF),
   .funct7_5_o (funct7_5_IF),
+  .PCbeforeReg_o (PCbeforeReg_IF),
   .PC_o (PC_IF),
 	.pcPlus4_o (pcPlus4_IF)
 );
@@ -63,7 +67,7 @@ HazardDetectionUnit HazardDetectionUnit (
   .BranchCond_i (BranchCond_ID),
   .MemRead_EX_MEM_i (MemRead_EX),
   .MemWrite_EX_MEM_i (MemWrite_EX),
-  .Mready_i (Mready_MEM),
+  .Mready_i (DMemReady),
 
   .IF_Flush_o (IF_Flush),
   .PCEn_o (PCEn),
@@ -255,8 +259,28 @@ logic [31:0] DataMemOut_MEM;
 logic [31:0] pcPlus4_MEM;
 logic [31:0] ImmOp_MEM;
 logic [4:0]  rd_MEM;
-logic        Mready_MEM;
 
+
+logic [31:0] DMemOut;
+logic [31:0] IMemOut;
+logic DMemReady;
+logic IMemReady;
+
+Memory Memory (
+  .clk_i (clk),
+  .Addr_i (regOp2_EX),
+  .WriteD_i (ALUout_EX),
+  .Mwrite_i (MemWrite_EX),
+  .Mread_i (MemRead_EX),
+  .funct3_i (funct3_EX),
+
+  .PC_i (PCbeforeReg_IF),
+
+  .ReadD_o (DMemOut),
+  .Instr_o (IMemOut),
+  .DMemReady_o (DMemReady),
+  .IMemReady_o (IMemReady)
+);
 
 MEMStage MEMStage (
   .clk_i (clk),
@@ -265,13 +289,10 @@ MEMStage MEMStage (
 
   .RegWrite_i (RegWrite_EX),
   .WriteSrc_i (WriteSrc_EX),
-  .MemWrite_i (MemWrite_EX),
-  .MemRead_i (MemRead_EX),
   .ImmOp_i (ImmOp_EX),
   .pcPlus4_i (pcPlus4_EX),
-  .regOp2_i (regOp2_EX),
   .rd_i (rd_EX),
-  .funct3_i (funct3_EX),
+  .DMemOut_i (DMemOut),
 
 	.RegWrite_o (RegWrite_MEM),
   .WriteSrc_o (WriteSrc_MEM),
@@ -279,8 +300,7 @@ MEMStage MEMStage (
   .DataMemOut_o (DataMemOut_MEM),
   .pcPlus4_o (pcPlus4_MEM),
   .ImmOp_o (ImmOp_MEM),
-  .rd_o (rd_MEM),
-  .Mready_o (Mready_MEM)
+  .rd_o (rd_MEM)
 );
 
 

@@ -7,6 +7,8 @@ module IFStage (
   input logic [1:0]   PCsrc_i,
   input logic [31:0]  pcPlusImm_i,
   input logic [31:0]  regPlusImm_i,
+  input logic         IMemReady_i,
+  input logic [31:0]  IMemInstr_i,
 	
 	output logic [4:0]  rs1_o,
 	output logic [4:0]  rs2_o,
@@ -15,13 +17,15 @@ module IFStage (
   output logic [6:0]  op_o,
   output logic [2:0]  funct3_o,
   output logic        funct7_5_o,
+  output logic [31:0] PCbeforeReg_o,
   output logic [31:0] PC_o,
   output logic [31:0] pcPlus4_o
 );
 
-logic [31:0] PC;
+initial begin
+  PCbeforeReg_o = 32'hbfc00000;
+end
 
-logic [31:0]  Instr;
 logic [31:0]  pcPlus4;
 logic [31:0]	nextPC;
 
@@ -36,30 +40,25 @@ Mux3 #(32) nextPCMux (
 
 RegAsyncEnR #(32) PCreg (
   .d (nextPC),
-  .en (PCEn_i),
+  .en (PCEn_i && IMemReady_i),
   .rst (rst_i),
   .clk (clk_i),
-  .q (PC)
+  .q (PCbeforeReg_o)
 );
 
-Adder adder4 (PC, 32'd4, pcPlus4);
+Adder adder4 (PCbeforeReg_o, 32'd4, pcPlus4);
 
-InstrMem InstrMem (
-  .A (PC),
-
-  .RD (Instr)
-);
 
 always_ff @(posedge clk_i) begin
   if (IF_ID_En_i == 1'b1) begin
-    rs1_o <= Instr[19:15];
-    rs2_o <= Instr[24:20];
-    rd_o <= Instr[11:7];
-    PC_o <= PC;
-    Instr31_7_o <= Instr[31:7];
-    op_o <= Instr[6:0];
-    funct3_o <= Instr[14:12];
-    funct7_5_o <= Instr[30];
+    rs1_o <= IMemInstr_i[19:15];
+    rs2_o <= IMemInstr_i[24:20];
+    rd_o <= IMemInstr_i[11:7];
+    PC_o <= PCbeforeReg_o;
+    Instr31_7_o <= IMemInstr_i[31:7];
+    op_o <= IMemInstr_i[6:0];
+    funct3_o <= IMemInstr_i[14:12];
+    funct7_5_o <= IMemInstr_i[30];
     pcPlus4_o <= pcPlus4;
   end
   if (flush_i == 1'b1) begin
