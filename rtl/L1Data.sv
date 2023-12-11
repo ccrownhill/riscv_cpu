@@ -27,29 +27,25 @@
 		4'b1111: CACHE_BLOCK[127:120] = DATA; \
 	endcase
 
-module Cache
+module L1Data
   import mem_pkg::*;
 (
-	input logic 	clk,
-	input CInput	CPUD_i,
-	input MOutput	MemD_i,
+	input logic 	      clk_i,
+	input L1DataIn_t	  CPUD_i,
+	input MemToCache_t	MemD_i,
 
-	output COutput  CPUD_o,
-	output MInput  MemD_o
+	output L1DataOut_t  CPUD_o,
+	output CacheToMem_t MemD_o
 );
 
-<<<<<<< HEAD
 typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
-=======
-typedef enum {COMP_TAG, ALLOCATE, WRITE_BACK} cache_state;
->>>>>>> 1ad069a (add writeback implementation of cache)
 
 logic 			hit;
 
-logic [1:0] 	degree;
-logic [2:0] 	set;
-logic [3:0]		byte_off;
-logic [24:0] 	tag;
+logic [$clog2(DEGREES)-1:0] 	degree;
+logic [$clog2(SETNUM)-1:0] 	set;
+logic [BYTE_ADDR_BITS-1:0]		byte_off;
+logic [TAGSIZE-1:0] 	tag;
 
 
 cache_state	C_State;
@@ -63,25 +59,17 @@ logic [$clog2(DEGREES)-1:0] last_used_shift_reg[DEGREES-1:0];
 
 initial begin
 	// this will set all valid bits to 0 
-	for (int i = 0; i < SETNUM; i++) begin
-		cache_arr[0][i].Valid = 1'b0;
-		cache_arr[1][i].Valid = 1'b0;
-		cache_arr[2][i].Valid = 1'b0;
-		cache_arr[3][i].Valid = 1'b0;
-	end
-<<<<<<< HEAD
-
   for (int i = 0; i < DEGREES; i++) begin
     last_used_shift_reg[i] = i;
-=======
-  for (int i = 0; i < DEGREES; i++) begin
-    last_used_shift_reg[i] = {$clog2(DEGREES)-1{1'b1}};
->>>>>>> 1ad069a (add writeback implementation of cache)
+
+	for (int i = 0; i < SETNUM; i++)
+    for (int j = 0; j < DEGREES; j++)
+      cache_arr[j][i].Valid = 1'b0;
   end
 	C_State = COMP_TAG;
 end 
 
-always_ff @(posedge clk) begin
+always_ff @(posedge clk_i) begin
 	C_State <= N_State;
   if (degree != last_used_shift_reg[0])
     `UPDATE_SHIFT_REG(last_used_shift_reg, degree);
@@ -89,9 +77,9 @@ end
 
 
 always_comb begin // logic for state machine and outputs
-	set = CPUD_i.Addr	[6:4]; 
-	tag = CPUD_i.Addr	[31:7];
-	byte_off = CPUD_i.Addr	[3:0];
+	set = CPUD_i.Addr	[31-TAGSIZE:BYTE_ADDR_BITS]; 
+	tag = CPUD_i.Addr	[31:32-TAGSIZE];
+	byte_off = CPUD_i.Addr	[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin

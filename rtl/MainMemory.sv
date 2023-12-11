@@ -1,34 +1,51 @@
 module MainMemory
   import mem_pkg::*;
-#(
-  parameter BLOCK_SIZE = 128,
-            MEM_SIZE = 18'h20000,
-            BLOCK_ADDR_BIT = 4
-)(
-  input logic clk,
-  input MInput CacheData_i,
-  output MOutput MemOut_o
+(
+  input logic           clk_i,
+  input logic           Valid1_i,
+  input logic           Valid2_i,
+  input logic           Wen_i,
+  input logic [31:0]    rAddr1_i,
+  input logic [31:0]    rAddr2_i,
+  input logic [31:0]    wAddr_i,
+  input logic [127:0]   WriteD_i,
+
+  output logic          Ready1_o,
+  output logic          Ready2_o,
+  output logic [127:0]  ReadD1_o,
+  output logic [127:0]  ReadD2_o
 );
 
-logic [BLOCK_SIZE-1:0] mem_arr[(MEM_SIZE/(BLOCK_SIZE/8))-1:0];
+logic [BLOCKSIZE-1:0] mem_arr[MAINMEM_BLOCKS-1:0];
 
-initial
-	$readmemh("data.mem", mem_arr, 17'h10000/(BLOCK_SIZE/8));
+initial begin
+	$readmemh("data.mem", mem_arr, 17'h10000/(BLOCKSIZE/8));
+  $readmemh("instructions.mem", mem_arr, 32'hbfc00000/(BLOCKSIZE/8));
+end
 
-always_ff @(posedge clk) begin
-  if(CacheData_i.Valid) begin
-    if(CacheData_i.Wen) begin
-      mem_arr[CacheData_i.Addr[31:BLOCK_ADDR_BIT]] <= CacheData_i.WriteD;
-      MemOut_o.ReadD <= {BLOCK_SIZE{1'bx}};
+always_ff @(posedge clk_i) begin
+  if(Valid1_i) begin
+    if(Wen_i) begin
+      mem_arr[wAddr_i[31:BYTE_ADDR_BITS]] <= WriteD_i;
+      ReadD1_o <= {BLOCKSIZE{1'bx}};
     end
     else begin
-      MemOut_o.ReadD <= mem_arr[CacheData_i.Addr[31:BLOCK_ADDR_BIT]];
+      ReadD1_o <= mem_arr[rAddr1_i[31:BYTE_ADDR_BITS]];
     end
-    MemOut_o.Ready <= 1'b1;
+    Ready1_o <= 1'b1;
   end
   else begin
-    MemOut_o.ReadD <= {BLOCK_SIZE{1'bx}};
-    MemOut_o.Ready <= 1'b0;
+    ReadD1_o <= {BLOCKSIZE{1'bx}};
+    Ready1_o <= 1'b0;
+  end
+
+  if (Valid2_i) begin
+    ReadD2_o <= mem_arr[rAddr2_i[31:BYTE_ADDR_BITS]];
+    Ready2_o <= 1'b1;
+  end
+  else begin
+    ReadD2_o <= {BLOCKSIZE{1'bx}};
+    Ready2_o <= 1'b0;
   end
 end
 
