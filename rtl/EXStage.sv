@@ -28,7 +28,8 @@ module EXStage (
   output logic [31:0] ImmOp_o,
   output logic [31:0] regOp2_o,
   output logic [4:0]  rd_o,
-  output logic [2:0]  funct3_o
+  output logic [2:0]  funct3_o,
+  output logic [31:0] ALUout_beforeEX_o
 );
 
 logic [31:0] ALUop2;
@@ -57,12 +58,12 @@ ALU ALU (
 	.ALUop1_i (ALUop1_i),
 	.ALUop2_i (ALUop2),
 	.ALUctrl_i (ALUctrl),
-	.ALUout_o (ALUout)
+	.ALUout_o (ALUout_beforeEX_o)
 );
 
 always_ff @(posedge clk_i) begin
   if (en_i) begin
-    ALUout_o <= ALUout;
+    ALUout_o <= ALUout_beforeEX_o;
     RegWrite_o <= RegWrite_i;
     WriteSrc_o <= WriteSrc_i;
     MemWrite_o <= MemWrite_i;

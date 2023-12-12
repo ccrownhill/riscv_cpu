@@ -29,6 +29,10 @@ IFStage IFStage (
   .regPlusImm_i (IF_regPlusImm_ID),
   .IMemReady_i (IMemReady),
   .IMemInstr_i (IMemOut),
+  .ALUout_EX_i (ALUout_EX),
+  .MemWrite_EX_i (MemWrite_EX),
+  .MemWrite_beforeID_i (MemWrite_beforeID),
+  .DMemReady_i (DMemReady),
 
   .rs1_o (rs1_IF),
   .rs2_o (rs2_IF),
@@ -86,6 +90,7 @@ logic [1:0]  	WriteSrc_ID;
 logic [1:0]  	ALUOp_ID;
 logic        	MemRead_ID;
 logic        	MemWrite_ID;
+logic         MemWrite_beforeID;
 
 logic [31:0] 	pcPlus4_ID;
 logic [31:0] 	ALUop1_ID;
@@ -107,6 +112,9 @@ logic [1:0]	IF_PCsrc_ID;
 logic [31:0]  IF_pcPlusImm_ID;
 logic [31:0] IF_regPlusImm_ID; // ALUout output that is used as input for IF stage
 
+// input for ID stage within the EX stage
+logic [31:0] ALUout_beforeEX;
+
 
 IDStage IDStage (
   .clk_i (clk),
@@ -125,6 +133,12 @@ IDStage IDStage (
   .writeRegAddr_i (rd_WB),
   .WD3_i (WD3_WB),
   .controlZeroSel_i (controlZeroSel),
+  .rd_EX_i (rd_EX),
+  .ALUout_beforeEX_i (ALUout_beforeEX),
+  .ALUout_EX_i (ALUout_EX),
+  .RegWrite_EX_i (RegWrite_EX),
+  .MemRead_EX_i (MemRead_EX),
+  .MemOut_i (DMemOut),
 
   .RegWrite_o (RegWrite_ID),
   .ALUsrc_o (ALUsrc_ID),
@@ -132,6 +146,7 @@ IDStage IDStage (
   .ALUOp_o (ALUOp_ID),
   .MemRead_o (MemRead_ID),
   .MemWrite_o (MemWrite_ID),
+  .MemWrite_beforeReg_o (MemWrite_beforeID),
   .pcPlus4_o (pcPlus4_ID),
   .ALUop1_o (ALUop1_ID),
   .regOp2_o (regOp2_ID),
@@ -246,7 +261,8 @@ EXStage EXStage (
   .pcPlus4_o (pcPlus4_EX),
   .regOp2_o (regOp2_EX),
   .rd_o (rd_EX),
-  .funct3_o (funct3_EX)
+  .funct3_o (funct3_EX),
+  .ALUout_beforeEX_o (ALUout_beforeEX)
 );
 
 

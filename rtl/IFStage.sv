@@ -9,6 +9,10 @@ module IFStage (
   input logic [31:0]  regPlusImm_i,
   input logic         IMemReady_i,
   input logic [31:0]  IMemInstr_i,
+  input logic [31:0]  ALUout_EX_i,
+  input logic         MemWrite_EX_i,
+  input logic         MemWrite_beforeID_i,
+  input logic         DMemReady_i,
 	
 	output logic [4:0]  rs1_o,
 	output logic [4:0]  rs2_o,
@@ -38,9 +42,20 @@ Mux3 #(32) nextPCMux (
   .out_o (nextPC)
 );
 
+logic forbiddenRead;
+
+always_latch begin
+  if (PCbeforeReg_o == regPlusImm_i && MemWrite_beforeID_i && !(ALUout_EX_i == regPlusImm_i && MemWrite_EX_i && DMemReady_i)) begin
+    forbiddenRead = 1'b1;
+    nextPC = PCbeforeReg_o;
+  end
+  else
+    forbiddenRead = 1'b0;
+end
+
 RegAsyncEnR #(32) PCreg (
   .d (nextPC),
-  .en (PCEn_i && IMemReady_i),
+  .en (PCEn_i && IMemReady_i && !forbiddenRead),
   .rst (rst_i),
   .clk (clk_i),
   .q (PCbeforeReg_o)
@@ -50,7 +65,7 @@ Adder adder4 (PCbeforeReg_o, 32'd4, pcPlus4);
 
 
 always_ff @(posedge clk_i) begin
-  if (IF_ID_En_i == 1'b1) begin
+  if (IF_ID_En_i && !forbiddenRead) begin
     rs1_o <= IMemInstr_i[19:15];
     rs2_o <= IMemInstr_i[24:20];
     rd_o <= IMemInstr_i[11:7];
@@ -61,7 +76,7 @@ always_ff @(posedge clk_i) begin
     funct7_5_o <= IMemInstr_i[30];
     pcPlus4_o <= pcPlus4;
   end
-  if (flush_i == 1'b1) begin
+  if (flush_i) begin
     rs1_o <= 5'b0;
     rs2_o <= 5'b0;
     rd_o <= 5'b0;
