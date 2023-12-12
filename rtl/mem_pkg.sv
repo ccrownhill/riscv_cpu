@@ -1,8 +1,10 @@
 package mem_pkg;
 
 parameter   MAINMEM_SIZE = 18'h20000;
+parameter   INSTRMEM_SIZE = 4096;
 parameter   BLOCKSIZE = 128;
 parameter   MAINMEM_BLOCKS = MAINMEM_SIZE/(BLOCKSIZE/8);
+parameter   INSTRMEM_BLOCKS = INSTRMEM_SIZE/(BLOCKSIZE/8);
 parameter   CACHESIZE = 4096;
 parameter   BYTE_ADDR_BITS = $clog2(BLOCKSIZE/8);
 parameter   SETNUM = CACHESIZE/(4*(BLOCKSIZE/8));
