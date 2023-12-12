@@ -268,8 +268,8 @@ logic IMemReady;
 
 Memory Memory (
   .clk_i (clk),
-  .Addr_i (regOp2_EX),
-  .WriteD_i (ALUout_EX),
+  .Addr_i (ALUout_EX),
+  .WriteD_i (regOp2_EX),
   .Mwrite_i (MemWrite_EX),
   .Mread_i (MemRead_EX),
   .funct3_i (funct3_EX),
