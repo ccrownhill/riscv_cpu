@@ -15,6 +15,12 @@ module IDStage (
   input logic [4:0]   writeRegAddr_i, // write address from WB stage
   input logic [31:0]  WD3_i, // write data from WB stage
   input logic         controlZeroSel_i,
+  input logic [4:0]   rd_EX_i,
+  input logic [31:0]  ALUout_beforeEX_i,
+  input logic [31:0]  ALUout_EX_i,
+  input logic         RegWrite_EX_i,
+  input logic         MemRead_EX_i,
+  input logic         MemOut_i,
 
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
@@ -22,6 +28,7 @@ module IDStage (
 	output logic [1:0]  ALUOp_o,
   output logic        MemRead_o,
   output logic        MemWrite_o,
+  output logic        MemWrite_beforeReg_o,
 
   output logic [31:0] pcPlus4_o,
   output logic [31:0] ALUop1_o,
@@ -54,7 +61,6 @@ logic        ALUsrc;
 logic [1:0]  WriteSrc;
 logic [1:0]  ALUOp;
 logic        MemRead;
-logic        MemWrite;
 
 
 logic        RegWriteAfterReset;
@@ -80,7 +86,7 @@ MainDecode MainDecode (
   .Jump_o (Jump_o),
   .Ret_o (Ret_o),
   .MemRead_o (MemRead),
-  .MemWrite_o (MemWrite)
+  .MemWrite_o (MemWrite_beforeReg_o)
 );
 
 
@@ -103,6 +109,18 @@ SignExtend SignExtend(
 
   .ImmOp (ImmOp)
 );
+
+always_latch begin
+  if (rd_o == rs1_i && RegWrite_o && rs1_i != 5'b0) begin
+    ALUop1 = ALUout_beforeEX_i;
+  end
+  else if (rd_EX_i == rs1_i && MemRead_EX_i && rs1_i != 5'b0) begin
+    ALUop1 = MemOut_i;
+  end
+  else if (rd_EX_i == rs1_i && RegWrite_EX_i && rs1_i != 5'b0) begin
+    ALUop1 = ALUout_EX_i;
+  end
+end
 
 Adder adderImm (PC_i, ImmOp, IF_pcPlusImm_o);
 Adder adderRegImm (ALUop1, ImmOp, IF_regPlusImm_o);
@@ -131,7 +149,7 @@ ControlResetMux ControlResetMux (
   .WriteSrc_i (WriteSrc),
   .ALUOp_i (ALUOp),
   .MemRead_i (MemRead),
-  .MemWrite_i (MemWrite),
+  .MemWrite_i (MemWrite_beforeReg_o),
 
   .RegWrite_o (RegWriteAfterReset),
   .ALUsrc_o (ALUsrcAfterReset),
