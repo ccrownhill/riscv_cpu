@@ -84,4 +84,4 @@ endmodule
 
 ## Testing for Pipelined CPU
 
-Details can be found on Stretch Goal 1: Pipelined RV32I Design on main READMD.md file, as it explains what we get and why do we think that it works correctly
+Details can be found on [Stretch Goal 1: Pipelined RV32I Design](https://github.com/ccrownhill/Team11#stretch-goal-1-pipelined-rv32i-design) as it explains what we get and why do we think that it works correctly
