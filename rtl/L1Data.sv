@@ -33,9 +33,11 @@ module L1Data
 	input logic 	      clk_i,
 	input L1DataIn_t	  CPUD_i,
 	input MemToCache_t	MemD_i,
+  input Ins2Dat_t     FromIns_i,
 
 	output L1DataOut_t  CPUD_o,
-	output CacheToMem_t MemD_o
+	output CacheToMem_t MemD_o,
+  output Dat2Ins_t    ToIns_o
 );
 
 typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
@@ -77,9 +79,9 @@ end
 
 
 always_comb begin // logic for state machine and outputs
-	set = CPUD_i.Addr	[31-TAGSIZE:BYTE_ADDR_BITS]; 
-	tag = CPUD_i.Addr	[31:32-TAGSIZE];
-	byte_off = CPUD_i.Addr	[BYTE_ADDR_BITS-1:0];
+	set = (FromIns_i.WriteBack) ? FromIns_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS] : CPUD_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS]; 
+	tag = (FromIns_i.WriteBack) ? FromIns_i.Addr[31:32-TAGSIZE] : CPUD_i.Addr[31:32-TAGSIZE];
+	byte_off = (FromIns_i.WriteBack) ? FromIns_i.Addr[BYTE_ADDR_BITS-1:0] : CPUD_i.Addr[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin

@@ -9,6 +9,7 @@ module Memory
 	input logic [2:0]     funct3_i,
 
   // for reading instructions
+  input logic           validInsReq_i,
   input logic [31:0]    PC_i,
 
 
@@ -21,6 +22,7 @@ module Memory
 L1DataIn_t L1DataIn;
 L1DataOut_t L1DataOut;
 
+L1InstrIn_t L1InstrIn;
 L1InstrOut_t L1InstrOut;
 
 CacheToMem_t L1DataMemIn;
@@ -28,6 +30,12 @@ CacheToMem_t L1InstrMemIn;
 
 MemToCache_t L1DataMemOut;
 MemToCache_t L1InstrMemOut;
+
+Ins2Dat_t ins2Dat;
+Dat2Ins_t dat2Ins;
+
+assign L1InstrIn.Valid = validInsReq_i;
+assign L1InstrIn.Addr = PC_i;
 
 assign L1DataIn.Valid = (Mwrite_i || Mread_i);
 assign L1DataIn.Wen = Mwrite_i;
@@ -38,16 +46,22 @@ L1Data L1Data (
   .clk_i  (clk_i),
   .CPUD_i (L1DataIn),
   .MemD_i (L1DataMemOut),
+  .FromIns_i (ins2Dat),
+
   .CPUD_o (L1DataOut),
-  .MemD_o (L1DataMemIn)
+  .MemD_o (L1DataMemIn),
+  .ToIns_o (dat2Ins)
 );
 
 L1Instr L1Instr (
   .clk_i (clk_i),
-  .PC_i (PC_i),
+  .CPUD_i (L1InstrIn),
   .MemD_i (L1InstrMemOut),
+  .FromDat_i (dat2Ins),
+
   .CPUD_o (L1InstrOut),
-  .MemD_o (L1InstrMemIn)
+  .MemD_o (L1InstrMemIn),
+  .ToDat_o (ins2Dat)
 );
 
 assign DMemReady_o = L1DataOut.Ready;
