@@ -71,4 +71,15 @@ typedef struct packed {
   logic   [127:0] ReadD2;
 } MOutput;
 
+typedef struct packed {
+  logic         Invalidate;
+  logic [31:0]  Addr;
+  logic         Written;
+} Dat2Ins_t;
+
+typedef struct packed {
+  logic         WriteBack;
+  logic [31:0]  Addr;
+} Ins2Dat_t;
+
 endpackage
