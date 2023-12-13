@@ -36,7 +36,7 @@ module Cache
 	output MInput  MemD_o
 );
 
-typedef enum {COMP_TAG, ALLOCATE, WRITE_MEM, WRITE_THROUGH, OUTPUT} cache_state;
+typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
 
 logic 			hit;
 
@@ -100,6 +100,7 @@ always_comb begin // logic for state machine and outputs
       if (CPUD_i.Valid && hit) begin
 
         if (CPUD_i.Wen) begin
+          degree = last_used_shift_reg[0];
           N_State = WRITE_THROUGH;
         end
         else begin
@@ -110,13 +111,14 @@ always_comb begin // logic for state machine and outputs
         N_State = ALLOCATE;
       end
       else if (CPUD_i.Valid && !hit && CPUD_i.Wen) begin
-        N_State = WRITE_MEM;
+        degree = last_used_shift_reg[DEGREES-1];
+        cache_arr[degree][set].Tag = tag;
+        N_State = WRITE_THROUGH;
       end
       MemD_o.Valid = 1'b0;
       CPUD_o.Ready = 1'b0;
     end
     WRITE_THROUGH: begin
-      degree = last_used_shift_reg[0];
       // write to cache
       cache_arr[degree][set].Valid = 1'b1;
       `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
@@ -145,13 +147,6 @@ always_comb begin // logic for state machine and outputs
       end
       else
         N_State = C_State;
-      CPUD_o.Ready = 1'b0;
-    end
-    WRITE_MEM: begin
-      degree = last_used_shift_reg[DEGREES-1];
-      cache_arr[degree][set].Tag = tag;
-      N_State = WRITE_THROUGH;
-      MemD_o.Valid = 1'b0;
       CPUD_o.Ready = 1'b0;
     end
     OUTPUT: begin
