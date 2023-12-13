@@ -82,3 +82,10 @@ The cache itself was implemented using a state machine which tracks what needs t
 
 If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
 
+# Proof
+
+Here is a video showing that the cache CPU will work for both the f1 program and distributions.
+
+[Distribution](../../../../Downloads/IMG_9483.HEIC)
+
+[F1](../../../../Downloads/IMG_9484.mov)
