@@ -81,3 +81,6 @@ NOTE: testbench has been modified, the step length now is 7 which was 3 for non-
 ![4071701276458_ pic](https://github.com/ccrownhill/Team11/assets/109323873/b7c78869-c807-4f06-b8a9-90d72da8e7cc)
 
 Obviously, non-pipelined hardware can work correctly since pipelined hardware does work correctly
+
+
+# Stretch Goal 2: Pipelined RV32I Design with Cache
