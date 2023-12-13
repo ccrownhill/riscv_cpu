@@ -44,6 +44,9 @@ logic PCEn;
 logic IF_ID_En;
 logic controlZeroSel; // make this an input for MainDecode and set everything to 0 if it is set
 logic IF_Flush;
+logic ID_EX_En;
+logic EX_MEM_En;
+logic MEM_reset;
 
 
 HazardDetectionUnit HazardDetectionUnit (
@@ -58,11 +61,17 @@ HazardDetectionUnit HazardDetectionUnit (
   .Jump_i (Jump_ID),
   .Ret_i (Ret_ID),
   .BranchCond_i (BranchCond_ID),
+  .MemRead_EX_MEM_i (MemRead_EX),
+  .MemWrite_EX_MEM_i (MemWrite_EX),
+  .Mready_i (Mready_MEM),
 
   .IF_Flush_o (IF_Flush),
   .PCEn_o (PCEn),
   .IF_ID_En_o (IF_ID_En),
-  .controlZeroSel_o (controlZeroSel)
+  .controlZeroSel_o (controlZeroSel),
+  .ID_EX_En_o (ID_EX_En),
+  .EX_MEM_En_o (EX_MEM_En),
+  .MEM_reset_o (MEM_reset)
 );
 
 
@@ -97,6 +106,7 @@ logic [31:0] IF_regPlusImm_ID; // ALUout output that is used as input for IF sta
 
 IDStage IDStage (
   .clk_i (clk),
+  .en_i (ID_EX_En),
   .rs1_i (rs1_IF),
   .rs2_i (rs2_IF),
   .Instr31_7_i (Instr31_7_IF),
@@ -195,6 +205,7 @@ logic [31:0] ALUout_EX;
 logic        RegWrite_EX;
 logic [1:0]  WriteSrc_EX;
 logic        MemWrite_EX;
+logic        MemRead_EX;
 logic [31:0] pcPlus4_EX;
 logic [31:0] ImmOp_EX;
 logic [31:0] regOp2_EX;
@@ -204,12 +215,14 @@ logic [2:0]  funct3_EX;
 
 EXStage EXStage (
   .clk_i (clk),
+  .en_i (EX_MEM_En),
 
   .RegWrite_i (RegWrite_ID),
   .ALUsrc_i (ALUsrc_ID),
   .WriteSrc_i (WriteSrc_ID),
   .ALUOp_i (ALUOp_ID),
   .MemWrite_i (MemWrite_ID),
+  .MemRead_i (MemRead_ID),
   .pcPlus4_i (pcPlus4_ID),
   .ALUop1_i (forwardOp1),
   .regOp2_i (forwardOp2),
@@ -224,6 +237,7 @@ EXStage EXStage (
   .RegWrite_o (RegWrite_EX),
   .WriteSrc_o (WriteSrc_EX),
   .MemWrite_o (MemWrite_EX),
+  .MemRead_o (MemRead_EX),
   .ImmOp_o (ImmOp_EX),
   .pcPlus4_o (pcPlus4_EX),
   .regOp2_o (regOp2_EX),
@@ -241,15 +255,18 @@ logic [31:0] DataMemOut_MEM;
 logic [31:0] pcPlus4_MEM;
 logic [31:0] ImmOp_MEM;
 logic [4:0]  rd_MEM;
+logic        Mready_MEM;
 
 
 MEMStage MEMStage (
   .clk_i (clk),
+  .reset_i (MEM_reset),
   .ALUout_i (ALUout_EX),
 
   .RegWrite_i (RegWrite_EX),
   .WriteSrc_i (WriteSrc_EX),
   .MemWrite_i (MemWrite_EX),
+  .MemRead_i (MemRead_EX),
   .ImmOp_i (ImmOp_EX),
   .pcPlus4_i (pcPlus4_EX),
   .regOp2_i (regOp2_EX),
@@ -262,7 +279,8 @@ MEMStage MEMStage (
   .DataMemOut_o (DataMemOut_MEM),
   .pcPlus4_o (pcPlus4_MEM),
   .ImmOp_o (ImmOp_MEM),
-  .rd_o (rd_MEM)
+  .rd_o (rd_MEM),
+  .Mready_o (Mready_MEM)
 );
 
 

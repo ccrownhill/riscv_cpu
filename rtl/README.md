@@ -4,6 +4,11 @@ This includes the individual contributions.
 
 ## Xiaoyang Xu (X454XU)
 
+Modules mainly edited:
+
+* `Mux8`
+* `Mux16`
+
 Coauthoring:
 
 * `MainDecoder`
