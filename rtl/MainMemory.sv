@@ -11,18 +11,8 @@ module MainMemory
   import mem_pkg::*;
 (
   input logic           clk_i,
-  input logic           Valid1_i,
-  input logic           Valid2_i,
-  input logic           Wen_i,
-  input logic [31:0]    rAddr1_i,
-  input logic [31:0]    rAddr2_i,
-  input logic [31:0]    wAddr_i,
-  input logic [127:0]   WriteD_i,
-
-  output logic          Ready1_o,
-  output logic          Ready2_o,
-  output logic [127:0]  ReadD1_o,
-  output logic [127:0]  ReadD2_o
+  input CacheToMem_t    Mem_i,
+  output MemToCache_t   Mem_o
 );
 
 logic [BLOCKSIZE-1:0] mem_arr_data[MAINMEM_BLOCKS-1:0];
@@ -34,28 +24,19 @@ initial begin
 end
 
 always_ff @(posedge clk_i) begin
-  if(Valid1_i) begin
-    if(Wen_i) begin
-      `WRITE_MAINMEM(wAddr_i[31:BYTE_ADDR_BITS], WriteD_i);
-      ReadD1_o <= {BLOCKSIZE{1'bx}};
+  if(Mem_i.Valid) begin
+    if(Mem_i.Wen) begin
+      `WRITE_MAINMEM(Mem_i.Addr[31:BYTE_ADDR_BITS], Mem_i.WriteD);
+      Mem_o.ReadD <= {BLOCKSIZE{1'bx}};
     end
     else begin
-      ReadD1_o <= `READ_MAINMEM(rAddr1_i[31:BYTE_ADDR_BITS]);
+      Mem_o.ReadD <= `READ_MAINMEM(Mem_i.Addr[31:BYTE_ADDR_BITS]);
     end
-    Ready1_o <= 1'b1;
+    Mem_o.Ready <= 1'b1;
   end
   else begin
-    ReadD1_o <= {BLOCKSIZE{1'bx}};
-    Ready1_o <= 1'b0;
-  end
-
-  if (Valid2_i) begin
-    ReadD2_o <= `READ_MAINMEM(rAddr2_i[31:BYTE_ADDR_BITS]);
-    Ready2_o <= 1'b1;
-  end
-  else begin
-    ReadD2_o <= {BLOCKSIZE{1'bx}};
-    Ready2_o <= 1'b0;
+    Mem_o.ReadD <= {BLOCKSIZE{1'bx}};
+    Mem_o.Ready <= 1'b0;
   end
 end
 

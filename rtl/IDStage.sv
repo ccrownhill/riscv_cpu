@@ -20,7 +20,7 @@ module IDStage (
   input logic [31:0]  ALUout_EX_i,
   input logic         RegWrite_EX_i,
   input logic         MemRead_EX_i,
-  input logic         MemOut_i,
+  input logic [31:0]  MemOut_i,
   input logic         forbiddenRead_i,
   input logic         IMemReady_i,
 
