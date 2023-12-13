@@ -82,4 +82,6 @@ always_comb
 endmodule 
 ```
 
-##Testing for Pipelined CPU
+## Testing for Pipelined CPU
+
+Details can be found on Stretch Goal 1: Pipelined RV32I Design on main READMD.md file, as it explains what we get and why do we think that it works correctly
