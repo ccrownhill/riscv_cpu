@@ -8,22 +8,24 @@
 // this implements a 2 input MUX for every byte choosing either the old or the
 // new data
 `define WRITE(CACHE_BLOCK, OFFSET, DATA) \
-    CACHE_BLOCK[0*8 + 7:0*8] = (OFFSET == 0) ? DATA : CACHE_BLOCK[0*8 + 7:0*8]; \
-    CACHE_BLOCK[1*8 + 7:1*8] = (OFFSET == 1) ? DATA : CACHE_BLOCK[1*8 + 7:1*8]; \
-    CACHE_BLOCK[2*8 + 7:2*8] = (OFFSET == 2) ? DATA : CACHE_BLOCK[2*8 + 7:2*8]; \
-    CACHE_BLOCK[3*8 + 7:3*8] = (OFFSET == 3) ? DATA : CACHE_BLOCK[3*8 + 7:3*8]; \
-    CACHE_BLOCK[4*8 + 7:4*8] = (OFFSET == 4) ? DATA : CACHE_BLOCK[4*8 + 7:4*8]; \
-    CACHE_BLOCK[5*8 + 7:5*8] = (OFFSET == 5) ? DATA : CACHE_BLOCK[5*8 + 7:5*8]; \
-    CACHE_BLOCK[6*8 + 7:6*8] = (OFFSET == 6) ? DATA : CACHE_BLOCK[6*8 + 7:6*8]; \
-    CACHE_BLOCK[7*8 + 7:7*8] = (OFFSET == 7) ? DATA : CACHE_BLOCK[7*8 + 7:7*8]; \
-    CACHE_BLOCK[8*8 + 7:8*8] = (OFFSET == 8) ? DATA : CACHE_BLOCK[8*8 + 7:8*8]; \
-    CACHE_BLOCK[9*8 + 7:9*8] = (OFFSET == 9) ? DATA : CACHE_BLOCK[9*8 + 7:9*8]; \
-    CACHE_BLOCK[10*8 + 7:10*8] = (OFFSET == 10) ? DATA : CACHE_BLOCK[10*8 + 7:10*8]; \
-    CACHE_BLOCK[11*8 + 7:11*8] = (OFFSET == 11) ? DATA : CACHE_BLOCK[11*8 + 7:11*8]; \
-    CACHE_BLOCK[12*8 + 7:12*8] = (OFFSET == 12) ? DATA : CACHE_BLOCK[12*8 + 7:12*8]; \
-    CACHE_BLOCK[13*8 + 7:13*8] = (OFFSET == 13) ? DATA : CACHE_BLOCK[13*8 + 7:13*8]; \
-    CACHE_BLOCK[14*8 + 7:14*8] = (OFFSET == 14) ? DATA : CACHE_BLOCK[14*8 + 7:14*8]; \
-    CACHE_BLOCK[15*8 + 7:15*8] = (OFFSET == 15) ? DATA : CACHE_BLOCK[15*8 + 7:15*8]; \
+	case (OFFSET) \
+		4'b0000: CACHE_BLOCK[7:0] = DATA; \
+		4'b0001: CACHE_BLOCK[15:8] = DATA; \
+		4'b0010: CACHE_BLOCK[23:16] = DATA; \
+		4'b0011: CACHE_BLOCK[31:24] = DATA; \
+		4'b0100: CACHE_BLOCK[39:32] = DATA; \
+		4'b0101: CACHE_BLOCK[47:40] = DATA; \
+		4'b0110: CACHE_BLOCK[55:48] = DATA; \
+		4'b0111: CACHE_BLOCK[63:56] = DATA; \
+		4'b1000: CACHE_BLOCK[71:64] = DATA; \
+		4'b1001: CACHE_BLOCK[79:72] = DATA; \
+		4'b1010: CACHE_BLOCK[87:80] = DATA; \
+		4'b1011: CACHE_BLOCK[95:88] = DATA; \
+		4'b1100: CACHE_BLOCK[103:96] = DATA; \
+		4'b1101: CACHE_BLOCK[111:104] = DATA; \
+		4'b1110: CACHE_BLOCK[119:112] = DATA; \
+		4'b1111: CACHE_BLOCK[127:120] = DATA; \
+	endcase
 
 module Cache
   import mem_pkg::*;
