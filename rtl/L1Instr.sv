@@ -8,7 +8,7 @@ module L1Instr
   import mem_pkg::*;
 (
 	input logic 	      clk_i,
-	input logic [31:0]  PC_i,
+	input L1InstrIn_t   CPUD_i,
 	input MemToCache_t	MemD_i,
   input Dat2Ins_t     FromDat_i,
 
@@ -55,12 +55,11 @@ end
 
 
 always_comb begin // logic for state machine and outputs
-	set = PC_i[31-TAGSIZE:BYTE_ADDR_BITS]; 
-	tag = PC_i[31:32-TAGSIZE];
-	byte_off = PC_i[BYTE_ADDR_BITS-1:0];
+	set = (FromDat_i.Invalidate) ? FromDat_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS] : CPUD_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS]; 
+	tag = (FromDat_i.Invalidate) ? FromDat_i.Addr[31:32-TAGSIZE] : CPUD_i.Addr[31:32-TAGSIZE];
+	byte_off = (FromDat_i.Invalidate) ? FromDat_i.Addr[BYTE_ADDR_BITS-1:0] : CPUD_i.Addr[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
-      if 
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin
         degree = 2'd0;
         hit = 1'b1;
@@ -79,33 +78,50 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
-      if (hit) begin // hit
+      if (FromDat_i.Invalidate) begin
+        if (hit)
+          cache_arr[degree][set].Valid = 1'b0;
+        CPUD_o.Ready = 1'b0;
+        N_State = C_State;
+      end
+      else if (CPUD_i.Valid && hit) begin // hit
         CPUD_o.Ready = 1'b1;
         N_State = C_State;
       end
-      else begin // no hit
-          N_State = ALLOCATE;
+      else if (CPUD_i.Valid) begin // no hit
+        N_State = ALLOCATE;
+        CPUD_o.Ready = 1'b0;
+      end
+      else begin
+        N_State = C_State;
         CPUD_o.Ready = 1'b0;
       end
       MemD_o.Valid = 1'b0;
+      ToDat_o.WriteBack = 1'b0;
+      ToDat_o.Addr = 32'bx;
     end
 
     ALLOCATE: begin
-      degree = last_used_shift_reg[DEGREES-1];
-      MemD_o.Wen = 1'b0;
-      MemD_o.Valid = 1'b1;
-      MemD_o.Addr = PC_i;
-      MemD_o.WriteD = {BLOCKSIZE{1'bx}};
-      if (MemD_i.Ready) begin
-        N_State = COMP_TAG;
-        cache_arr[degree][set].Data = MemD_i.ReadD;
-        cache_arr[degree][set].Tag = tag;
-        cache_arr[degree][set].Valid = 1'b1;
-        cache_arr[degree][set].Dirty = 1'b0;
+      // make sure other cache does its write backs first
+      ToDat_o.WriteBack = 1'b1;
+      ToDat_o.Addr = CPUD_i.Addr;
+      if (FromDat_i.Written) begin
+        degree = last_used_shift_reg[DEGREES-1];
+        MemD_o.Wen = 1'b0;
+        MemD_o.Valid = 1'b1;
+        MemD_o.Addr = CPUD_i.Addr;
+        MemD_o.WriteD = {BLOCKSIZE{1'bx}};
+        if (MemD_i.Ready) begin
+          N_State = COMP_TAG;
+          cache_arr[degree][set].Data = MemD_i.ReadD;
+          cache_arr[degree][set].Tag = tag;
+          cache_arr[degree][set].Valid = 1'b1;
+          cache_arr[degree][set].Dirty = 1'b0;
+        end
+        else
+          N_State = C_State;
+        CPUD_o.Ready = 1'b0;
       end
-      else
-        N_State = C_State;
-      CPUD_o.Ready = 1'b0;
     end
 	endcase
 end

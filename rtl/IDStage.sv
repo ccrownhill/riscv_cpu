@@ -21,6 +21,8 @@ module IDStage (
   input logic         RegWrite_EX_i,
   input logic         MemRead_EX_i,
   input logic         MemOut_i,
+  input logic         forbiddenRead_i,
+  input logic         IMemReady_i,
 
 	output logic        RegWrite_o,
 	output logic        ALUsrc_o,
@@ -143,7 +145,7 @@ PCsrcDecode PCsrcDecode (
 
 
 ControlResetMux ControlResetMux (
-  .controlZeroSel_i (controlZeroSel_i),
+  .controlZeroSel_i (controlZeroSel_i || IMemReady_i || forbiddenRead_i),
   .RegWrite_i (RegWrite),
   .ALUsrc_i (ALUsrc),
   .WriteSrc_i (WriteSrc),

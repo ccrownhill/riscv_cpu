@@ -32,14 +32,14 @@ typedef struct packed {
 } L1InstrIn_t;
 
 typedef struct packed {
-  logic [31:0]  ReadD;
   logic         Ready;
+  logic [31:0]  ReadD;
 } L1InstrOut_t;
 
 // this is for sending data to the CPU after it is found
 typedef struct packed { 
-	logic 	[7:0]	  ByteOut;
   logic           Ready;
+	logic 	[7:0]	  ByteOut;
 } L1DataOut_t;
 
 typedef struct packed {
@@ -73,8 +73,8 @@ typedef struct packed {
 
 typedef struct packed {
   logic         Invalidate;
-  logic [31:0]  Addr;
   logic         Written;
+  logic [31:0]  Addr;
 } Dat2Ins_t;
 
 typedef struct packed {

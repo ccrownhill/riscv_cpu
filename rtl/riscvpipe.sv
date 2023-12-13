@@ -11,12 +11,15 @@ logic [4:0] 	rs1_IF;
 logic [4:0] 	rs2_IF;
 logic [4:0] 	rd_IF;
 logic [31:0]	PC_IF;
+logic         validReq_IF;
 logic [31:0] 	pcPlus4_IF;
 logic [31:7] 	Instr31_7_IF;
 logic [6:0] 	op_IF;
 logic [2:0] 	funct3_IF;
 logic         funct7_5_IF;
 logic [31:0]  PCbeforeReg_IF;
+logic         forbiddenRead_IF;
+logic         IMemReady_IF;
 
 IFStage IFStage (
   .clk_i (clk),
@@ -42,8 +45,11 @@ IFStage IFStage (
   .funct3_o (funct3_IF),
   .funct7_5_o (funct7_5_IF),
   .PCbeforeReg_o (PCbeforeReg_IF),
+  .validReq_o (validReq_IF),
   .PC_o (PC_IF),
-	.pcPlus4_o (pcPlus4_IF)
+	.pcPlus4_o (pcPlus4_IF),
+  .forbiddenRead_o (forbiddenRead_IF),
+  .IMemReady_o (IMemReady_IF)
 );
 
 
@@ -139,6 +145,8 @@ IDStage IDStage (
   .RegWrite_EX_i (RegWrite_EX),
   .MemRead_EX_i (MemRead_EX),
   .MemOut_i (DMemOut),
+  .forbiddenRead_i (forbiddenRead_IF),
+  .IMemReady_i (IMemReady_IF),
 
   .RegWrite_o (RegWrite_ID),
   .ALUsrc_o (ALUsrc_ID),
@@ -290,6 +298,7 @@ Memory Memory (
   .Mread_i (MemRead_EX),
   .funct3_i (funct3_EX),
 
+  .validInsReq_i (validReq_IF),
   .PC_i (PCbeforeReg_IF),
 
   .ReadD_o (DMemOut),

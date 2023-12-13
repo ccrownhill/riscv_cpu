@@ -31,9 +31,11 @@ module L1Data
 	input logic 	      clk_i,
 	input L1DataIn_t	  CPUD_i,
 	input MemToCache_t	MemD_i,
+  input Ins2Dat_t     FromIns_i,
 
 	output L1DataOut_t  CPUD_o,
-	output CacheToMem_t MemD_o
+	output CacheToMem_t MemD_o,
+  output Dat2Ins_t    ToIns_o
 );
 
 typedef enum {COMP_TAG, ALLOCATE, WRITE_BACK} cache_state;
@@ -75,9 +77,9 @@ end
 
 
 always_comb begin // logic for state machine and outputs
-	set = CPUD_i.Addr	[31-TAGSIZE:BYTE_ADDR_BITS]; 
-	tag = CPUD_i.Addr	[31:32-TAGSIZE];
-	byte_off = CPUD_i.Addr	[BYTE_ADDR_BITS-1:0];
+	set = (FromIns_i.WriteBack) ? FromIns_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS] : CPUD_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS]; 
+	tag = (FromIns_i.WriteBack) ? FromIns_i.Addr[31:32-TAGSIZE] : CPUD_i.Addr[31:32-TAGSIZE];
+	byte_off = (FromIns_i.WriteBack) ? FromIns_i.Addr[BYTE_ADDR_BITS-1:0] : CPUD_i.Addr[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin
@@ -98,12 +100,30 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
-      if (CPUD_i.Valid && hit) begin // hit
+      if (hit && FromIns_i.WriteBack) begin
+        if (cache_arr[degree][set].Dirty) begin
+          N_State = WRITE_BACK;
+          ToIns_o.Written = 1'b0;
+        end
+        else begin
+          N_State = C_State;
+          ToIns_o.Written = 1'b1;
+        end
+        CPUD_o.Ready = 1'b0;
+      end
+      else if (CPUD_i.Valid && hit) begin // hit
         if (CPUD_i.Wen) begin
+          ToIns_o.Invalidate = 1'b1;
+          ToIns_o.Addr = CPUD_i.Addr;
           cache_arr[degree][set].Dirty = 1'b1;
           `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData)
         end
+        else begin
+          ToIns_o.Invalidate = 1'b0;
+          ToIns_o.Addr = 32'bx;
+        end
         CPUD_o.Ready = 1'b1;
+        ToIns_o.Written = 1'b1;
         N_State = C_State;
       end
       else if (CPUD_i.Valid) begin // no hit
@@ -112,9 +132,16 @@ always_comb begin // logic for state machine and outputs
         else
           N_State = ALLOCATE;
         CPUD_o.Ready = 1'b0;
+        ToIns_o.Invalidate = 1'b0;
+        ToIns_o.Addr = 32'bx;
+        ToIns_o.Written = 1'b1;
       end
-      else
+      else begin
+        ToIns_o.Invalidate = 1'b0;
+        ToIns_o.Addr = 32'bx;
+        ToIns_o.Written = 1'b1;
         CPUD_o.Ready = 1'b0;
+      end
       MemD_o.Valid = 1'b0;
     end
 
@@ -139,10 +166,24 @@ always_comb begin // logic for state machine and outputs
     WRITE_BACK: begin
       MemD_o.Wen = 1'b1;
       MemD_o.Valid = 1'b1;
-      MemD_o.Addr = {cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag, set, byte_off};
-      MemD_o.WriteD = cache_arr[last_used_shift_reg[DEGREES-1]][set].Data;
+      if (FromIns_i.WriteBack) begin
+        MemD_o.Addr = {cache_arr[last_used_shift_reg[0]][set].Tag, set, byte_off};
+        MemD_o.WriteD = cache_arr[last_used_shift_reg[0]][set].Data;
+      end
+      else begin
+        MemD_o.Addr = {cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag, set, byte_off};
+        MemD_o.WriteD = cache_arr[last_used_shift_reg[DEGREES-1]][set].Data;
+      end
       if (MemD_i.Ready) begin
-        N_State = ALLOCATE;
+        if (FromIns_i.WriteBack) begin
+          cache_arr[last_used_shift_reg[0]][set].Dirty = 1'b0;
+          ToIns_o.Written = 1'b1;
+          ToIns_o.Invalidate = 1'b0;
+          N_State = COMP_TAG;
+        end
+        else begin
+          N_State = ALLOCATE;
+        end
         MemD_o.Valid = 1'b0;
       end
       else
