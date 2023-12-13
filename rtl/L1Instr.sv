@@ -10,7 +10,9 @@ module L1Instr
 	input logic 	      clk_i,
 	input logic [31:0]  PC_i,
 	input MemToCache_t	MemD_i,
+  input Dat2Ins_t     FromDat_i,
 
+  output Ins2Dat_t    ToDat_o,
 	output L1InstrOut_t  CPUD_o,
 	output CacheToMem_t MemD_o
 );
@@ -58,6 +60,7 @@ always_comb begin // logic for state machine and outputs
 	byte_off = PC_i[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
+      if 
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin
         degree = 2'd0;
         hit = 1'b1;
