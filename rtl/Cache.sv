@@ -4,7 +4,6 @@
   end \
   SHIFT_REG[0] <= NEWVAL;
 
-
 // this implements a 2 input MUX for every byte choosing either the old or the
 // new data
 `define WRITE(CACHE_BLOCK, OFFSET, DATA) \
