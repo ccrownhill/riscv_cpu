@@ -100,7 +100,7 @@ and a0, a1, a2
 
 The wave we have for this test shown below and all the result matches, last signal refer to the result a0:
 
-![ALU test](Images/ALUtest.png)
+![ALU test](test/Images/ALUtest.png)
 
 ### Test all memory instructions (lb, lh, lw, lbu, lhu, sb, sh and sw)
 
@@ -126,7 +126,7 @@ lw a0, 0(a1)
 
 The wave we got from this test shows the expected data:
 
-![DataMemoryTest](Images/Load_store_test.png)
+![DataMemoryTest](test/Images/Load_store_test.png)
 
 ### Test with all B type instructions (beq, bne, blt, bge, bltu and bgeu)
 
@@ -164,7 +164,7 @@ end_test:
 ```
 The wave we got is the same with what we expexted as the 6 is bigger and not equal to 5:
 
-![Branch test](<Images/Branch_test.png>)
+![Branch test](test/Images/Branch_test.png>)
 
 Thus we have include all the RV32I integer instruction and finish testing them worked functionally.
 
@@ -174,32 +174,32 @@ It can be seen that our design displays everything correctly for all 4 distribut
 
 Expected triangular distribution from Excel:
 
-![PDF Triangular](Images/PDF_Triangle.png)
+![PDF Triangular](test/Images/PDF_Triangle.png)
 
-![Triangular Data](Images/Data_Triangle.png)
+![Triangular Data](test/Images/Data_Triangle.png)
 
 This is included just to show we are using the correct data as the PDF of the triangle distribution is not as theoretically expected. 
 This is because some values in the range 0 - 255 never occur which causes the PDF to shoot to zero at these values which is why the distribution looks so strange.
 
-![Triangle Vbuddy](Images/Triangle_Vbuddy.png)
+![Triangle Vbuddy](test/Images/Triangle_Vbuddy.png)
 
 Gaussian Distribution:
 
-![PDF Gaussian](Images/PDF_Gaussian.png)
+![PDF Gaussian](test/Images/PDF_Gaussian.png)
 
-![Gaussian Vbuddy](Images/Gaussian_Vbuddy.png)
+![Gaussian Vbuddy](test/Images/Gaussian_Vbuddy.png)
 
 Noisy Distribution:
 
-![PDF Noisy](Images/PDF_Noisy.png)
+![PDF Noisy](test/Images/PDF_Noisy.png)
 
-![Noisy Vbuddy](Images/Noisy_Vbuddy.png)
+![Noisy Vbuddy](test/Images/Noisy_Vbuddy.png)
 
 Sin Distribution:
 
-![PDF Sin](Images/PDF_Sin.png)
+![PDF Sin](test/Images/PDF_Sin.png)
 
-![Sin Vbuddy](Images/Sin_Vbuddy.png)
+![Sin Vbuddy](test/Images/Sin_Vbuddy.png)
 
 These images show that our CPU works exactly as expected as it produces the same results that we expect from the excel plots.
 
