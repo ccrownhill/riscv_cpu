@@ -4,7 +4,6 @@
   end \
   SHIFT_REG[0] <= NEWVAL;
 
-
 // this implements a 2 input MUX for every byte choosing either the old or the
 // new data
 `define WRITE(CACHE_BLOCK, OFFSET, DATA) \
@@ -32,12 +31,11 @@ module L1Data
 (
 	input logic 	      clk_i,
 	input L1DataIn_t	  CPUD_i,
-	input MemToCache_t	MemD_i,
-  input Ins2Dat_t     FromIns_i,
+	input L2ToL1_t	    MemD_i,
+  input L1ToL2_t      MemBus_i,
 
 	output L1DataOut_t  CPUD_o,
-	output CacheToMem_t MemD_o,
-  output Dat2Ins_t    ToIns_o
+	output L1ToL2_t     MemBus_o
 );
 
 typedef enum {COMP_TAG, ALLOCATE, WRITE_THROUGH, OUTPUT} cache_state;
@@ -79,9 +77,9 @@ end
 
 
 always_comb begin // logic for state machine and outputs
-	set = (FromIns_i.WriteBack) ? FromIns_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS] : CPUD_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS]; 
-	tag = (FromIns_i.WriteBack) ? FromIns_i.Addr[31:32-TAGSIZE] : CPUD_i.Addr[31:32-TAGSIZE];
-	byte_off = (FromIns_i.WriteBack) ? FromIns_i.Addr[BYTE_ADDR_BITS-1:0] : CPUD_i.Addr[BYTE_ADDR_BITS-1:0];
+	set = CPUD_i.Addr[31-TAGSIZE:BYTE_ADDR_BITS]; 
+	tag = CPUD_i.Addr[31:32-TAGSIZE];
+	byte_off = CPUD_i.Addr[BYTE_ADDR_BITS-1:0];
 	case(C_State)
     COMP_TAG: begin
       if (cache_arr[0][set].Valid && cache_arr[0][set].Tag == tag) begin
@@ -102,57 +100,74 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
-      if (CPUD_i.Valid && hit) begin
-        N_State = OUTPUT;
+      if (CPUD_i.Valid && hit) begin // hit
+        if (CPUD_i.Wen) begin
+          N_State = WRITE_THROUGH;
+        end
+        else begin
+          N_State = OUTPUT;
+        end
       end
-      else if (CPUD_i.Valid) begin
+      else if (CPUD_i.Valid) begin // no hit
         degree = last_used_shift_reg[DEGREES-1];
         N_State = ALLOCATE;
       end
-      MemD_o.Valid = 1'b0;
+      CPUD_o.Ready = 1'b0;
+    end
+
+    ALLOCATE: begin
+      if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b1) begin
+        MemBus_o.Wen = 1'b0;
+        MemBus_o.Valid = 1'b1;
+        MemBus_o.Src = 1'b1;
+        MemBus_o.Addr = CPUD_i.Addr;
+        MemBus_o.WriteD = {BLOCKSIZE{1'bx}};
+        if (MemD_i.Ready && MemD_i.Dst == 1'b1) begin
+          if (CPUD_i.Wen) begin
+            N_State = WRITE_THROUGH;
+          end
+          else begin
+            N_State = OUTPUT;
+          end
+          cache_arr[degree][set].Data = MemD_i.ReadD;
+          cache_arr[degree][set].Tag = tag;
+          cache_arr[degree][set].Valid = 1'b1;
+        end
+        else
+          N_State = C_State;
+      end
+      else
+        N_State = C_State;
       CPUD_o.Ready = 1'b0;
     end
 
     WRITE_THROUGH: begin
-      // write to cache
-      cache_arr[degree][set].Valid = 1'b1;
-      `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
-      // write to main memory
-      MemD_o.Valid = 1'b1;		
-      MemD_o.Wen = 1'b1;
-      MemD_o.WriteD = cache_arr[degree][set].Data;
-      MemD_o.Addr = CPUD_i.Addr;
-      if (MemD_i.Ready)
-        N_State = OUTPUT;
-      else
-        N_State = C_State;
-      end
-    end
-
-    ALLOCATE: begin
-      MemD_o.Wen = 1'b0;
-      MemD_o.Valid = 1'b1;
-      MemD_o.Addr = CPUD_i.Addr;
-      MemD_o.WriteD = {BLOCKSIZE{1'bx}};
-      if (MemD_i.Ready) begin
-        if (CPUD_i.Wen)
-          N_State = WRITE_THROUGH;
-        else
+      if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b1) begin
+        MemBus_o.Wen = 1'b1;
+        MemBus_o.Valid = 1'b1;
+        MemBus_o.Src = 1'b1;
+        MemBus_o.Addr = {cache_arr[degree][set].Tag, set, byte_off};
+				`WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
+        MemBus_o.WriteD = cache_arr[degree][set].Data;
+        if (MemD_i.Ready && MemD_i.Dst == 1'b1) begin
           N_State = OUTPUT;
-        cache_arr[degree][set].Data = MemD_i.ReadD;
-        cache_arr[degree][set].Tag = tag;
-        cache_arr[degree][set].Valid = 1'b1;
-        cache_arr[degree][set].Dirty = 1'b0;
+        end
+        else begin
+          N_State = C_State;
+        end
       end
-      else
-        N_State = C_State;
+			else begin
+				N_State = C_State;
+			end
       CPUD_o.Ready = 1'b0;
     end
 
     OUTPUT: begin
+      CPUD_o.Ready = 1'b1;
       N_State = COMP_TAG;
-      CPUD_o.Ready = 1'b1;	
-      MemD_o.Valid = 1'b0;
+      degree = last_used_shift_reg[0];
+      MemBus_o.Valid = 1'b0;
+      MemBus_o.Wen = 1'b0;
     end
 	endcase
 end

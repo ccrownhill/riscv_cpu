@@ -8,10 +8,10 @@ module L2Cache
   import mem_pkg::*;
 (
 	input logic 	      clk_i,
-	input CacheToMem_t	l1_i,
+	input L1ToL2_t    	l1_i,
 	input MemToCache_t	MemD_i,
 
-	output MemToCache_t l1_o,
+	output L2ToL1_t     l1_o,
 	output CacheToMem_t MemD_o
 );
 
@@ -22,7 +22,6 @@ logic 			hit;
 logic [$clog2(DEGREES)-1:0] 	degree;
 logic [$clog2(SETNUM)-1:0] 	set;
 logic [TAGSIZE-1:0] 	tag;
-
 
 cache_state	C_State;
 cache_state	N_State;
@@ -36,11 +35,13 @@ logic [$clog2(DEGREES)-1:0] last_used_shift_reg[DEGREES-1:0];
 initial begin
 	// this will set all valid bits to 0 
 	for (int i = 0; i < SETNUM; i++)
-    for (int j = 0; j < DEGREES; j++)
+    for (int j = 0; j < DEGREES; j++) begin
       cache_arr[j][i].Valid = 1'b0;
+      cache_arr[j][i].Dirty = 1'b0;
+    end
 
   for (int i = 0; i < DEGREES; i++) begin
-    last_used_shift_reg[i] = {$clog2(DEGREES){1'b1}};
+    last_used_shift_reg[i] = i;
   end
 	C_State = COMP_TAG;
 end 
@@ -80,6 +81,7 @@ always_comb begin // logic for state machine and outputs
           cache_arr[degree][set].Dirty = 1'b1;
           cache_arr[degree][set].Data = l1_i.WriteD;
         end
+        l1_o.Dst = l1_i.Src;
         l1_o.ReadD = cache_arr[degree][set].Data;
         l1_o.Ready = 1'b1;
         N_State = C_State;
@@ -98,17 +100,16 @@ always_comb begin // logic for state machine and outputs
     end
 
     ALLOCATE: begin
-      degree = last_used_shift_reg[DEGREES-1];
       MemD_o.Wen = 1'b0;
       MemD_o.Valid = 1'b1;
       MemD_o.Addr = l1_i.Addr;
       MemD_o.WriteD = {BLOCKSIZE{1'bx}};
       if (MemD_i.Ready) begin
         N_State = COMP_TAG;
-        cache_arr[degree][set].Data = MemD_i.ReadD;
-        cache_arr[degree][set].Tag = tag;
-        cache_arr[degree][set].Valid = 1'b1;
-        cache_arr[degree][set].Dirty = 1'b0;
+        cache_arr[last_used_shift_reg[DEGREES-1]][set].Data = MemD_i.ReadD;
+        cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag = tag;
+        cache_arr[last_used_shift_reg[DEGREES-1]][set].Valid = 1'b1;
+        cache_arr[last_used_shift_reg[DEGREES-1]][set].Dirty = 1'b0;
       end
       else
         N_State = C_State;

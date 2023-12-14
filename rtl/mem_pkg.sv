@@ -45,9 +45,23 @@ typedef struct packed {
 typedef struct packed {
   logic           Valid;
   logic           Wen;
+  logic           Src;
+  logic [31:0]    Addr;
+  logic [127:0]   WriteD;
+} L1ToL2_t;
+
+typedef struct packed {
+  logic           Valid;
+  logic           Wen;
   logic [31:0]    Addr;
   logic [127:0]   WriteD;
 } CacheToMem_t;
+
+typedef struct packed {
+  logic           Ready;
+  logic           Dst;
+  logic [127:0]   ReadD;
+} L2ToL1_t;
 
 typedef struct packed {
   logic           Ready;

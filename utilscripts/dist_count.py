@@ -8,6 +8,8 @@ if len(sys.argv) != 2:
 
 out = [0 for _ in range(256)]
 
+prev = 0
+
 with open(sys.argv[1], "r") as f:
     for line in f:
         line = line.replace("  ", " ")

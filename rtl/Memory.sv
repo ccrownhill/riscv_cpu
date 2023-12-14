@@ -7,6 +7,7 @@ module Memory
 	input logic           Mwrite_i,
 	input logic 	        Mread_i,
 	input logic [2:0]     funct3_i,
+  input logic           flush_i,
 
   // for reading instructions
   input logic           validInsReq_i,
@@ -19,26 +20,22 @@ module Memory
   output logic          IMemReady_o
 );
 
+// between CPU and split L1 caches
 L1DataIn_t L1DataIn;
 L1DataOut_t L1DataOut;
 
 L1InstrIn_t L1InstrIn;
 L1InstrOut_t L1InstrOut;
 
-CacheToMem_t L1DataL2In;
-CacheToMem_t L1InstrL2In;
+// between split L1 caches and L2
+L1ToL2_t L1ToL2Bus_L1side;
+L1ToL2_t L1ToL2Bus_L2side;
+L2ToL1_t L2ToL1Bus;
 
-MemToCache_t L1DataL2Out;
-MemToCache_t L1InstrL2Out;
 
-Ins2Dat_t ins2Dat;
-Dat2Ins_t dat2Ins;
-
+// between L2 and MainMemory
 CacheToMem_t L2CacheToMem;
 MemToCache_t MemToL2Cache;
-
-CacheToMem_t L1ToL2;
-MemToCache_t L2ToL1;
 
 assign L1InstrIn.Valid = validInsReq_i;
 assign L1InstrIn.Addr = PC_i;
@@ -51,45 +48,38 @@ assign L1DataIn.ByteData = WriteD_i[7:0];
 L1Data L1Data (
   .clk_i  (clk_i),
   .CPUD_i (L1DataIn),
-  .MemD_i (L1DataL2Out),
-  .FromIns_i (ins2Dat),
+  .MemD_i (L2ToL1Bus),
+  .MemBus_i (L1ToL2Bus_L1side),
 
   .CPUD_o (L1DataOut),
-  .MemD_o (L1DataL2In),
-  .ToIns_o (dat2Ins)
+  .MemBus_o (L1ToL2Bus_L1side)
 );
 
 L1Instr L1Instr (
   .clk_i (clk_i),
+  .flush_i (flush_i),
   .CPUD_i (L1InstrIn),
-  .MemD_i (L1InstrL2Out),
-  .FromDat_i (dat2Ins),
+  .MemD_i (L2ToL1Bus),
+  .MemBus_i (L1ToL2Bus_L1side),
 
   .CPUD_o (L1InstrOut),
-  .MemD_o (L1InstrL2In),
-  .ToDat_o (ins2Dat)
+  .MemBus_o (L1ToL2Bus_L1side)
 );
 
 assign DMemReady_o = L1DataOut.Ready;
 assign IMemReady_o = L1InstrOut.Ready;
 assign Instr_o = L1InstrOut.ReadD;
 
-L1_L2interface L1_L2interface (
-  .l1Dat_i (L1DataL2In),
-  .l1Ins_i (L1InstrL2In),
-  .L2Out_i (L2ToL1),
-
-  .l1Dat_o (L1DataL2Out),
-  .l1Ins_o (L1InstrL2Out),
-  .L2In_o (L1ToL2)
-);
+always_ff @(posedge clk_i) begin
+  L1ToL2Bus_L2side <= L1ToL2Bus_L1side;
+end
 
 L2Cache L2Cache (
   .clk_i (clk_i),
-  .l1_i (L1ToL2),
+  .l1_i (L1ToL2Bus_L2side),
   .MemD_i (MemToL2Cache),
 
-  .l1_o (L2ToL1),
+  .l1_o (L2ToL1Bus),
   .MemD_o (L2CacheToMem)
 );
 

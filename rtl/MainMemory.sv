@@ -1,11 +1,11 @@
 `define WRITE_MAINMEM(ADDR, DATA) \
-  if (ADDR >= 32'hbfc00000/(BLOCKSIZE/8)) \
-    mem_arr_ins[ADDR-32'hbfc00000/(BLOCKSIZE/8)] <= DATA; \
+  if (ADDR >= {32'hbfc00000}[31:BYTE_ADDR_BITS]) \
+    mem_arr_ins[ADDR-{32'hbfc00000}[31:BYTE_ADDR_BITS]] <= DATA; \
   else \
     mem_arr_data[ADDR] <= DATA;
 
 `define READ_MAINMEM(ADDR) \
-  (ADDR >= 32'hbfc00000/(BLOCKSIZE/8)) ? mem_arr_ins[ADDR-32'hbfc00000/(BLOCKSIZE/8)] : mem_arr_data[ADDR]
+  (ADDR >= {32'hbfc00000}[31:BYTE_ADDR_BITS]) ? mem_arr_ins[ADDR-{32'hbfc00000}[31:BYTE_ADDR_BITS]] : mem_arr_data[ADDR]
 
 module MainMemory
   import mem_pkg::*;
