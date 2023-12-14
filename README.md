@@ -85,7 +85,7 @@ Obviously, non-pipelined hardware can work correctly since pipelined hardware do
 
 # Stretch Goal 2: Pipelined RV32I Design with Cache
 
-We successfully run the files on the pipelined CPU with cache. However, due to the nature of Verilator, the performance has hardly any change. This time, we manually change the time interval in `f1_light.s` file, but the time interval between all lights on and all lights off remains in the similar range with pipelined CPU without cache. Here is a video demostration, more details can be found in `README_cache.md`
+We successfully run the files on the pipelined CPU with cache. Initially, due to the nature of Verilator, the performance has hardly any change. This time, we manually change the time interval and use a 4-bit number as the random delay number in `f1_light.s` file. In this case, the lights can cycle through quicker than before. Here is a video demostration, more details can be found in `README_cache.md`
 
 
 
