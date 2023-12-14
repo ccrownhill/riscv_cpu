@@ -1,7 +1,7 @@
 .text
 .equ NORMAL_DELAY, 24
 .equ NLIGHTS, 0xff
-.equ SREG_INIT, 0b1111111
+.equ SREG_INIT, 0b1111
 
 main:
 	jal ra, init
@@ -34,7 +34,7 @@ count_down:
 
 lfsr:
 	slli s0, s0, 1
-	srli t0, s0, 7 // get bit 6
+	srli t0, s0, 4 // get bit 3
 	srli t1, s0, 3 // get bit 2
 	andi t1, t1, 1
 	xor t0, t1, t0
