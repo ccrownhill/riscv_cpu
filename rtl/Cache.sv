@@ -65,6 +65,10 @@ initial begin
 		cache_arr[2][i].Valid = 1'b0;
 		cache_arr[3][i].Valid = 1'b0;
 	end
+
+  for (int i = 0; i < DEGREES; i++) begin
+    last_used_shift_reg[i] = i;
+  end
 	C_State = COMP_TAG;
 end 
 
@@ -100,26 +104,21 @@ always_comb begin // logic for state machine and outputs
       else
         hit = 1'b0;
       if (CPUD_i.Valid && hit) begin
-
         if (CPUD_i.Wen) begin
-          degree = last_used_shift_reg[0];
           N_State = WRITE_THROUGH;
         end
         else begin
           N_State = OUTPUT;
         end
       end
-      else if (CPUD_i.Valid && !hit && !CPUD_i.Wen) begin
-        N_State = ALLOCATE;
-      end
-      else if (CPUD_i.Valid && !hit && CPUD_i.Wen) begin
+      else if (CPUD_i.Valid) begin
         degree = last_used_shift_reg[DEGREES-1];
-        cache_arr[degree][set].Tag = tag;
-        N_State = WRITE_THROUGH;
+        N_State = ALLOCATE;
       end
       MemD_o.Valid = 1'b0;
       CPUD_o.Ready = 1'b0;
     end
+
     WRITE_THROUGH: begin
       // write to cache
       cache_arr[degree][set].Valid = 1'b1;
@@ -135,14 +134,17 @@ always_comb begin // logic for state machine and outputs
         N_State = C_State;
       CPUD_o.Ready = 1'b0;
     end
+
     ALLOCATE: begin
-      degree = last_used_shift_reg[DEGREES-1];
       MemD_o.Wen = 1'b0;
       MemD_o.Valid = 1'b1;
       MemD_o.Addr = CPUD_i.Addr;
       MemD_o.WriteD = {BLOCKSIZE{1'bx}};
       if (MemD_i.Ready) begin
-        N_State = OUTPUT;
+        if (CPUD_i.Wen)
+          N_State = WRITE_THROUGH;
+        else
+          N_State = OUTPUT;
         cache_arr[degree][set].Data = MemD_i.ReadD;
         cache_arr[degree][set].Tag = tag;
         cache_arr[degree][set].Valid = 1'b1;
@@ -151,10 +153,11 @@ always_comb begin // logic for state machine and outputs
         N_State = C_State;
       CPUD_o.Ready = 1'b0;
     end
+
     OUTPUT: begin
-      degree = last_used_shift_reg[0];
       N_State = COMP_TAG;
       CPUD_o.Ready = 1'b1;	
+      MemD_o.Valid = 1'b0;
     end
 	endcase
 end
