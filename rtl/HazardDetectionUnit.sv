@@ -34,7 +34,7 @@ always_comb begin
     EX_MEM_En_o = 1'b0;
     MEM_reset_o = 1'b1;
   end
-  else if ((MemRead_ID_EX_i == 1'b1 && (rd_ID_EX_i == rs1_IF_ID_i || rd_ID_EX_i == rs2_IF_ID_i))) begin
+  else if (MemRead_ID_EX_i == 1'b1 && ((rd_ID_EX_i == rs1_IF_ID_i || rd_ID_EX_i == rs2_IF_ID_i) && rd_ID_EX_i != 5'b0)) begin
     PCEn_o = 1'b0;
     IF_ID_En_o = 1'b0;
     controlZeroSel_o = 1'b1;
@@ -49,9 +49,9 @@ always_comb begin
   // register value
   else if ((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr
       // check whether instruction in EX stage will write to register file
-      && (((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && RegWrite_ID_EX_i == 1'b1)
+      && ((((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && rd_ID_EX_i != 5'b0) && RegWrite_ID_EX_i == 1'b1)
       // check whether instruction in MEM stage will write to register file
-      || ((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && RegWrite_EX_MEM_i == 1'b1))) begin
+      || (((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && rd_EX_MEM_i != 5'b0) && RegWrite_EX_MEM_i == 1'b1))) begin
 //     || (Ret_i == 1'b1
 //       && ((rs1_IF_ID_i == rd_ID_EX_i && Reg || rs1_IF_ID_i == rd_EX_MEM_i))) begin
         PCEn_o = 1'b0;

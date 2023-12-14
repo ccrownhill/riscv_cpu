@@ -1,13 +1,14 @@
 # Team 11 repo
 
-## Objectives
+## Summary of results
 
-1. To learn RISC-V 32-bit integer instruction set architecture
-2. To implememt a single-cycle RV32I instruction set in a microarchitecture
-3. To implementing the F1 starting light algorithm in RV32I assembly language
-4. To verify your RV32I design by executing the F1 light program
-5. As stretched goal, to implement a simple pipelined version of the microarchitecture with hazard detection and mitigation
-6. As a further stretched goal, add data cache to the pipelined RV32I
+We managed to implement a fully pipelined RISC-V CPU (with hazard detection and forwarding) which also uses single level caching.
+
+In a different branch (`neumann_multilevel`) we were even able to implement
+a two level caching mechanism with split L1 cache for instructions and data and
+unified L2 cache as well as main memory for both of them. This required dealing
+with cache coherence between the two L1 caches and adding extra hazard detection
+mechanisms to deal with writes to instruction memory.
 
 ## Team members and personal statements
 
@@ -78,7 +79,7 @@ finally, the whole design as
 
 This part test all the instructions of RV32I with I, S, R, B and J type instructions. 
 
-### Test all instructions with ALU
+**Test all instructions with ALU**
 
 We started with editing ALU and to include all the R type and part of I type Instructions. The ALUdecoder has been edited to deal with R and I type intructions differently because the I type instruction do not have funct7 thus it should be identify whther is shift instructions. We also make the ALUctrl to 4 bits number so it is enough to includes all instructions. Here is the testing result:
 We have the assembly testing program(ALUtest.s):
@@ -102,7 +103,7 @@ The wave we have for this test shown below and all the result matches, last sign
 
 ![ALU test](test/Images/ALUtest.png)
 
-### Test all memory instructions (lb, lh, lw, lbu, lhu, sb, sh and sw)
+**Test all memory instructions (lb, lh, lw, lbu, lhu, sb, sh and sw)**
 
 Then to test all the load and store instructions are working proporly, we edited the data memory to enable more instructions.
 
@@ -128,7 +129,7 @@ The wave we got from this test shows the expected data:
 
 ![DataMemoryTest](test/Images/Load_store_test.png)
 
-### Test with all B type instructions (beq, bne, blt, bge, bltu and bgeu)
+**Test with all B type instructions (beq, bne, blt, bge, bltu and bgeu)**
 
 For Branch instructions we added the `BranchCond` module to set a single bit signal
 (`BranchCond`) according to whether the condition of each of the branch instructions
@@ -168,7 +169,7 @@ The wave we got is the same with what we expexted as the 6 is bigger and not equ
 
 Thus we have include all the RV32I integer instruction and finish testing them worked functionally.
 
-### Test of PDF Distributions
+**Test of PDF Distributions**
 
 It can be seen that our design displays everything correctly for all 4 distributions:
 
@@ -209,7 +210,7 @@ However this is a limitation of the display and not our CPU itself.
 Overall we are very happy with the results we recieved and our SingleCycleCPU has been a success.
 
 
-### Test for the F1-FSM
+**Test for the F1-FSM**
 
 Before the hardware design phase, Our team created the assembly language program to implement the F1 starting light algorithms:
 
@@ -278,6 +279,161 @@ These results mean that we successfully generated random delay with LFSR.
 ## Stretch Goal 1: Pipelined RV32I Design
 
 ### Design
+
+We chose to do a standard five stage pipeline
+
+* `IF` Instruction Fetch
+  * read instructions from instruction memory
+  * PC register
+* `ID` Instruction Decode
+  * decodes instruction into control signals
+  * reads data from register file
+* `EX` Execute
+  * computes ALU result
+* `MEM` Memory
+  * writes/reads the data memory
+* `WB` Write Back
+  * writes data from memory or data from ALU output or next PC value (`jal`) to register file
+
+Patterson p. 297
+
+**IMPORTANT**: to avoid unnecessary extra stalls we designed the register file in
+a slightly unconventional way into a latch
+
+* it will be written during the entire first half of a clock cycle (clock high)
+* it will be read in the second half
+
+```verilog
+always_latch begin
+  if (clk == 1'b1) begin
+    // AD3 != 0 because writing zero register has to stay 0	
+    if (WE3 && AD3 != {ADDRESS_WIDTH{1'b0}}) begin
+      reg_file[AD3] = WD3;   // Write data to port 3
+    end
+  end
+  else if (clk == 1'b0) begin
+    RD1 = reg_file[AD1];
+    RD2 = reg_file[AD2];
+    a0_o = reg_file[10];
+  end
+end
+```
+
+We know that this can also be done by configuring all other pipeline registers as
+well as the register file to write on the negative edge of the clock and read
+the register file on the positive edge but we sticked to this version because
+it was already in place when we learned about the other option and it was best to
+avoid merge conflicts with current development changes.
+
+
+Pipelining was implemented in multiple steps:
+
+**1. Insert pipeline registers between stages**
+
+As in this picture we just inserted pipeline registers between the different stages.
+These received all output signals of one stage as well as the control signals
+that need to be passed to the next stage.
+
+Patterson p. 299
+
+That way it is possible to execute multiple different stages in parallel which means
+less combinational logic needs to be done in one clock cycle which allows a big speedup.
+
+In theory this gives a speedup up to `N` for `N` stages but in practice not all stages execute as fast
+as the other stages and we also need to introduce stalls.
+
+**2. Avoiding hazards**
+
+There are two types of hazards in a pipelined CPU:
+
+* *Data Hazards*: when an instruction needs data from a previous instruction that
+has not yet reached the write back stage --> use FORWARDING
+* `Control Hazards`: when we load a wrong instruction because the branch condition
+of a branch instruction was not yet evaluated --> use stalls, move logic up in the pipeline, predicted fetches, and flush registers to delete predicted instruction load
+
+**2.1. Avoiding data hazards**
+
+In the `EX` stage in `ForwardingUnit.sv` we decide where our ALU operands should
+come from:
+
+* from the register file (if it contains the most up-to-date versions of what we need)
+* from the ALU output stored in the `EX/MEM` register (if one operand is the output of the previous ALU instruction that was not yet written to memory)
+* from the WB stage register file input if we need the second last instructions output
+
+Then we use two MUXes for each operand that select the correct of these (the `Sel`
+input comes from `ForwardUnit.sv`).
+
+Why we need to stall for memory load instruction forwarding: Memory instruction output
+is only available after the `MEM` stage that means that if the last instruction
+before the current instruction is a `MEM` instruction its memory output will not
+be available while the current instruction is starting the EX stage.
+Hence we will stall for one cycle.
+
+How to stall in `HazardDetectionUnit.sv`
+
+* checks whether conditions for stall are fulfilled
+	* whether stages further up will write to the register file at the same address
+	as the current instruction
+	* whether we have a memory load instruction in the MEM stage (then we need to stall)
+* sets PC register enable and `IF/ID` register enable low
+* sets all control signals in `ID` stage to zero so that we will not be writing to
+the register file or memory during the stall
+
+Patterson p. 325
+
+**2.2. Avoiding control hazards**
+
+Here we employed a smart technique to reduce the amount of stalls to 0 if the branch
+condition does not make use of a register edited in the previous two instructions and
+if our prediction of "branch not taken" was correct.
+
+This was done by moving logic into the ID stage:
+
+* comparing register operands directly from output of register file
+* calculate PC + Immediate operand so that we don't need to wait for the EX stage
+
+This means that in many cases all the information which instruction to load in the
+following IF stage will be available and we don't need to stall.
+
+However, we loose a cycle or two in the following scenarios:
+
+1. 1 lost cycle: branch taken means that we already loaded the value at PC+4 from
+the instruction memory while the new PC will only show on the PC register output
+the next cycle. This means we need to set the instruction in the `IF/ID` register
+to 0 to make it like a nop
+
+1. up to 2 lost cycles: if the branch depends on the previous instruction's output
+we need to stall for 2 cycles until the result is in the register file or 1 cycle
+if it was the second last instruction's output.
+
+The Hazard Detection unit was extended to allow for flushing:
+
+* it flushes under this condition: (`Branch_i` for branch instruction, `BranchCond` when condition is fulfilled, `Jump` for `jal` instruction and `Ret` for `jalr` instruction as set in decode logic of `ID` stage):
+
+```verilog
+((Branch_i == 1'b1 && BranchCond_i == 1'b1) || Jump_i == 1'b1 || Ret_i == 1'b1)
+```
+
+* it stalls under this condition (up to two cycles when register for comparison
+was not yet written):
+
+```verilog
+if ((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr 
+// check whether instruction in EX stage will write to register file         
+&& ((((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && rd_ID_EX_i != 5'b0) && RegWrite_ID_EX_i == 1'b1)
+// check whether instruction in MEM stage will write to register file        
+|| (((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && rd_EX_MEM_i != 5'b0) && RegWrite_EX_MEM_i == 1'b1)))
+((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr
+// check whether instruction in EX stage will write to register file
+&& (((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && RegWrite_ID_EX_i == 1'b1)
+// check whether instruction in MEM stage will write to register file
+|| ((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && RegWrite_EX_MEM_i == 1'b1)))
+```
+
+Note the checks to ignore writes to the zero register because these will not change
+anything and should therefore not result in stalls.
+
+Patterson p. 333
 
 ### Evidence
 
