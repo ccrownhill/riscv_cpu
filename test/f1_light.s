@@ -34,8 +34,8 @@ count_down:
 
 lfsr:
 	slli s0, s0, 1
-	srli t0, s0, 4 // get bit 3
-	srli t1, s0, 3 // get bit 2
+	srli t0, s0, 4 # get bit 3
+	srli t1, s0, 3 # get bit 2
 	andi t1, t1, 1
 	xor t0, t1, t0
 	add s0, s0, t0

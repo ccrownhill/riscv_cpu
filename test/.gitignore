@@ -1,0 +1,6 @@
+*.bin
+*.reloc
+*.mem
+*.cfg
+*.hex
+*.out
