@@ -16,7 +16,7 @@ mechanisms to deal with writes to instruction memory.
 |----------------|----------|----------|---------------------------|--------------|
 | Xiaoyang Xu | 02030033 | **X454XU** | xx1522@ic.ac.uk | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
 | Constantin Kronbichler    | 02221910 | **ccrownhill** | ck622@ic.ac.uk     | [Constantin's Statement](statements/ConstantinKronbichler.md) |
-| Yixu Pan|022101209 |**YixuPan** |yp1222@ic.ac.uk |[Yixu Pan's Statement](statements/YixuPan.md) |
+| Yixu Pan| 02210129 |**YixuPan** |yp1222@ic.ac.uk |[Yixu Pan's Statement](statements/YixuPan.md) |
 | Orlan Forshaw| 02229179 | **ManofRenown** |of222@ic.ac.uk |[Orlan Forshaw's Statement](statements/OrlanForshaw.md) |
 
 
@@ -38,6 +38,8 @@ mechanisms to deal with writes to instruction memory.
   * `mem_to_bloc.py` to convert data memory file from bytes to n bit blocks
   * `TabRemove.py` to format code correctly
   * ...
+
+* `memtest`: test bench to test caching in isolation from rest of CPU; SystemVerilog modules are not up-to-date anymore
 
 * `SingleCycleCPU`: the single cycle implementation from Lab4 (included just for reference)
 
@@ -83,6 +85,8 @@ See the [test directory README](./test/README.md#single-cycle).
 
 ## Stretch Goal 1: Pipelined RV32I Design
 
+Note that all the graphics from this section come from the textbook "Computer Organization and Design RISC-V Edition: The Hardware Software Interface" by David Patterson and John Hennessy.
+
 ### Design
 
 We chose to do a standard five stage pipeline
@@ -105,7 +109,7 @@ We chose to do a standard five stage pipeline
 * `WB` Write Back
   * writes data from memory or data from ALU output or next PC value (`jal`) to register file
 
-Patterson p. 297
+![patterson 297](Images/pipeline_stages.png)
 
 **IMPORTANT**: to avoid unnecessary extra stalls we designed the register file in
 a slightly unconventional way into a latch
@@ -144,7 +148,7 @@ As in this picture we just inserted pipeline registers between the different sta
 These received all output signals of one stage as well as the control signals
 that need to be passed to the next stage.
 
-Patterson p. 299
+![patterson 299](pipeline_stages.png)
 
 That way it is possible to execute multiple different stages in parallel which means
 less combinational logic needs to be done in one clock cycle which allows a big speedup.
@@ -189,7 +193,7 @@ How to stall in `HazardDetectionUnit.sv`
 * sets all control signals in `ID` stage to zero so that we will not be writing to
 the register file or memory during the stall
 
-Patterson p. 325
+![patterson 325](Images/hazard_detection.png)
 
 **2.2. Avoiding control hazards**
 
@@ -238,7 +242,7 @@ if ((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr
 Note the checks to ignore writes to the zero register because these will not change
 anything and should therefore not result in stalls.
 
-Patterson p. 333
+![patterson 333](Images/flush_pipe.png)
 
 ### Evidence
 

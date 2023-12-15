@@ -52,3 +52,7 @@ the next value for PC from the ALUout (for JALR)
 ## Pipelining, Single Level Caching, and Multilevel caching as von Neumann architecture
 
 I described all of this in the [root directory README](../README.md)
+
+Note that I also wrote a test bench for testing the cache and main memory separately in the `memtest` directory.
+
+The SystemVerilog files in there are now outdated but it was very useful to have a simplified testing environment to find all problems in the memory modules before integrating them with the rest of the CPU.
