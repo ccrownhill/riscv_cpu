@@ -17,6 +17,12 @@ I assigned the value to RegWrite_o, ImmSrc_o, ALUsrc_o, WriteSrc_o, ALUOp_o, Mem
 
 ## Constantin Kronbichler (ccrownhill)
 
+### For testing environment
+
+I was responsible for creating the testing environment including writing the `Makefile` in `test` directory.
+
+### Single cycle CPU
+
 Modules mainly edited:
 
 * `ControlPath`
@@ -38,7 +44,6 @@ Coauthoring
 
 Also responsible for:
 
-* Creating `Makefile` to run both F1 light and PDF test in more automated fashion
 * Create Python scripts for converting memory files to CSV for plotting PDFs in Excel and other uses
 
 Summary of my involvement:
@@ -54,6 +59,39 @@ the next value for PC from the ALUout (for JALR)
 	* added immediate encoding for U-type instructions to `SignExtend`
 	* worked together with rest of Team to debug our code and run the tests
 
+### Pipelined CPU
+
+Pipelining was done completely by me so I was the author of all the modules for it:
+
+* all the top level modules for every stage
+* `ForwardingUnit.sv`
+* `HazardDetectionUnit.sv`
+* ...
+
+### Single level caching
+
+Authored:
+
+* `Cache.sv` in `writeback_caching` branch
+* `Memory.sv` as top level module for cache and main memory (I designed the interface between them and to the CPU)
+* `HazardDetectionUnit.sv` to stall when `Memory` is not ready yet.
+
+Coauthored:
+
+* `Cache.sv` implementation for write through (in `main` branch). I modified the state machine slightly and fixed all the errors I found when debugging and integrating it
+* `MainMemory.sv`: fix problems and debugging
+
+### Multilevel Caching
+
+In `neumann_multilevel` branch.
+
+This was completely done by me so all modules were also created by me.
+The more important ones include:
+
+* `L2Cache.sv`
+* `L1Instr.sv`
+* `L1Data.sv`
+* `IFStage.sv` to deal with new stalling conditions, e.g. on forbidden read, etc. (see README in root directory)
 
 ## Orlan Forshaw (ManofRenown)
 Main Modules:
