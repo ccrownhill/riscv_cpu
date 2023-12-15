@@ -206,6 +206,8 @@ These results mean that we successfully generated random delay with LFSR.
 
 * `F1_light` can be successfully run on Vbuddy with noticeable longer time interval, around 3.1 seconds and 130 cycles, from current light on to next light on. However, the time interval for non-pipelined version is around 1.5 seconds and 60 cycles. This sounds weird because Verilator lock the clock speed to 2ps/cycle (in reality, the clock speed will be increased since only the logic of one stage is executed in one cycle instead of 5 stages). This shows that we pipelined the instructions successfully.
 
+https://github.com/ccrownhill/Team11/assets/109323873/3f1e5aec-fca1-42b9-b6e8-d10ca1525932
+
 * *Guassian*, *Noisy*, *Sine*, and *Triangle* distributions can be plotted on Vbuddy with noticeable slower plotting speed compared to non-pipelined version, which means plotting instructions can be successfully run with pipelined hardware, reason as explained above. 
 
 Here is a video comparison when `Noisy.mem` is run on a pipelined version and a non-pipelined one
@@ -248,11 +250,14 @@ For the F1 light, we manually changed the time interval and used a 4-bit linear 
 
 
 
-https://github.com/ccrownhill/Team11/assets/109323873/3f1e5aec-fca1-42b9-b6e8-d10ca1525932
+
+https://github.com/ccrownhill/Team11/assets/109323873/68d96834-7d10-47ee-a870-f63b191afc54
 
 
 
-We also tested the distributions and they run as shown.(Note: All distributions are run on Pipelined CPU with cache, We forgot to change the title from "Pipelined" to "Caching")
+
+
+We also tested the distributions and they run as shown.
 
 Gaussian:
 
