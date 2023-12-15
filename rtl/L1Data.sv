@@ -194,29 +194,4 @@ Mux16 #(8) ByteSelect(
 	.out_o  (CPUD_o.ByteOut)
 );
 
-// feel free to delete this it was for mapping out the steps
-// could be left to document how was designed or added to README
-
-/*
-for the cache:
-It recieves a request for a load with an address from the CPU requesting Data (Addr) and so Cready goes low and Valid goes high
-NOTE: For an instruction not a Load/Store valid will be set low unless we have a miss
-2. It takes this address and compares the set bits to detect which set to check
-3. It checks the block offset to determine which block 
-4. It checks the byte_off offset to determine which byte_off
-5. It checks the tag of this byte_off
-6. Now the tree splits into two paths on either a HIT or a MISS
-
-HIT:
-7. This byte_off is outputted in ByteData along with relevant half word and word
-8. The cache is now finished with this request and Cready goes high on the cycle it outputs the data 
-
-MISS:
-NOTE: if the instruction was not load/store but a miss occurs valid must go high as we are changing cache data
-7. The data must be fetched from main memory so MOutput must be configured
-8. The data is returned from main memory and this must be written to the correct block
-9. finally the data must be outputted
-10. The cache is now finished so Cready goes high on the cycle it outputs
-*/
-	
 endmodule
