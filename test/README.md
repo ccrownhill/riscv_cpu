@@ -1,5 +1,7 @@
 # Evidence of our working CPU
 
+For how to run tests with the Makefile see the [root directory README](../README.md#running-with-the-makefile).
+
 ## Single Cycle
 
 This part test all the instructions of RV32I with I, S, R, B and J type instructions. 

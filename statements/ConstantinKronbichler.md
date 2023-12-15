@@ -4,7 +4,7 @@ This personal statement does not contain that much info on how I designed certai
 parts because this is mostly covered in
 
 * [root directory README](../README.md) (where I explain my pipelining and multilevel caching implementation)
-* [rtl directory README](../rtl/README.md) (where I list which modules I mainly designed.
+* [rtl directory README](../rtl/README.md#constantin-kronbichler-ccrownhill) (where I list which modules I mainly designed.
 
 ## Summary of my involvement
 
@@ -33,6 +33,8 @@ For this purpose I also wrote the [CONTRIBUTING.md](../CONTRIBUTING.md) to give 
 I wrote almost all of the Python scripts in `utilscripts` (to convert hex data in the correct block size format or check distribution outputs exactly).
 
 Moreover, I was the creator of our `Makefile` (in `test` directory) used for testing the CPU in all scenarios.
+
+Note that the usage of the Makefile is also documented in the [root directory README](../README.md#running-with-the-makefile).
 
 ## Single Cycle CPU contributions
 
