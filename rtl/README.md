@@ -80,19 +80,19 @@ Other Contributions:
 
 ## Yixu Pan (YixuPan)
 
-Mainly Responsible for:
+Responsible for:
 
-* `Mainmemory`
+* `Mainmemory.sv`
   I wrote was for the data cache design. For reading data once cache miss, it fetch data from the main memory to the cache and replace some original data of cache. And for writing data, as we apply both the write-back policy and write-through policy in different version, the write instruction will only happen when data replaced or modified in the cache for write-back and always write in write through. The code was designed to control with cache valid bit and write enable signal, It will return the block size read out and a ready signal to tell whether the memory data is ready for another read or write operation.
-* `MemExtend`
+* `MemExtend.sv`
   I wrote are used for the Main memory to be able to do the load and store instructions which apply basicly the same principle with the data memory we have for the single-cycle and the pipelined RISC-V. However unfortunately, as our cache use load byte only on design purpose, some of my code has been deleted didn't include all the load and store RV32I instruction in this data cache design.
-* `DataMem`
+* `DataMem.sv`
   I was responsible for the data memory which enables the data to be store and access. It was designed to have synchronous writting operation and asynchronous reading operation, which controled by the MemWrite and addressport. The write instruction only take 1 byte to store in the data memory and read instruction also take 1 byte to the register file every cycle. The data memory enable all the store and load RV32I instructions.
-* `ALU`
+* `ALU.sv`
   I was responsable for the ALU of the datapath. It was initially designed to only deal add and sub operations in lab 4 but later project requies more, so I edit it to deal with several operations which are arithmetic, logical, comparision bit shifting. These operations are controled by the 3 bit ALUctrl and differents operations are allocated according to the RV32I:RISC-V integer instructions.
-* `Regfile`
+* `Regfile.sv`
   I was responsible for the register file of the datapath. This was designed with synchonous writting and asyhconous reading operations. It assign output a0 with the x10 register and simply work as a temporary storage with fast access.
-* `DirectMappedCache``SetAssociativeCache`
+* `DirectMappedCache.sv` and `SetAssociativeCache.sv`
   (only at branch Pan)
   I have wrote the basic structure with both Direct-mapped and set-associative cache before our group work out our final design and this two file can be partly referrence of the structure of the cache and it shows my initial and general understanding before our group discussion. As they are design of general structure of cache, these two version of cache have not build connection with main memory on the code.
 
