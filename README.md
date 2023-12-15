@@ -17,7 +17,7 @@ mechanisms to deal with writes to instruction memory.
 | Xiaoyang Xu | 02030033 | **X454XU** | xx1522@ic.ac.uk | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
 | Constantin Kronbichler    | 02221910 | **ccrownhill** | ck622@ic.ac.uk     | [Constantin's Statement](statements/ConstantinKronbichler.md) |
 | Yixu Pan|022101209 |**YixuPan** |yp1222@ic.ac.uk |[Yixu Pan's Statement](statements/YixuPan.md) |
-| Orlan Forshaw| 02229179 | **ManofRenown** |of222@ic.ac.uk |[Orlan Forshaw's Statement](statements/OrlanForshaw) |
+| Orlan Forshaw| 02229179 | **ManofRenown** |of222@ic.ac.uk |[Orlan Forshaw's Statement](statements/OrlanForshaw.md) |
 
 
 ## Repository structure
