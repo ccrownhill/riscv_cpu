@@ -61,11 +61,11 @@ initial begin
 	// this will set all valid bits to 0 
   for (int i = 0; i < DEGREES; i++) begin
     last_used_shift_reg[i] = i;
+  end
 
 	for (int i = 0; i < SETNUM; i++)
     for (int j = 0; j < DEGREES; j++)
       cache_arr[j][i].Valid = 1'b0;
-  end
 	C_State = COMP_TAG;
 end 
 
