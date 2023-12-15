@@ -10,7 +10,7 @@ clean:
 	riscv64-unknown-elf-as -R -march=rv32im -mabi=ilp32 -o ins.out $^
 	@riscv64-unknown-elf-ld -melf32lriscv -e 0xBFC00000 -Ttext 0xBFC00000 -o ins.out.reloc ins.out
 	@riscv64-unknown-elf-objcopy -O binary -j .text ins.out.reloc ins.bin
-	@od -v -An -t x4 ins.bin | tr -s '\n ' | sed "s/^ //g" | sed "s/ /\n/g" > $@ #| sed "s/^ //" | rev | sed "s/ /\n/g" | rev | paste -d" " - - - - | sed "s/ //g" > $@
+	@od -v -An -t x4 ins.bin | tr -s '\n ' | sed "s/^ //g" | rev | sed "s/ /\n/g" | rev | paste -d" " - - - - | sed "s/ //g" > $@
 	@echo "" >> $@
 	cp $@ instructions.mem
 	rm $@
