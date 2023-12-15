@@ -578,7 +578,7 @@ https://github.com/ccrownhill/Team11/assets/109323873/6579ed6d-6fa6-4562-9b76-db
 
 We also tested the distributions and they run as shown.
 
-[Proof of working gaussian](Gaussian_proof.HEIC)
+[Proof of working gaussian](Gaussian_proof.png)
 
 ## Testing
 
