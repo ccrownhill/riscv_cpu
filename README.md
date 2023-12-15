@@ -351,7 +351,7 @@ Our final version is a write through cache as we thought this was our best versi
 So in the end we picked our write through cache as our final result due to a greater confidence in the design and minimal performance difference between the two designs.
 
 Here is a state machine for the Write Back cache:
-![Write back cache state machien](Images/state_back.jpg)
+![Write back cache state machien](Images/state_write_back.jpeg)
 
 When comparing a run of the Gaussian distribution PDF generation program we can compare at what time they start to display the distribution:
 
@@ -419,8 +419,7 @@ it will return an outdated value.
 The solution for this is to make the L1 caches **snooping caches** which means
 that they are connected to a common input and output bus with the L2 cache, as in this image:
 
-!TODO INSERT IMAGE
-
+![multilevel cache bus](Images/multi_level_bus.jpg)
 
 Note that both L1 caches are implemented as write through caches.
 Now, whenever `L1Data` sends a write request on the bus to L2 (happens on every write because we use write through)

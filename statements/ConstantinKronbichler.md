@@ -26,6 +26,8 @@ My biggest contributions were: (see [root directory README](../README.md) for do
 
 Other than that my knowledge of git and Github made me responsible for teaching everyone how to best contribute.
 
+For this purpose I also wrote the [CONTRIBUTING.md](../CONTRIBUTING.md) to give everyone a quick lookup resource on how to do basic things with git.
+
 ### Scripting and Makefile
 
 I wrote almost all of the Python scripts in `utilscripts` (to convert hex data in the correct block size format or check distribution outputs exactly).
