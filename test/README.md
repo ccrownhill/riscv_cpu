@@ -286,7 +286,7 @@ Gaussian:
 
 Triangle:
 
-![triangle](./Images/Multilevel_Triange.jpeg)
+![triangle](./Images/Multilevel_Triangle.jpeg)
 
 Sine:
 
