@@ -325,13 +325,13 @@ The cache is 4 way set associative which should allow it to hold a large amount 
 The cache itself was implemented using a state machine which tracks what needs to be done by moving through the stages before outputting the correctly fetched value or writing the correct block in memory and awaiting the next instruction. There is logic in the hazard detection to make sure that if there is a delay, from not getting a cache hit or from a write instruction, the pipeline is stalled until this instruction is executed fully. We have not implemented out of order execution.
 
 Here is a state machine for the write through cache:
-![State Machine of Writethrough](state_through.png)
+![State Machine of Writethrough](Images/state_through.png)
 
-## Next Steps
+### Next Steps
 
 If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
 
-## Performance
+### Performance
 
 Our performance for our cache cannot be measured in real time but we can assess the hitrate which is an indicator as to how well it will perform. In the example program we achieve an average hitrate of 94%. This is because the example program is very predictable. Since it accesses data incremently every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
 
@@ -343,13 +343,25 @@ This shows that hit has gone high in a previous state comparing tags. From there
 
 This shows a miss where the data has not been found in the cache so we move to the allocate stage. This is where we fetch the block we need from the memory and write it into the cache. This was a read instruction so the next stage is the output stage where the correct data will be outputted to the CPU. The block is now stored in the cache so later if needed later it can be retrieved and outputted much faster.
 
-More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hitrate there is minimal increase to the number of cycles. If we take into account the theoretical incease from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole. 
+More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hitrate there is minimal increase to the number of cycles. If we take into account the theoretical increase from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole.
 
-Our final version is a write through cache as we thought this was our best version overall. However we did also implement a write back cache. The write through was more complete however the write back did have an edge when it came to performance. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not syncronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
+### Performance comparison to write back cache
+
+Our final version is a write through cache as we thought this was our best version overall. However we did also implement a faster write back cache. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not synchronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
 So in the end we picked our write through cache as our final result due to a greater confidence in the design and minimal performance difference between the two designs.
 
 Here is a state machine for the Write Back cache:
-![Write back cache state machien](state_back.jpg)
+![Write back cache state machien](Images/state_back.jpg)
+
+When comparing a run of the Gaussian distribution PDF generation program we can compare at what time they start to display the distribution:
+
+* Write Back: 358666ps
+* Write Through: 504550ps
+
+This shows that the write back cache outperforms the write through cache
+by almost a factor of 2.
+
+This is due to less writes to memory.
 
 ### Evidence
 
@@ -394,7 +406,7 @@ caches that it now reads and writes whole blocks directly.
 
 ### Split L1 caches and the problem of cache coherence
 
-`L1Data.sv` for the data cache and `L1Instr.sv` for the instruction cache.
+`L1Data.sv` for the data cache and `L1Instr.sv` for the **read-only** instruction cache.
 
 The most interesting part comes from dealing with two separate L1 caches that both
 communicate with the L2 cache.
@@ -416,6 +428,87 @@ Now, whenever `L1Data` sends a write request on the bus to L2 (happens on every 
 its entry at that address (if it has it).
 This means a new read request to `L1Instr` for address `x` has to ALLOCATE the updated
 value from the L2 cache.
+
+The busses were implemented by using one struct to define all of their bits:
+
+```verilog
+typedef struct packed {
+  logic           Valid;
+  logic           Wen;
+  logic           Src;
+  logic [31:0]    Addr;
+  logic [127:0]   WriteD;
+} L1ToL2_t;
+
+typedef struct packed {
+  logic           Ready;
+  logic           Dst;
+  logic [127:0]   ReadD;
+} L2ToL1_t;
+```
+
+Note the `Src` and `Dst` fields to differentiate which cache a request comes from or whose request is being served.
+
+Then the ALLOCATE stage of `L1Instr` is changed to this:
+
+```verilog
+ALLOCATE: begin
+	if (flush_i) begin
+		N_State = COMP_TAG;
+		if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b0) begin
+			MemBus_o.Valid = 1'b0;
+		end
+	end
+	else if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b0) begin
+		degree = last_used_shift_reg[DEGREES-1];
+		MemBus_o.Src = 1'b0;
+		MemBus_o.Wen = 1'b0;
+		MemBus_o.Valid = 1'b1;
+		MemBus_o.Addr = CPUD_i.Addr;
+		MemBus_o.WriteD = {BLOCKSIZE{1'bx}};
+		if (MemD_i.Ready && MemD_i.Dst == 1'b0) begin
+			N_State = COMP_TAG;
+			cache_arr[degree][set].Data = MemD_i.ReadD;
+			cache_arr[degree][set].Tag = tag;
+			cache_arr[degree][set].Valid = 1'b1;
+			cache_arr[degree][set].Dirty = 1'b0;
+			MemBus_o.Valid = 1'b0;
+		end
+		else
+			N_State = C_State;
+	end
+	else
+		N_State = C_State;
+	CPUD_o.Ready = 1'b0;
+end
+```
+
+This just checks whether the bus is free to use before making a request as well as whether the response from the L2 cache is destined for `L1Instr`.
+
+In `L1Data` we do something similar for ALLOCATE but also have to change the WRITE_THROUGH state:
+
+```verilog
+WRITE_THROUGH: begin
+	if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b1) begin
+		MemBus_o.Wen = 1'b1;
+		MemBus_o.Valid = 1'b1;
+		MemBus_o.Src = 1'b1;
+		MemBus_o.Addr = {cache_arr[degree][set].Tag, set, byte_off};
+		`WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
+		MemBus_o.WriteD = cache_arr[degree][set].Data;
+		if (MemD_i.Ready && MemD_i.Dst == 1'b1) begin
+			N_State = OUTPUT;
+		end
+		else begin
+			N_State = C_State;
+		end
+	end
+	else begin
+		N_State = C_State;
+	end
+	CPUD_o.Ready = 1'b0;
+end
+```
 
 ### Handling new Hazards arising from split cache configuration
 
@@ -447,8 +540,7 @@ end
 
 ### Evidence
 
-TODO insert link to test directory readme section on this
-
+See [test folder README](./test/README.md#multilevel-von-neumann-cpu).
 
 ## Testing
 
@@ -498,10 +590,11 @@ Note that the Makefile is in `test` and you can only run it from that directory.
 * Test probability function on VBuddy (will automatically change `instructions.mem` and `data.mem`)
 
 ```
-make distfile.mem
+make gaussian
+make sine
+make noisy
+make triangle
 ```
-
-**IMPORTANT**: needs `.mem` extension.
 
 * Test F1 light on VBuddy (will automatically change `instructions.mem`)
 
@@ -509,13 +602,15 @@ make distfile.mem
 make f1
 ```
 
-* Run a generic test bench file ending in `_tb.cpp`:
+* Get executable for generic test bench file ending in `_tb.cpp`:
 
 ```
 make my_tb.cpp
 ```
 
 where `my` should be replaced by the actual name.
+
+Run with `./obj_dir/Vriscvpipe`.
 
 * For debugging: run with `gtkwave`
 

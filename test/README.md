@@ -202,7 +202,7 @@ The time interval from the current light on to the next light on is a constant, 
 These results mean that we successfully generated random delay with LFSR.
 
 
-### Pipelined CPU
+## Pipelined CPU
 
 * `F1_light` can be successfully run on Vbuddy with noticeable longer time interval, around 3.1 seconds and 130 cycles, from current light on to next light on. However, the time interval for non-pipelined version is around 1.5 seconds and 60 cycles. This sounds weird because Verilator lock the clock speed to 2ps/cycle (in reality, the clock speed will be increased since only the logic of one stage is executed in one cycle instead of 5 stages). This shows that we pipelined the instructions successfully.
 
@@ -241,7 +241,7 @@ NOTE: testbench has been modified, the step length now is 7 which was 3 for non-
 Obviously, non-pipelined hardware can work correctly since pipelined hardware does work correctly
 
 
-### Caching
+## Caching
 
 We successfully ran the files on the pipelined CPU with the cache.
 
@@ -249,11 +249,7 @@ For the F1 light, we manually changed the time interval and used a 4-bit linear 
 
 
 
-
-
 https://github.com/ccrownhill/Team11/assets/109323873/68d96834-7d10-47ee-a870-f63b191afc54
-
-
 
 
 
@@ -282,20 +278,20 @@ Noisy:
 ![4371702660048_ pic](https://github.com/ccrownhill/Team11/assets/109323873/ecf7fe44-b882-4684-a0f4-b69ee8bc6285)
 
 
-#### Write-Back and Write-Through Caching
+## Multilevel von Neumann CPU
 
-Here is a comparison between write-back caching and write-through caching. It can be seen that the write-back caching runs faster than write-through caching because write-back caching optimizes for performance by delaying the slower write operations to main storage, accepting the trade-off of potential data consistency issues in certain failure scenarios. The choice between write-back and write-through caching depends on the specific requirements and priorities of the system in terms of performance, data integrity, and fault tolerance.
+Gaussian:
 
-Write Back:
+![gaussian](./Images/Multilevel_Gaussian.jpeg)
 
+Triangle:
 
-![Write_back](https://github.com/ccrownhill/Team11/assets/109323873/288fa01c-8f73-44cf-ae7e-b6d18823eaeb)
+![triangle](./Images/Multilevel_Triange.jpeg)
 
+Sine:
 
-Write Through:
+![sine](./Images/Multilevel_Sine.jpeg)
 
+Noisy:
 
-![Write_through](https://github.com/ccrownhill/Team11/assets/109323873/efc06add-4958-4732-904f-26f9b21c6c1d)
-
-
-
+![noisy](./Images/Multilevel_Noisy.jpeg)
