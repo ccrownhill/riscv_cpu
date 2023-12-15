@@ -261,22 +261,26 @@ We also tested the distributions and they run as shown.
 
 Gaussian:
 
-![4191702651807_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/12507ce0-df1c-4c94-af50-7117411bc128)
+![4341702660044_ pic](https://github.com/ccrownhill/Team11/assets/109323873/3dfe3efe-9dd9-455f-9ae1-b2e8565b89b1)
+
 
 
 Sine:
 
-![4201702651810_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/481819dc-447d-4ed5-99ec-0fdbe30bb94f)
+
+![4351702660045_ pic](https://github.com/ccrownhill/Team11/assets/109323873/6d6caec1-4d02-4a31-889b-55f1751abaa6)
 
 
 Triangle:
 
-![4211702651813_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/05d9d8aa-4ac6-44dd-adf6-0977889b6bdd)
+![4361702660046_ pic](https://github.com/ccrownhill/Team11/assets/109323873/795848ac-adc0-490e-b347-fa9ddae15a9d)
+
 
 
 Noisy:
 
-![4221702651816_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/e76db1a4-51a6-4a2b-80bd-6ddf7efd386a)
+![4371702660048_ pic](https://github.com/ccrownhill/Team11/assets/109323873/ecf7fe44-b882-4684-a0f4-b69ee8bc6285)
+
 
 #### Write-Back and Write-Through Caching
 
