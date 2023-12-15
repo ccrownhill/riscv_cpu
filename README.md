@@ -333,11 +333,11 @@ Here is a state machine for the write through cache:
 
 ### Next Steps
 
-If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
+If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most interesting feature as writing an effective algorithm would be a fascinating challenge.
 
 ### Performance
 
-Our performance for our cache cannot be measured in real time but we can assess the hitrate which is an indicator as to how well it will perform. In the example program we achieve an average hitrate of 94%. This is because the example program is very predictable. Since it accesses data incremently every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
+Our performance for our cache cannot be measured in real time but we can assess the hit rate which is an indicator as to how well it will perform. In the example program we achieve an average hit rate of 94%. This is because the example program is very predictable. Since it accesses data incrementally every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
 
 ![This is an example of a hit](Images/hit.png)
 
@@ -347,7 +347,7 @@ This shows that hit has gone high in a previous state comparing tags. From there
 
 This shows a miss where the data has not been found in the cache so we move to the allocate stage. This is where we fetch the block we need from the memory and write it into the cache. This was a read instruction so the next stage is the output stage where the correct data will be outputted to the CPU. The block is now stored in the cache so later if needed later it can be retrieved and outputted much faster.
 
-More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hitrate there is minimal increase to the number of cycles. If we take into account the theoretical increase from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole.
+More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hit rate there is minimal increase to the number of cycles. If we take into account the theoretical increase from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole.
 
 ### Performance comparison to write back cache
 
@@ -510,6 +510,21 @@ WRITE_THROUGH: begin
 		N_State = C_State;
 	end
 	CPUD_o.Ready = 1'b0;
+end
+```
+
+**Avoid Verilator limitations by adding register into the bus**
+
+I separated the output lines of the L1 caches going into the bus and then to the L2 cache
+with a register from the L2 cache to avoid doing to much combinational logic in one
+cycle.
+Otherwise, it is too hard for Verilator to simulate and it will throw a "did not converge" error.
+
+I do this as follows in `Memory.sv`:
+
+```verilator
+always_ff @(posedge clk_i) begin
+  L1ToL2Bus_L2side <= L1ToL2Bus_L1side;
 end
 ```
 
