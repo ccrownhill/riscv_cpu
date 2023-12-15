@@ -324,6 +324,9 @@ The cache is 4 way set associative which should allow it to hold a large amount 
 
 The cache itself was implemented using a state machine which tracks what needs to be done by moving through the stages before outputting the correctly fetched value or writing the correct block in memory and awaiting the next instruction. There is logic in the hazard detection to make sure that if there is a delay, from not getting a cache hit or from a write instruction, the pipeline is stalled until this instruction is executed fully. We have not implemented out of order execution.
 
+Here is a state machine for the write through cache:
+![State Machine of Writethrough](state_through.png)
+
 ## Next Steps
 
 If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
@@ -344,6 +347,9 @@ More cycles are used when running the program with the cache as misses add cycle
 
 Our final version is a write through cache as we thought this was our best version overall. However we did also implement a write back cache. The write through was more complete however the write back did have an edge when it came to performance. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not syncronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
 So in the end we picked our write through cache as our final result due to a greater confidence in the design and minimal performance difference between the two designs.
+
+Here is a state machine for the Write Back cache:
+![Write back cache state machien](state_back.jpg)
 
 ### Evidence
 
