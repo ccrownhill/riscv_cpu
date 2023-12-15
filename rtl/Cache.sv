@@ -64,14 +64,9 @@ initial begin
 		cache_arr[2][i].Valid = 1'b0;
 		cache_arr[3][i].Valid = 1'b0;
 	end
-<<<<<<< HEAD
 
   for (int i = 0; i < DEGREES; i++) begin
     last_used_shift_reg[i] = i;
-=======
-  for (int i = 0; i < DEGREES; i++) begin
-    last_used_shift_reg[i] = {$clog2(DEGREES)-1{1'b1}};
->>>>>>> 1ad069a (add writeback implementation of cache)
   end
 	C_State = COMP_TAG;
 end 
@@ -107,47 +102,17 @@ always_comb begin // logic for state machine and outputs
       end
       else
         hit = 1'b0;
-<<<<<<< HEAD
-      if (CPUD_i.Valid && hit) begin
-=======
       if (CPUD_i.Valid && hit) begin // hit
->>>>>>> 1ad069a (add writeback implementation of cache)
         if (CPUD_i.Wen) begin
           cache_arr[degree][set].Dirty = 1'b1;
           `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData)
         end
-<<<<<<< HEAD
-        else begin
-          N_State = OUTPUT;
-        end
-      end
-      else if (CPUD_i.Valid) begin
-        degree = last_used_shift_reg[DEGREES-1];
-        N_State = ALLOCATE;
-      end
-      MemD_o.Valid = 1'b0;
-      CPUD_o.Ready = 1'b0;
-    end
-
-    WRITE_THROUGH: begin
-      // write to cache
-      cache_arr[degree][set].Valid = 1'b1;
-      `WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
-      // write to main memory
-      MemD_o.Valid = 1'b1;		
-      MemD_o.Wen = 1'b1;
-      MemD_o.WriteD = cache_arr[degree][set].Data;
-      MemD_o.Addr = CPUD_i.Addr;
-      if (MemD_i.Ready)
-        N_State = OUTPUT;
-      else
-=======
         CPUD_o.Ready = 1'b1;
->>>>>>> 1ad069a (add writeback implementation of cache)
         N_State = C_State;
       end
       else if (CPUD_i.Valid) begin // no hit
-        if (cache_arr[last_used_shift_reg[DEGREES-1]][set].Dirty)
+        degree = last_used_shift_reg[DEGREES-1];
+        if (cache_arr[degree][set].Dirty)
           N_State = WRITE_BACK;
         else
           N_State = ALLOCATE;
@@ -178,8 +143,8 @@ always_comb begin // logic for state machine and outputs
     WRITE_BACK: begin
       MemD_o.Wen = 1'b1;
       MemD_o.Valid = 1'b1;
-      MemD_o.Addr = {cache_arr[last_used_shift_reg[DEGREES-1]][set].Tag, set, byte_off};
-      MemD_o.WriteD = cache_arr[last_used_shift_reg[DEGREES-1]][set].Data;
+      MemD_o.Addr = {cache_arr[degree][set].Tag, set, byte_off};
+      MemD_o.WriteD = cache_arr[degree][set].Data;
       if (MemD_i.Ready) begin
         N_State = ALLOCATE;
         MemD_o.Valid = 1'b0;
