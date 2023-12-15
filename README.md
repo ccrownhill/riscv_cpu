@@ -165,7 +165,7 @@ end_test:
 ```
 The wave we got is the same with what we expexted as the 6 is bigger and not equal to 5:
 
-![Branch test](test/Images/Branch_test.png>)
+![Branch test](test/Images/Branch_test.png)
 
 Thus we have include all the RV32I integer instruction and finish testing them worked functionally.
 
@@ -285,13 +285,18 @@ We chose to do a standard five stage pipeline
 * `IF` Instruction Fetch
   * read instructions from instruction memory
   * PC register
+  * `IF/ID` register between this and next stage
 * `ID` Instruction Decode
   * decodes instruction into control signals
   * reads data from register file
+  * `ID/EX` register between this and next stage
 * `EX` Execute
   * computes ALU result
+  * `EX/MEM` register between this and next stage
 * `MEM` Memory
   * writes/reads the data memory
+  * also writes new value of PC to input of PC register; the reason for this is that the PC register will introduce another cycle delay until its output changes; hence, we change it already before the last stage
+  * `MEM/WB` register between this and next stage
 * `WB` Write Back
   * writes data from memory or data from ALU output or next PC value (`jal`) to register file
 
@@ -420,14 +425,9 @@ was not yet written):
 ```verilog
 if ((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr 
 // check whether instruction in EX stage will write to register file         
-&& ((((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && rd_ID_EX_i != 5'b0) && RegWrite_ID_EX_i == 1'b1)
+&&    ((((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && rd_ID_EX_i != 5'b0) && RegWrite_ID_EX_i == 1'b1)
 // check whether instruction in MEM stage will write to register file        
-|| (((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && rd_EX_MEM_i != 5'b0) && RegWrite_EX_MEM_i == 1'b1)))
-((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr
-// check whether instruction in EX stage will write to register file
-&& (((rs1_IF_ID_i == rd_ID_EX_i || rs2_IF_ID_i == rd_ID_EX_i) && RegWrite_ID_EX_i == 1'b1)
-// check whether instruction in MEM stage will write to register file
-|| ((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && RegWrite_EX_MEM_i == 1'b1)))
+    || (((rs1_IF_ID_i == rd_EX_MEM_i || rs2_IF_ID_i == rd_EX_MEM_i) && rd_EX_MEM_i != 5'b0) && RegWrite_EX_MEM_i == 1'b1)))
 ```
 
 Note the checks to ignore writes to the zero register because these will not change
