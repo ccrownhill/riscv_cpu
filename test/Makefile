@@ -13,10 +13,13 @@ clean:
 	@od -v -An -t x4 -w4 ins.bin | tr -s '\n' | sed "s/ //g" > $@ #| sed "s/^ //" | rev | sed "s/ /\n/g" | rev | paste -d" " - - - - | sed "s/ //g" > $@
 	@echo "" >> $@
 	cp $@ instructions.mem
+	rm $@
 
 %.hex: %.dist
 	../utilscripts/mem_to_block.py 16 $^ $@
 	@echo "" >> $@ # insert newline
+	cp $@ data.mem
+	rm $@
 
 warnings:
 	verilator -Wall -I$(SRCPATH) --cc --trace $(SRCPATH)/mem_pkg.sv $(SRCPATH)/riscvpipe.sv

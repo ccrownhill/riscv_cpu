@@ -14,7 +14,8 @@ with open(sys.argv[1], "r") as f:
         byte_data = line.strip().split(" ")
         for byte in byte_data:
             out[int(byte, 16)] += 1
-            if out[int(byte,16)] >= 255:
+            if out[int(byte,16)] >= 200:
                 print([hex(o) for o in out])
                 sys.exit(0)
 
+print([hex(o) for o in out])

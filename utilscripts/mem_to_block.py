@@ -11,6 +11,8 @@ block_size = int(sys.argv[1])
 with open(sys.argv[2], "r") as f:
     contents = f.read()
 
+if contents[0] == " ":
+    contents = "0" + contents[1:]
 contents = contents.replace("\n", " ")
 contents = contents.replace("  ", " 0")
 contents = contents.split(" ")
