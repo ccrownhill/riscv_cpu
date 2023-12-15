@@ -125,7 +125,7 @@ Sin Distribution:
 
 ![PDF Sin](Images/PDF_Sin.png)
 
-![Sin Vbuddy](Images/Sin_Vbuddy.jpeg)
+![Sin Vbuddy](Images/Sine_Vbuddy.jpeg)
 
 These images show that our CPU works exactly as expected as it produces the same results that we expect from the excel plots.
 
