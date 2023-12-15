@@ -148,7 +148,7 @@ As in this picture we just inserted pipeline registers between the different sta
 These received all output signals of one stage as well as the control signals
 that need to be passed to the next stage.
 
-![patterson 299](pipeline_stages.png)
+![patterson 299](Images/pipeline_stages.png)
 
 That way it is possible to execute multiple different stages in parallel which means
 less combinational logic needs to be done in one clock cycle which allows a big speedup.
