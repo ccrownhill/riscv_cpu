@@ -272,3 +272,21 @@ Triangle:
 Noisy:
 
 ![4221702651816_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/e76db1a4-51a6-4a2b-80bd-6ddf7efd386a)
+
+#### Write Back and Write Through Caching
+
+Here is a comparison between write-back caching and write-through caching. It can be seen that the write-back caching runs faster than write-through caching
+
+Write Back:
+
+
+![Write_back](https://github.com/ccrownhill/Team11/assets/109323873/288fa01c-8f73-44cf-ae7e-b6d18823eaeb)
+
+
+Write Through:
+
+
+![Write_through](https://github.com/ccrownhill/Team11/assets/109323873/efc06add-4958-4732-904f-26f9b21c6c1d)
+
+
+####TODO: Explain why write back is faster
