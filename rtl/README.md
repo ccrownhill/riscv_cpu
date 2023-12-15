@@ -57,9 +57,9 @@ the next value for PC from the ALUout (for JALR)
 
 ## Orlan Forshaw (ManofRenown)
 Main Modules:
-* SignExtend.sv (fully my work)
-* Cache.sv (fully my design and work)
-* ofpipe (all not found in single cycle)
+* `SignExtend.sv` (fully my work)
+* `Cache.sv` (fully my design and work)
+* `ofpipe` (all not found in single cycle) (available in ofpipe branch)
 
 	
 Other Contributions:
@@ -68,14 +68,14 @@ Other Contributions:
   I also created the section of the README with links and brief descriptions of these images. 
 		NOTE: Constantins script to convert the data into one long column was very helpful in doing this.
 
-	I also created a formatting script <TabRemove.py> which is to help keep formatting consistent across the project. 
+  I also created a formatting script `TabRemove.py` which is to help keep formatting consistent across the project. 
   This script takes in any number of files as arguments and then formats them so that no tab characters are used in the whole document. 
   It also removes all trailing whitespace and replaces any instances of leading 4 spaces with leading 2 spaces as this was the formatting the team agreed upon.
   
   I was also involved in resolving merge conflicts across the project when the arose. 
   However these were usually minor issues and we managed to work together effectively as a team to prevent them.
 
-  I was also involved with testing and making sure the project was actually working.
+  I was also involved with testing and making sure the project was actually working throughout the design.
 
 
 ## Yixu Pan (YixuPan)
