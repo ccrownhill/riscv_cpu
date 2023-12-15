@@ -260,7 +260,7 @@ We will only have one level of cache. (To begin)
 We will initially have a writethrough cache.
 
 This is an example of a cache. For our purposes the 32 bit input to the mux will be 8 bit and our mux will be much larger to enable every byte to be individually addressed.
-![Alt text](cache_address.png)
+![Alt text](Images/cache_address.png)
 
 Inputs and outputs names:
 Top Level Memory:  Memory.sv
@@ -335,11 +335,11 @@ If given more time there are two features that would be very interesting to impl
 
 Our performance for our cache cannot be measured in real time but we can assess the hitrate which is an indicator as to how well it will perform. In the example program we achieve an average hitrate of 94%. This is because the example program is very predictable. Since it accesses data incremently every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
 
-![This is an example of a hit](hit.png)
+![This is an example of a hit](Images/hit.png)
 
 This shows that hit has gone high in a previous state comparing tags. From there the next state is the Output stage (state 3) where the output of the cache is changed to the new correct output value. Then the cache will signal it is ready for a new instruction and change state again on the next clock cycle to compare tags for the next value.
 
-![This is an example of a miss](miss.png)
+![This is an example of a miss](Images/miss.png)
 
 This shows a miss where the data has not been found in the cache so we move to the allocate stage. This is where we fetch the block we need from the memory and write it into the cache. This was a read instruction so the next stage is the output stage where the correct data will be outputted to the CPU. The block is now stored in the cache so later if needed later it can be retrieved and outputted much faster.
 
@@ -354,6 +354,101 @@ Here is a state machine for the Write Back cache:
 ### Evidence
 
 See the [test directory README](https://github.com/ccrownhill/Team11/blob/main/test/README.md#caching)
+
+
+## Multilevel caching with unified main memory, L2 cache and split L1 caches
+
+As an extra challenge a multilevel caching system was implemented in the `neumann_multilevel` branch.
+As the branch name suggests it also implements a von-Neumann memory model, i.e.
+a shared memory for both instructions and data.
+
+### Motivation
+
+Almost all modern CPUs use a von-Neumann architecture as well as multilevel caching with
+a split first level cache.
+Hence, it was my goal to try to implement a more realistic CPU by adding this to our design.
+
+### Main Memory
+
+`MainMemory.sv`
+
+Since $2^32$ bytes would be too big for our memory the memory just contains two
+SystemVerilog arrays and decides which one to read from based on the input address.
+
+This was done with this simple Macro:
+
+```verilog
+`define WRITE_MAINMEM(ADDR, DATA) \
+	if (ADDR >= {32'hbfc00000}[31:BYTE_ADDR_BITS]) \
+		mem_arr_ins[ADDR-{32'hbfc00000}[31:BYTE_ADDR_BITS]] <= DATA; \
+  else \
+    mem_arr_data[ADDR] <= DATA;
+```
+
+### L2 cache
+
+`L2Cache.sv`
+
+The L2 cache is a simple write back cache with the only difference to the previous
+caches that it now reads and writes whole blocks directly.
+
+### Split L1 caches and the problem of cache coherence
+
+`L1Data.sv` for the data cache and `L1Instr.sv` for the instruction cache.
+
+The most interesting part comes from dealing with two separate L1 caches that both
+communicate with the L2 cache.
+
+The main problem arises when one cache wants to read from memory that the other cache
+has just written. Assume both `L1Data` and `L1Instr` have a cached copy of data at address `x`.
+When `L1Data` writes to address `x` and `L1Instr` receives a read request at address `x`
+it will return an outdated value.
+
+The solution for this is to make the L1 caches **snooping caches** which means
+that they are connected to a common input and output bus with the L2 cache, as in this image:
+
+!TODO INSERT IMAGE
+
+
+Note that both L1 caches are implemented as write through caches.
+Now, whenever `L1Data` sends a write request on the bus to L2 (happens on every write because we use write through)
+`L1Instr` will *snoop* this request from the bus going to the L2 cache and invalidate
+its entry at that address (if it has it).
+This means a new read request to `L1Instr` for address `x` has to ALLOCATE the updated
+value from the L2 cache.
+
+### Handling new Hazards arising from split cache configuration
+
+Extra hazard handling implemented (in `IFStage.sv` and `HazardDetectionUnit.sv`):
+
+* Stall when the instruction memory is not ready (this is the case if it has to load data from the L2 cache or main memory)
+* Check if a previous instruction will write to the memory address you are about to read.
+In that case wait for data to be written to memory (use ready signal of `L1Data`).
+* To check for these forbidden reads I also had to add another forwarding mechanism to forward the memory address and memory write enable
+from the `ID`/`WB` stage to the `IF` stage to be able to tell whether a write happens and whether it writes to the address equivalent to the current PC value in the `IF` stage.
+* checking the value in the `EX` stage was not necessary since the pipeline already
+stalls automatically if we require a value from an instruction while we are in the ID stage (which is when the previous instruction is in the `EX` stage)
+
+This is the code in `IFStage.sv` to check for forbidden reads (i.e. from addresses that will be overwritten in later stages of previous instructions):
+
+```verilog
+always_latch begin
+  if (PCbeforeReg_o[31:2] == regPlusImm_i[31:2] && MemWrite_beforeID_i && !(ALUout_EX_i == regPlusImm_i && MemWrite_EX_i && DMemReady_i)) begin
+    forbiddenRead = 1'b1;
+    nextPC = PCbeforeReg_o;
+    validReq_o = 1'b0;
+  end
+  else begin
+    forbiddenRead = 1'b0;
+    validReq_o = 1'b1;
+  end
+end
+```
+
+### Evidence
+
+TODO insert link to test directory readme section on this
+
 
 ## Testing
 
