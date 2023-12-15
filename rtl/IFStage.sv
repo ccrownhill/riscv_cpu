@@ -29,9 +29,6 @@ module IFStage (
   output logic        IMemReady_o
 );
 
-initial begin
-  PCbeforeReg_o = 32'hbfc00000;
-end
 
 logic [31:0]  pcPlus4;
 logic [31:0]	nextPC;
@@ -71,7 +68,7 @@ Adder adder4 (PCbeforeReg_o, 32'd4, pcPlus4);
 
 
 always_ff @(posedge clk_i) begin
-  if (IF_ID_En_i) begin
+  if (IF_ID_En_i && IMemReady_i) begin
     rs1_o <= IMemInstr_i[19:15];
     rs2_o <= IMemInstr_i[24:20];
     rd_o <= IMemInstr_i[11:7];
@@ -82,7 +79,7 @@ always_ff @(posedge clk_i) begin
     funct7_5_o <= IMemInstr_i[30];
     pcPlus4_o <= pcPlus4;
     forbiddenRead_o <= forbiddenRead;
-    IMemReady_o <= IMemReady_o;
+    IMemReady_o <= IMemReady_i;
   end
   if (flush_i) begin
     rs1_o <= 5'b0;
@@ -94,6 +91,7 @@ always_ff @(posedge clk_i) begin
     funct3_o <= 3'b0;
     funct7_5_o <= 1'b0;
     pcPlus4_o <= 32'b0;
+    IMemReady_o <= 1'b0;
   end
 end
 endmodule

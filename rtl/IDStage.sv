@@ -145,7 +145,7 @@ PCsrcDecode PCsrcDecode (
 
 
 ControlResetMux ControlResetMux (
-  .controlZeroSel_i (controlZeroSel_i || IMemReady_i || forbiddenRead_i),
+  .controlZeroSel_i (controlZeroSel_i || !IMemReady_i || forbiddenRead_i),
   .RegWrite_i (RegWrite),
   .ALUsrc_i (ALUsrc),
   .WriteSrc_i (WriteSrc),

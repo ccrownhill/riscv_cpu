@@ -38,7 +38,7 @@ CacheToMem_t L2CacheToMem;
 MemToCache_t MemToL2Cache;
 
 assign L1InstrIn.Valid = validInsReq_i;
-assign L1InstrIn.Addr = PC_i;
+assign L1InstrIn.Addr = PC_i + 32'hbfc00000;
 
 assign L1DataIn.Valid = (Mwrite_i || Mread_i);
 assign L1DataIn.Wen = Mwrite_i;

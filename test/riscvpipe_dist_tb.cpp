@@ -21,11 +21,11 @@ int main(int argc, char **argv, char **env) {
 	tfp->open ("riscvpipe.vcd");
  
 	if (vbdOpen()!=1) return(-1);
-	vbdHeader("Pipelined");
+	vbdHeader("Multilevel");
 
 	// initialize simulation inputs
 	top->clk = 1;
-	top->rst = 1;
+	top->rst = 0;
 	bool started = false;
 	int count = 0;
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv, char **env) {
 			top->eval ();
 		}
 		
-		top->rst = (simcyc<2);
+		//top->rst = (simcyc<2);
 
 		if (top->a0 != 0)
 			started = true;
