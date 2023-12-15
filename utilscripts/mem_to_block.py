@@ -23,7 +23,6 @@ for i in range(int(len(contents)/block_size)):
     for j in range(block_size):
         tmp.append(contents[i * block_size + j])
     out.append(''.join(reversed(tmp)))
-    print(hex(i*block_size), out[-1])
 
 with open(sys.argv[3], "w") as f:
     f.write("\n".join(out))
