@@ -246,9 +246,29 @@ We successfully ran the files on the pipelined CPU with the cache.
 For the F1 light, we manually changed the time interval and used a 4-bit linear feedback shift register as the random delay in the `f1_light.s` file. That way, the lights can cycle through quicker than before.
 
 
-https://github.com/ccrownhill/Team11/assets/109323873/6579ed6d-6fa6-4562-9b76-db219395564b
 
-We also tested the distributions and they run as shown.
 
-![Proof of working gaussian](Gaussian_proof.png)
+https://github.com/ccrownhill/Team11/assets/109323873/3f1e5aec-fca1-42b9-b6e8-d10ca1525932
 
+
+
+We also tested the distributions and they run as shown.(Note: All distributions are run on Pipelined CPU with cache, We forgot to change the title from "Pipelined" to "Caching")
+
+Gaussian:
+
+![4191702651807_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/12507ce0-df1c-4c94-af50-7117411bc128)
+
+
+Sine:
+
+![4201702651810_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/481819dc-447d-4ed5-99ec-0fdbe30bb94f)
+
+
+Triangle:
+
+![4211702651813_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/05d9d8aa-4ac6-44dd-adf6-0977889b6bdd)
+
+
+Noisy:
+
+![4221702651816_ pic_hd](https://github.com/ccrownhill/Team11/assets/109323873/e76db1a4-51a6-4a2b-80bd-6ddf7efd386a)
