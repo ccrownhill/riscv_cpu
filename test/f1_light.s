@@ -1,5 +1,5 @@
 .text
-.equ NORMAL_DELAY, 24
+.equ NORMAL_DELAY, 10
 .equ NLIGHTS, 0xff
 .equ SREG_INIT, 0b1111
 

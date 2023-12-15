@@ -21,7 +21,7 @@ int main(int argc, char **argv, char **env) {
 	tfp->open ("riscvpipe.vcd");
  
 	if (vbdOpen()!=1) return(-1);
-	vbdHeader("SingleCyc");
+	vbdHeader("Caching F1");
 	vbdSetMode(1);
 
 	// initialize simulation inputs
