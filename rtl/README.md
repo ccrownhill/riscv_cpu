@@ -57,14 +57,10 @@ the next value for PC from the ALUout (for JALR)
 
 ## Orlan Forshaw (ManofRenown)
 Main Modules:
-SignExtend.sv:
-	This was almost entirely my own work. It involved handling the 5 instruction types we were going to be using and forming a 32 bit immediate value from the decoding of the instruction word. 
-  There were 5 cases where immediates where formed differently. Namely I S B J U Instruction types. 
-  These all formed the immediate from different bits of the word which needed to be concatenated together. 
-  The sign extending was achieved by repeating the most significant bit of the immediate an appropriate amount of times to form a 32 bit value. This value is then outputted by the module.
-		Note: I was not aware at the start that we would be using U instructions so this was implemented by Constantin.
-Lab 4: I made the Program Counter 
-	this was used in Lab 4 but could not be imported to the larger coursework as a whole unfortunately.
+* SignExtend.sv (fully my work)
+* Cache.sv (fully my design and work)
+* ofpipe (all not found in single cycle)
+
 	
 Other Contributions:
 	I generated the final excel diagrams which demonstrate the expected values of the distributions. 
@@ -78,6 +74,8 @@ Other Contributions:
   
   I was also involved in resolving merge conflicts across the project when the arose. 
   However these were usually minor issues and we managed to work together effectively as a team to prevent them.
+
+  I was also involved with testing and making sure the project was actually working.
 
 
 ## Yixu Pan (YixuPan)

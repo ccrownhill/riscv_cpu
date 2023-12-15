@@ -474,9 +474,100 @@ Obviously, non-pipelined hardware can work correctly since pipelined hardware do
 
 ## Stretch Goal 2: Pipelined RV32I Design with Cache
 
-### Design
+# Caching
 
-### Evidence
+## initial design choices
+
+This is the overall design we have chosen.
+
+Cache size: 128 Words total capacity which is 512 bytes.
+4 degrees of associative: Tracking least used by splitting the ways into two groups, tracking the least used group and randomly eliminating a way within the least used group when necessary.
+16 Bytes in a block 
+8 Sets total
+4 blocks in a set
+total number of blocks = 32
+We will only have one level of cache. (To begin)
+We will initially have a writethrough cache.
+
+This is an example of a cache. For our purposes the 32 bit input to the mux will be 8 bit and our mux will be much larger to enable every byte to be individually addressed.
+![Alt text](cache_address.png)
+
+Inputs and outputs names:
+Top Level Memory:  Memory.sv
+on startup all data should be wiped and all V bits set to 0
+inputs: 
+- clk
+- Addr_i [31:0]
+- WriteD_i [31:0]
+- Mwrite_i
+- Mread_i
+- funct3_i [2:0]
+- ReadD_o [31:0]
+- Mready_o
+
+The cache itself: Cache.sv
+- Valid_i
+- Wen_i
+- funct3_i [2:0]
+- Addr_i [31:0] // this will form the various parts of the address such as tag and byte offset.
+- WordData_i[31:0]
+- HalfData_i [15:0]
+- ByteData_i [7:0] 
+- clk
+- WordData_o [31:0]
+- HalfData_o [15:0]
+- ByteData_o [7:0] 
+- Cready_o
+
+The main memory: MainMemory.sv
+- Valid_i
+- Wen_i
+- clk
+- Addr_i [31:0]
+- WriteD_i [127:0]
+- ReadD_o [127:0] // on a miss the cache is updated with the missing block. Then the cache will read the desired byte and output it back to the cpu
+- Ready_o
+
+The 16 mux: Mux16.sv
+Follows conventions of previous Muxs
+
+Sign extender for the byte and half word outputs: MemExtend.sv
+- WordData_i[31:0]
+- HalfData_i [15:0]
+- ByteData_i [7:0] 
+- funct3_i [2:0]
+- ExtD_o [31:0]
+
+To split up this task we have done:
+Constantin will be integrating the modules into the CPU.
+Orlan will create Cache.sv
+Pan will create MainMemory.sv and MemExtend.sv
+Seb will create Mux16.sv and helping others with any issues
+
+Introducing caching into our CPU was a very large task and because of the nature of the task it was very important to have set variable names. This would make connecting it in the top level much easier. It was a very fun but challenging task and we worked well as a team to achieve it. We decided to only implement l1 cache as this would be enough for our purposes.
+
+The largest design choice we made was certainly making the cache byte addressed. We realised that the test program only used LB and SB instructions. This means that we could make better use of a cache by making it byte addressable. In this way we increased the amount of data our cache could store without increasing the size of it. We picked the size of our cache to be a reasonable size that could theoretically be implemented in a real CPU. Our block size was chosen to be quite large as we realised for the programs we will be running spatial locality would be very helpful in increasing the hit rate.
+
+Testing the performance improvements from the cache is difficult as we cannot simulate different delay times with fetching values from memory very easily. However assuming that our cache allows us to fetch form l1 in 2 cycle and form main memory in 100 cycles our cache should enable a significant speed increase in a real CPU. This is probably the single biggest improvement to our CPU we have made as pipelining our CPU with 5 stage could cause between a 3-5 times increase in clock frequency, but the cache could be 10 times faster assuming a decent hit rate.
+
+The cache is 4 way set associative which should allow it to hold a large amount of data for plotting different distributions but in the case where some data must be replaced it selects the last used way using a shift register which allows us to make use of temporal locality. In these ways we take advantage of the principles of both spatial and temporal locality which again should improve our hit rate.
+
+The cache itself was implemented using a state machine which tracks what needs to be done by moving through the stages before outputting the correctly fetched value or writing the correct block in memory and awaiting the next instruction. There is logic in the hazard detection to make sure that if there is a delay, from not getting a cache hit or from a write instruction, the pipeline is stalled until this instruction is executed fully. We have not implemented out of order execution.
+
+## Next Steps
+
+If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
+
+## Performance
+
+Our performance for our cache cannot be measured in real time but we can assess the hitrate which is an indicator as to how well it will perform. In the example program we achieve an average hitrate of 94%. This is because the example program is very predictable. Since it accesses data incremently every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
+
+More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hitrate there is minimal increase to the number of cycles. If we take into account the theoretical incease from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole. 
+
+Our final version is a write through cache as we thought this was our best version overall. However we did also implement a write back cache. The write through was more complete however the write through did have an edge when it came to performance. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not syncronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
+So in the end we picked our write through cache as our final result due to a greater confidence in the design and minimal performance difference between the two designs.
+
+## Proof
 
 We successfully ran the files on the pipelined CPU with the cache.
 
@@ -484,6 +575,10 @@ For the F1 light, we manually changed the time interval and used a 4-bit linear 
 
 
 https://github.com/ccrownhill/Team11/assets/109323873/6579ed6d-6fa6-4562-9b76-db219395564b
+
+We also tested the distributions and they run as shown.
+
+[Proof of working gaussian](Gaussian_proof.HEIC)
 
 ## Testing
 
