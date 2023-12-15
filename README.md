@@ -242,7 +242,7 @@ Patterson p. 333
 
 ### Evidence
 
-See the [test directory README](./test/pipelined-cpu).
+See the [test directory README](https://github.com/ccrownhill/Team11/tree/main/test#pipelined-cpu).
 
 ## Stretch Goal 2: Pipelined RV32I Design with Cache
 
