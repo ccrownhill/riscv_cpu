@@ -107,25 +107,25 @@ Expected triangular distribution from Excel:
 This is included just to show we are using the correct data as the PDF of the triangle distribution is not as theoretically expected. 
 This is because some values in the range 0 - 255 never occur which causes the PDF to shoot to zero at these values which is why the distribution looks so strange.
 
-![Triangle Vbuddy](Images/Triangle_Vbuddy.png)
+![Triangle Vbuddy](Images/Triangle_Vbuddy.jpeg)
 
 Gaussian Distribution:
 
 ![PDF Gaussian](Images/PDF_Gaussian.png)
 
-![Gaussian Vbuddy](Images/Gaussian_Vbuddy.png)
+![Gaussian Vbuddy](Images/Gaussian_Vbuddy.jpeg)
 
 Noisy Distribution:
 
 ![PDF Noisy](Images/PDF_Noisy.png)
 
-![Noisy Vbuddy](Images/Noisy_Vbuddy.png)
+![Noisy Vbuddy](Images/Noisy_Vbuddy.jpeg)
 
 Sin Distribution:
 
 ![PDF Sin](Images/PDF_Sin.png)
 
-![Sin Vbuddy](Images/Sin_Vbuddy.png)
+![Sin Vbuddy](Images/Sin_Vbuddy.jpeg)
 
 These images show that our CPU works exactly as expected as it produces the same results that we expect from the excel plots.
 
