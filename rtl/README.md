@@ -46,19 +46,6 @@ Also responsible for:
 
 * Create Python scripts for converting memory files to CSV for plotting PDFs in Excel and other uses
 
-Summary of my involvement:
-
-* In the initial Lab 4 I wrote the ControlUnit
-* Later I created the top level file `ControlPath` to include the PC register, the instruction memory and the decoding logic
-* To properly decode functions I wrote the `ALUDecode` and `PCsrcDecode` modules to further decode the output from `MainDecode` (I also supported Xiaoyang to write this file by discussing its requirements according the ISA specification)
-* The other big thing I worked on was changing all the top level modules (`ControlPath`, `DataPath`, etc.) for the JAL and JALR instructions.
-I did this by adding more MUXes to make sure the right data was written to the register file
-(for example when saving PC+4 as the return address) or to enable loading
-the next value for PC from the ALUout (for JALR)
-* Smaller co-authoring edits:
-	* added immediate encoding for U-type instructions to `SignExtend`
-	* worked together with rest of Team to debug our code and run the tests
-
 ### Pipelined CPU
 
 Pipelining was done completely by me so I was the author of all the modules for it:
