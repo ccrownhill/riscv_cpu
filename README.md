@@ -1,4 +1,4 @@
-# Team 11 repo
+# Pipelined RISC-V CPU with Caching in Systemverilog
 
 ## Summary of results
 
