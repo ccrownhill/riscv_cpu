@@ -13,7 +13,7 @@ mechanisms to deal with writes to instruction memory.
 ## Team members and personal statements
 
 | Name           | GitHub   | Link to Personal Statement|
-|----------------|----------|----------|---------------------------|--------------|
+|----------------|----------|---------------------------|
 | Xiaoyang Xu | **X454XU** | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
 | Constantin Kronbichler    | **ccrownhill** | [Constantin's Statement](statements/ConstantinKronbichler.md) |
 | Yixu Pan| **YixuPan** | [Yixu Pan's Statement](statements/YixuPan.md) |
