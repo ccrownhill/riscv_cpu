@@ -1,4 +1,4 @@
-# Pipelined RISC-V CPU with Caching in Systemverilog
+# Pipelined RISC-V CPU with Multilevel-Caching in SystemVerilog
 
 ## Summary of results
 
