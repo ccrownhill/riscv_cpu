@@ -1,4 +1,4 @@
-# Team 11 repo
+# Pipelined RISC-V CPU with Caching in Systemverilog
 
 ## Summary of results
 
@@ -12,12 +12,12 @@ mechanisms to deal with writes to instruction memory.
 
 ## Team members and personal statements
 
-| Name           | CID      | GitHub   | Email                     | Link to Personal Statement|
-|----------------|----------|----------|---------------------------|--------------|
-| | | | | |
-| Constantin Kronbichler    | 02221910 | **ccrownhill** | ck622@ic.ac.uk     | [Constantin's Statement](statements/ConstantinKronbichler.md) |
-| | | | | |
-| | | | | |
+| Name           | GitHub   | Link to Personal Statement|
+|----------------|----------|---------------------------|
+| Xiaoyang Xu | **X454XU** | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
+| Constantin Kronbichler    | **ccrownhill** | [Constantin's Statement](statements/ConstantinKronbichler.md) |
+| Yixu Pan| **YixuPan** | [Yixu Pan's Statement](statements/YixuPan.md) |
+| | **ManofRenown** | [ManofRenown's Statement](statements/ManofRenown.md) |
 
 
 ## Repository structure
@@ -39,23 +39,27 @@ mechanisms to deal with writes to instruction memory.
   * `TabRemove.py` to format code correctly
   * ...
 
-* `SingleCycleCPU`: the single cycle implementation from Lab4 (included just for reference)
+* `memtest`: test bench to test caching in isolation from rest of CPU; SystemVerilog modules are not up-to-date anymore
+
+* `SingleCycleCPU`: the single cycle implementation (included just for reference)
 
 ### Branches
 
-* `main`: contains pipelined CPU with forwarding and hazard detection along with single level write through caching
+All of them are pipelined versions with 5 stage pipeline:
 
-The following were built on top of the pipelined version:
+* `main`: 2 level von-Neumann cache:
+	* split instruction and data cache for L1 (with write through)
+	* uses simple write through snooping protocol for cache coherence between the two
+	L1 caches
+	* unified L2 cache (with write back)
+	* Unified main memory
+
+
+* `writethrough_caching`: contains pipelined CPU with forwarding and hazard detection along with single level write through caching
 
 * `writeback_caching`: implements single level writeback caching
 * `neumann_cache`: implements a split instruction and data cache
 with a unified main memory
-* `neumann_multilevel`: 2 level cache:
-  * split instruction and data cache for L1 (with write through)
-  * uses simple write through snooping protocol for cache coherence between the two
-  L1 caches
-  * unified L2 cache (with write back)
-  * Unified main memory
 
 ## Part 1: Single Cycle CPU
 
@@ -63,25 +67,27 @@ with a unified main memory
 
 We referred to the book written by Harris & Harris, Control Unit as:
 
-<img width="836" alt="Screen Shot 2023-11-30 at 10 48 00" src="https://github.com/ccrownhill/Team11/assets/109323873/182af720-c189-4339-a2b1-ba8f939fd0d7">
+<img width="836" alt="Screen Shot 2023-11-30 at 10 48 00" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/182af720-c189-4339-a2b1-ba8f939fd0d7">
 
 ALU section as:
 
-<img width="630" alt="Screen Shot 2023-11-30 at 10 48 11" src="https://github.com/ccrownhill/Team11/assets/109323873/233053ef-cd99-4918-86dc-895bf0439bbd">
+<img width="630" alt="Screen Shot 2023-11-30 at 10 48 11" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/233053ef-cd99-4918-86dc-895bf0439bbd">
 
 ImmSrc as:
 
-<img width="882" alt="Screen Shot 2023-11-30 at 10 48 43" src="https://github.com/ccrownhill/Team11/assets/109323873/9a2a506a-a7d0-45ed-941c-00db4a568895">
+<img width="882" alt="Screen Shot 2023-11-30 at 10 48 43" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/9a2a506a-a7d0-45ed-941c-00db4a568895">
 
 finally, the whole design as
 
-<img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/Team11/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
+<img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
 
 ### Evidence
 
 See the [test directory README](./test/README.md#single-cycle).
 
 ## Stretch Goal 1: Pipelined RV32I Design
+
+Note that all the graphics from this section come from the textbook "Computer Organization and Design RISC-V Edition: The Hardware Software Interface" by David Patterson and John Hennessy.
 
 ### Design
 
@@ -105,7 +111,7 @@ We chose to do a standard five stage pipeline
 * `WB` Write Back
   * writes data from memory or data from ALU output or next PC value (`jal`) to register file
 
-Patterson p. 297
+![patterson 297](Images/pipeline_stages.png)
 
 **IMPORTANT**: to avoid unnecessary extra stalls we designed the register file in
 a slightly unconventional way into a latch
@@ -144,7 +150,7 @@ As in this picture we just inserted pipeline registers between the different sta
 These received all output signals of one stage as well as the control signals
 that need to be passed to the next stage.
 
-Patterson p. 299
+![patterson 299](Images/pipeline_registers.png)
 
 That way it is possible to execute multiple different stages in parallel which means
 less combinational logic needs to be done in one clock cycle which allows a big speedup.
@@ -189,7 +195,7 @@ How to stall in `HazardDetectionUnit.sv`
 * sets all control signals in `ID` stage to zero so that we will not be writing to
 the register file or memory during the stall
 
-Patterson p. 325
+![patterson 325](Images/hazard_detection.png)
 
 **2.2. Avoiding control hazards**
 
@@ -238,11 +244,11 @@ if ((Branch_i == 1'b1 || Ret_i == 1'b1) // check if it is branch or jalr
 Note the checks to ignore writes to the zero register because these will not change
 anything and should therefore not result in stalls.
 
-Patterson p. 333
+![patterson 333](Images/flush_pipe.png)
 
 ### Evidence
 
-See the [test directory README](./test/pipelined-cpu).
+See the [test directory README](https://github.com/ccrownhill/riscv_cpu/tree/main/test#pipelined-cpu).
 
 ## Stretch Goal 2: Pipelined RV32I Design with Cache
 
@@ -260,7 +266,7 @@ We will only have one level of cache. (To begin)
 We will initially have a writethrough cache.
 
 This is an example of a cache. For our purposes the 32 bit input to the mux will be 8 bit and our mux will be much larger to enable every byte to be individually addressed.
-![Alt text](cache_address.png)
+![Alt text](Images/cache_address.png)
 
 Inputs and outputs names:
 Top Level Memory:  Memory.sv
@@ -324,30 +330,237 @@ The cache is 4 way set associative which should allow it to hold a large amount 
 
 The cache itself was implemented using a state machine which tracks what needs to be done by moving through the stages before outputting the correctly fetched value or writing the correct block in memory and awaiting the next instruction. There is logic in the hazard detection to make sure that if there is a delay, from not getting a cache hit or from a write instruction, the pipeline is stalled until this instruction is executed fully. We have not implemented out of order execution.
 
-## Next Steps
+Here is a state machine for the write through cache:
+![State Machine of Writethrough](Images/state_through.png)
 
-If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most intersting feature as writing an effective algorithm would be a fascinating challenge.
+### Next Steps
 
-## Performance
+If given more time there are two features that would be very interesting to implement. Including out of order execution would certainly speed up the CPU as we could have the cache operating somewhat independently of the main CPU. For example if a write instruction was followed by many register instructions we would not have to stall as the cache could write memory while the register instructions happen in parallel. Another very interesting feature would be pre-fetching instructions. This would be a huge speedup as it would allow us to massively improve our hit rate. With the sample program in particular this would be an 100% hit rate as the plotting of the distribution is massively predictable. This would be the most interesting feature as writing an effective algorithm would be a fascinating challenge.
 
-Our performance for our cache cannot be measured in real time but we can assess the hitrate which is an indicator as to how well it will perform. In the example program we achieve an average hitrate of 94%. This is because the example program is very predictable. Since it accesses data incremently every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
+### Performance
 
-![This is an example of a hit](hit.png)
+Our performance for our cache cannot be measured in real time but we can assess the hit rate which is an indicator as to how well it will perform. In the example program we achieve an average hit rate of 94%. This is because the example program is very predictable. Since it accesses data incrementally every single byte in our block will be accessed. Because of this the only misses we have are when crossing a cache boundary and thus causing a new block to be fetched. As we do not have prefetching these are mandatory misses and so the only improvements we could make would be either increasing the number of bytes in a block. Or implementing some method of prefetching. 
+
+![This is an example of a hit](Images/hit.png)
 
 This shows that hit has gone high in a previous state comparing tags. From there the next state is the Output stage (state 3) where the output of the cache is changed to the new correct output value. Then the cache will signal it is ready for a new instruction and change state again on the next clock cycle to compare tags for the next value.
 
-![This is an example of a miss](miss.png)
+![This is an example of a miss](Images/miss.png)
 
 This shows a miss where the data has not been found in the cache so we move to the allocate stage. This is where we fetch the block we need from the memory and write it into the cache. This was a read instruction so the next stage is the output stage where the correct data will be outputted to the CPU. The block is now stored in the cache so later if needed later it can be retrieved and outputted much faster.
 
-More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hitrate there is minimal increase to the number of cycles. If we take into account the theoretical incease from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole. 
+More cycles are used when running the program with the cache as misses add cycles that otherwise would not be there. However assuming a good hit rate there is minimal increase to the number of cycles. If we take into account the theoretical increase from the cache allowing faster reading than main memory it is clear our cache would massively speed up the CPU as a whole.
 
-Our final version is a write through cache as we thought this was our best version overall. However we did also implement a write back cache. The write through was more complete however the write back did have an edge when it came to performance. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not syncronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
+### Performance comparison to write back cache
+
+Our final version is a write through cache as we thought this was our best version overall. However we did also implement a faster write back cache. This is because it did not have to write main memory every time a cache location was updated. This comes with its own issues however as your main memory and cache memory are not synchronised which causes issues when overwriting a cache location that stores data not yet written to main memory. This requires use of a dirty bit and when it is required to write to main memory there is a large delay because of this since you must write main memory then read the new data and finally rewrite the cache. This means that while write back may be more efficient overall there is more consistency with a write through cache and it offers a more than good enough performance increase while keeping testing and implementation much simpler.
 So in the end we picked our write through cache as our final result due to a greater confidence in the design and minimal performance difference between the two designs.
+
+Here is a state machine for the Write Back cache:
+![Write back cache state machien](Images/state_write_back.jpeg)
+
+When comparing a run of the Gaussian distribution PDF generation program we can compare at what time they start to display the distribution:
+
+* Write Back: 358666ps
+* Write Through: 504550ps
+
+This shows that the write back cache outperforms the write through cache
+by almost a factor of 2.
+
+This is due to less writes to memory.
 
 ### Evidence
 
-See the [test directory README](./test/README.md#caching)
+See the [test directory README](https://github.com/ccrownhill/riscv_cpu/blob/main/test/README.md#caching)
+
+
+## Multilevel caching with unified main memory, L2 cache and split L1 caches
+
+As an extra challenge a multilevel caching system was implemented in the `neumann_multilevel` branch.
+As the branch name suggests it also implements a von-Neumann memory model, i.e.
+a shared memory for both instructions and data.
+
+### Motivation
+
+Almost all modern CPUs use a von-Neumann architecture as well as multilevel caching with
+a split first level cache.
+Hence, it was my goal to try to implement a more realistic CPU by adding this to our design.
+
+### Main Memory
+
+`MainMemory.sv`
+
+Since $2^32$ bytes would be too big for our memory the memory just contains two
+SystemVerilog arrays and decides which one to read from based on the input address.
+
+This was done with this simple Macro:
+
+```verilog
+`define WRITE_MAINMEM(ADDR, DATA) \
+	if (ADDR >= {32'hbfc00000}[31:BYTE_ADDR_BITS]) \
+		mem_arr_ins[ADDR-{32'hbfc00000}[31:BYTE_ADDR_BITS]] <= DATA; \
+  else \
+    mem_arr_data[ADDR] <= DATA;
+```
+
+### L2 cache
+
+`L2Cache.sv`
+
+The L2 cache is a simple write back cache with the only difference to the previous
+caches that it now reads and writes whole blocks directly.
+
+### Split L1 caches and the problem of cache coherence
+
+`L1Data.sv` for the data cache and `L1Instr.sv` for the **read-only** instruction cache.
+
+The most interesting part comes from dealing with two separate L1 caches that both
+communicate with the L2 cache.
+
+The main problem arises when one cache wants to read from memory that the other cache
+has just written. Assume both `L1Data` and `L1Instr` have a cached copy of data at address `x`.
+When `L1Data` writes to address `x` and `L1Instr` receives a read request at address `x`
+it will return an outdated value.
+
+The solution for this is to make the L1 caches **snooping caches** which means
+that they are connected to a common input and output bus with the L2 cache, as in this image:
+
+![multilevel cache bus](Images/multi_level_bus.jpg)
+
+Note that both L1 caches are implemented as write through caches.
+Now, whenever `L1Data` sends a write request on the bus to L2 (happens on every write because we use write through)
+`L1Instr` will *snoop* this request from the bus going to the L2 cache and invalidate
+its entry at that address (if it has it).
+This means a new read request to `L1Instr` for address `x` has to ALLOCATE the updated
+value from the L2 cache.
+
+The busses were implemented by using one struct to define all of their bits:
+
+```verilog
+typedef struct packed {
+  logic           Valid;
+  logic           Wen;
+  logic           Src;
+  logic [31:0]    Addr;
+  logic [127:0]   WriteD;
+} L1ToL2_t;
+
+typedef struct packed {
+  logic           Ready;
+  logic           Dst;
+  logic [127:0]   ReadD;
+} L2ToL1_t;
+```
+
+Note the `Src` and `Dst` fields to differentiate which cache a request comes from or whose request is being served.
+
+Then the ALLOCATE stage of `L1Instr` is changed to this:
+
+```verilog
+ALLOCATE: begin
+	if (flush_i) begin
+		N_State = COMP_TAG;
+		if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b0) begin
+			MemBus_o.Valid = 1'b0;
+		end
+	end
+	else if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b0) begin
+		degree = last_used_shift_reg[DEGREES-1];
+		MemBus_o.Src = 1'b0;
+		MemBus_o.Wen = 1'b0;
+		MemBus_o.Valid = 1'b1;
+		MemBus_o.Addr = CPUD_i.Addr;
+		MemBus_o.WriteD = {BLOCKSIZE{1'bx}};
+		if (MemD_i.Ready && MemD_i.Dst == 1'b0) begin
+			N_State = COMP_TAG;
+			cache_arr[degree][set].Data = MemD_i.ReadD;
+			cache_arr[degree][set].Tag = tag;
+			cache_arr[degree][set].Valid = 1'b1;
+			cache_arr[degree][set].Dirty = 1'b0;
+			MemBus_o.Valid = 1'b0;
+		end
+		else
+			N_State = C_State;
+	end
+	else
+		N_State = C_State;
+	CPUD_o.Ready = 1'b0;
+end
+```
+
+This just checks whether the bus is free to use before making a request as well as whether the response from the L2 cache is destined for `L1Instr`.
+
+In `L1Data` we do something similar for ALLOCATE but also have to change the WRITE_THROUGH state:
+
+```verilog
+WRITE_THROUGH: begin
+	if (MemBus_i.Valid == 1'b0 || MemBus_i.Src == 1'b1) begin
+		MemBus_o.Wen = 1'b1;
+		MemBus_o.Valid = 1'b1;
+		MemBus_o.Src = 1'b1;
+		MemBus_o.Addr = {cache_arr[degree][set].Tag, set, byte_off};
+		`WRITE(cache_arr[degree][set].Data, byte_off, CPUD_i.ByteData);
+		MemBus_o.WriteD = cache_arr[degree][set].Data;
+		if (MemD_i.Ready && MemD_i.Dst == 1'b1) begin
+			N_State = OUTPUT;
+		end
+		else begin
+			N_State = C_State;
+		end
+	end
+	else begin
+		N_State = C_State;
+	end
+	CPUD_o.Ready = 1'b0;
+end
+```
+
+**Avoid Verilator limitations by adding register into the bus**
+
+I separated the output lines of the L1 caches going into the bus and then to the L2 cache
+with a register from the L2 cache to avoid doing to much combinational logic in one
+cycle.
+Otherwise, it is too hard for Verilator to simulate and it will throw a "did not converge" error.
+
+I do this as follows in `Memory.sv`:
+
+```verilator
+always_ff @(posedge clk_i) begin
+  L1ToL2Bus_L2side <= L1ToL2Bus_L1side;
+end
+```
+
+### Handling new Hazards arising from split cache configuration
+
+Extra hazard handling implemented (in `IFStage.sv` and `HazardDetectionUnit.sv`):
+
+* Stall when the instruction memory is not ready (this is the case if it has to load data from the L2 cache or main memory)
+* Check if a previous instruction will write to the memory address you are about to read.
+In that case wait for data to be written to memory (use ready signal of `L1Data`).
+* To check for these forbidden reads I also had to add another forwarding mechanism to forward the memory address and memory write enable
+from the `ID`/`WB` stage to the `IF` stage to be able to tell whether a write happens and whether it writes to the address equivalent to the current PC value in the `IF` stage.
+* checking the value in the `EX` stage was not necessary since the pipeline already
+stalls automatically if we require a value from an instruction while we are in the ID stage (which is when the previous instruction is in the `EX` stage)
+
+This is the code in `IFStage.sv` to check for forbidden reads (i.e. from addresses that will be overwritten in later stages of previous instructions):
+
+```verilog
+always_latch begin
+  if (PCbeforeReg_o[31:2] == regPlusImm_i[31:2] && MemWrite_beforeID_i && !(ALUout_EX_i == regPlusImm_i && MemWrite_EX_i && DMemReady_i)) begin
+    forbiddenRead = 1'b1;
+    nextPC = PCbeforeReg_o;
+    validReq_o = 1'b0;
+  end
+  else begin
+    forbiddenRead = 1'b0;
+    validReq_o = 1'b1;
+  end
+end
+```
+
+### Evidence
+
+See [test folder README](./test/README.md#multilevel-von-neumann-cpu).
 
 ## Testing
 
@@ -397,10 +610,11 @@ Note that the Makefile is in `test` and you can only run it from that directory.
 * Test probability function on VBuddy (will automatically change `instructions.mem` and `data.mem`)
 
 ```
-make distfile.mem
+make gaussian
+make sine
+make noisy
+make triangle
 ```
-
-**IMPORTANT**: needs `.mem` extension.
 
 * Test F1 light on VBuddy (will automatically change `instructions.mem`)
 
@@ -408,13 +622,15 @@ make distfile.mem
 make f1
 ```
 
-* Run a generic test bench file ending in `_tb.cpp`:
+* Get executable for generic test bench file ending in `_tb.cpp`:
 
 ```
 make my_tb.cpp
 ```
 
 where `my` should be replaced by the actual name.
+
+Run with `./obj_dir/Vriscvpipe`.
 
 * For debugging: run with `gtkwave`
 
