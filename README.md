@@ -12,12 +12,12 @@ mechanisms to deal with writes to instruction memory.
 
 ## Team members and personal statements
 
-| Name           | CID      | GitHub   | Email                     | Link to Personal Statement|
+| Name           | GitHub   | Link to Personal Statement|
 |----------------|----------|----------|---------------------------|--------------|
-| Xiaoyang Xu | 02030033 | **X454XU** | xx1522@ic.ac.uk | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
-| Constantin Kronbichler    | 02221910 | **ccrownhill** | ck622@ic.ac.uk     | [Constantin's Statement](statements/ConstantinKronbichler.md) |
-| Yixu Pan| 02210129 |**YixuPan** |yp1222@ic.ac.uk |[Yixu Pan's Statement](statements/YixuPan.md) |
-| Orlan Forshaw| 02229179 | **ManofRenown** |of222@ic.ac.uk |[Orlan Forshaw's Statement](statements/OrlanForshaw.md) |
+| Xiaoyang Xu | **X454XU** | [Xiaoyang Xu's Statement](statements/XiaoyangXu.md) |
+| Constantin Kronbichler    | **ccrownhill** | [Constantin's Statement](statements/ConstantinKronbichler.md) |
+| Yixu Pan| **YixuPan** | [Yixu Pan's Statement](statements/YixuPan.md) |
+| | **ManofRenown** | [ManofRenown's Statement](statements/ManofRenown.md) |
 
 
 ## Repository structure
@@ -41,23 +41,25 @@ mechanisms to deal with writes to instruction memory.
 
 * `memtest`: test bench to test caching in isolation from rest of CPU; SystemVerilog modules are not up-to-date anymore
 
-* `SingleCycleCPU`: the single cycle implementation from Lab4 (included just for reference)
+* `SingleCycleCPU`: the single cycle implementation (included just for reference)
 
 ### Branches
 
-* `main`: contains pipelined CPU with forwarding and hazard detection along with single level write through caching
+All of them are pipelined versions with 5 stage pipeline:
 
-The following were built on top of the pipelined version:
+* `main`: 2 level von-Neumann cache:
+	* split instruction and data cache for L1 (with write through)
+	* uses simple write through snooping protocol for cache coherence between the two
+	L1 caches
+	* unified L2 cache (with write back)
+	* Unified main memory
+
+
+* `writethrough_caching`: contains pipelined CPU with forwarding and hazard detection along with single level write through caching
 
 * `writeback_caching`: implements single level writeback caching
 * `neumann_cache`: implements a split instruction and data cache
 with a unified main memory
-* `neumann_multilevel`: 2 level cache:
-  * split instruction and data cache for L1 (with write through)
-  * uses simple write through snooping protocol for cache coherence between the two
-  L1 caches
-  * unified L2 cache (with write back)
-  * Unified main memory
 
 ## Part 1: Single Cycle CPU
 
@@ -65,19 +67,19 @@ with a unified main memory
 
 We referred to the book written by Harris & Harris, Control Unit as:
 
-<img width="836" alt="Screen Shot 2023-11-30 at 10 48 00" src="https://github.com/ccrownhill/Team11/assets/109323873/182af720-c189-4339-a2b1-ba8f939fd0d7">
+<img width="836" alt="Screen Shot 2023-11-30 at 10 48 00" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/182af720-c189-4339-a2b1-ba8f939fd0d7">
 
 ALU section as:
 
-<img width="630" alt="Screen Shot 2023-11-30 at 10 48 11" src="https://github.com/ccrownhill/Team11/assets/109323873/233053ef-cd99-4918-86dc-895bf0439bbd">
+<img width="630" alt="Screen Shot 2023-11-30 at 10 48 11" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/233053ef-cd99-4918-86dc-895bf0439bbd">
 
 ImmSrc as:
 
-<img width="882" alt="Screen Shot 2023-11-30 at 10 48 43" src="https://github.com/ccrownhill/Team11/assets/109323873/9a2a506a-a7d0-45ed-941c-00db4a568895">
+<img width="882" alt="Screen Shot 2023-11-30 at 10 48 43" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/9a2a506a-a7d0-45ed-941c-00db4a568895">
 
 finally, the whole design as
 
-<img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/Team11/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
+<img width="877" alt="Screen Shot 2023-11-30 at 10 47 06" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/7c040d0b-d810-4953-9943-1cc471ac524e">
 
 ### Evidence
 
@@ -246,7 +248,7 @@ anything and should therefore not result in stalls.
 
 ### Evidence
 
-See the [test directory README](https://github.com/ccrownhill/Team11/tree/main/test#pipelined-cpu).
+See the [test directory README](https://github.com/ccrownhill/riscv_cpu/tree/main/test#pipelined-cpu).
 
 ## Stretch Goal 2: Pipelined RV32I Design with Cache
 
@@ -369,7 +371,7 @@ This is due to less writes to memory.
 
 ### Evidence
 
-See the [test directory README](https://github.com/ccrownhill/Team11/blob/main/test/README.md#caching)
+See the [test directory README](https://github.com/ccrownhill/riscv_cpu/blob/main/test/README.md#caching)
 
 
 ## Multilevel caching with unified main memory, L2 cache and split L1 caches
