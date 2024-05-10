@@ -110,7 +110,7 @@ The `SetAssociativeCache.sv` I wrote is a 2-way design but the way number can be
 cache_line_t cache [NUM_LINES][NUM_WAYS]; // Cache memory
 ```
 
-## Testing of all RV32I: RISC-V integer instructions and comments on our F1 asslembly program
+## Testing of all RV32I: RISC-V integer instructions and comments on our F1 assembly program
 I have write all the testing assembly code for all RV32I: RISC-V interger instructions included in our CPU design, program are inside the test file and the result with prove are also included in the readme, they are seperated into:
 * load and store instructions `load_store_test.s`
 * Instructions with ALU `ALUtest.s`

@@ -59,7 +59,7 @@ With a very similar approach as Mux8, but this time we have 16 input value and 1
 
 I designed the MainDecoder according to the structure as shown in the image below, the value of ouput of this module is assigned according to Table 7.6 in the image. However, due to the number of the types of the instruction needed is 5, we have to add an aditional value to ImmSrc which is 3-bit.
 
-<img width="493" alt="Screen Shot 2023-12-13 at 11 55 31" src="https://github.com/ccrownhill/Team11/assets/109323873/46d11ed9-3b14-455d-a39b-508ca032e2a4">
+<img width="493" alt="Screen Shot 2023-12-13 at 11 55 31" src="https://github.com/ccrownhill/riscv_cpu/assets/109323873/46d11ed9-3b14-455d-a39b-508ca032e2a4">
 
 The main part of the code is the secion in the image below
 
@@ -84,4 +84,4 @@ endmodule
 
 ## Testing for Pipelined CPU
 
-Details can be found on [Stretch Goal 1: Pipelined RV32I Design](https://github.com/ccrownhill/Team11#stretch-goal-1-pipelined-rv32i-design) as it explains what we get and why do we think that it works correctly
+Details can be found on [Stretch Goal 1: Pipelined RV32I Design](https://github.com/ccrownhill/riscv_cpu#stretch-goal-1-pipelined-rv32i-design) as it explains what we get and why do we think that it works correctly
